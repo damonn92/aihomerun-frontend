@@ -30,3 +30,8 @@ dist-ssr
 
 # Apple Sign In private key - NEVER commit this
 keys/
+
+# Capacitor — web assets are rebuilt by `cap sync`, no need to track
+ios/App/App/public/
+# CocoaPods lock (can be large and is reproducible)
+ios/App/Pods/

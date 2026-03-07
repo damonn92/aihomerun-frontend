@@ -1,9 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import UploadPage   from './pages/UploadPage'
 import ResultPage   from './pages/ResultPage'
 import AuthPage     from './pages/AuthPage'
 import ProfilePage  from './pages/ProfilePage'
+import PrivacyPage  from './pages/PrivacyPage'
+
+/* ─── Detect /privacy route (works both as web URL and in-app nav) ────────── */
+function useRoute() {
+  const [path, setPath] = useState(() => window.location.pathname)
+  useEffect(() => {
+    const handler = () => setPath(window.location.pathname)
+    window.addEventListener('popstate', handler)
+    return () => window.removeEventListener('popstate', handler)
+  }, [])
+  return path
+}
 
 /* ─── Splash / loading screen ────────────────────────────────────────────── */
 function SplashScreen() {
@@ -106,24 +118,21 @@ function TabBar({ active, onChange }) {
 /* ─── Main content (requires auth) ───────────────────────────────────────── */
 function AppContent() {
   const { user, loading } = useAuth()
-  const [result, setResult]     = useState(null)
+  const [result, setResult]       = useState(null)
   const [activeTab, setActiveTab] = useState('home')
 
   if (loading) return <SplashScreen />
   if (!user)   return <AuthPage />
 
-  // When showing ResultPage, hide the tab bar for a focused experience
   const showTabBar = !result
 
   function handleTabChange(tab) {
     setActiveTab(tab)
-    // Switching away from home resets any in-progress result
     if (tab !== 'home') setResult(null)
   }
 
   return (
     <>
-      {/* Page content — leave room at the bottom for the tab bar */}
       <div style={{
         height: '100%',
         paddingBottom: showTabBar ? 'calc(49px + env(safe-area-inset-bottom, 0px))' : 0,
@@ -148,6 +157,11 @@ function AppContent() {
 
 /* ─── Root ────────────────────────────────────────────────────────────────── */
 export default function App() {
+  const path = useRoute()
+
+  // /privacy is publicly accessible — no auth needed (required for App Store)
+  if (path === '/privacy') return <PrivacyPage />
+
   return (
     <AuthProvider>
       <div className="app-shell">
