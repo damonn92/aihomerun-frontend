@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
-import { Camera, ChevronLeft, AlertCircle, CheckCircle } from 'lucide-react'
+import { Camera, AlertCircle, CheckCircle, LogOut } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
@@ -105,6 +106,8 @@ function LoadingScreen({ step }) {
 
 /* ─── Upload Page ─────────────────────────────────────────────────────────── */
 export default function UploadPage({ onResult }) {
+  const { user, signOut, getAccessToken } = useAuth()
+
   const [file, setFile]           = useState(null)
   const [preview, setPreview]     = useState(null)
   const [actionType, setActionType] = useState('swing')
@@ -152,7 +155,9 @@ export default function UploadPage({ onResult }) {
     form.append('age', age)
 
     try {
-      const res  = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form })
+      const token = getAccessToken()
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const res  = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form, headers })
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Analysis failed')
       onResult(data)
@@ -172,6 +177,7 @@ export default function UploadPage({ onResult }) {
       {/* ── Navigation Bar ── */}
       <nav className="ios-navbar">
         <div className="ios-navbar-inner" style={{ justifyContent: 'space-between' }}>
+          {/* Left: logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 26, lineHeight: 1 }}>⚾</span>
             <span style={{
@@ -182,17 +188,37 @@ export default function UploadPage({ onResult }) {
               AIHomeRun
             </span>
           </div>
-          <span style={{
-            font: 'var(--text-caption2)',
-            fontWeight: 700,
-            letterSpacing: 1.2,
-            color: 'var(--brand)',
-            background: 'rgba(255,69,58,0.14)',
-            padding: '3px 8px',
-            borderRadius: 'var(--r-xs)',
-          }}>
-            BETA
-          </span>
+
+          {/* Right: user avatar + logout */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Avatar */}
+            <div style={{
+              width: 30, height: 30,
+              borderRadius: 15,
+              background: 'var(--fill2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
+            }}>
+              {user?.user_metadata?.avatar_url
+                ? <img src={user.user_metadata.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="" />
+                : <span style={{ font: 'var(--text-caption1)', fontWeight: 700, color: 'var(--label2)' }}>
+                    {(user?.email?.[0] || '?').toUpperCase()}
+                  </span>
+              }
+            </div>
+            {/* Logout */}
+            <button
+              onClick={signOut}
+              title="Sign out"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--label3)', padding: '4px',
+                display: 'flex', alignItems: 'center',
+              }}
+            >
+              <LogOut size={17} strokeWidth={1.8} />
+            </button>
+          </div>
         </div>
       </nav>
 
