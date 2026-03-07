@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
-import UploadPage  from './pages/UploadPage'
-import ResultPage  from './pages/ResultPage'
-import AuthPage    from './pages/AuthPage'
+import UploadPage   from './pages/UploadPage'
+import ResultPage   from './pages/ResultPage'
+import AuthPage     from './pages/AuthPage'
+import ProfilePage  from './pages/ProfilePage'
 
 /* ─── Splash / loading screen ────────────────────────────────────────────── */
 function SplashScreen() {
@@ -28,17 +29,103 @@ function SplashScreen() {
   )
 }
 
+/* ─── Bottom tab bar ──────────────────────────────────────────────────────── */
+function TabBar({ active, onChange }) {
+  const tabs = [
+    { id: 'home',    label: '主页',  icon: '⚾' },
+    { id: 'profile', label: '资料',  icon: '👤' },
+  ]
+  return (
+    <nav style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 100,
+      display: 'flex',
+      background: 'var(--bg-elevated, rgba(255,255,255,0.92))',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderTop: '0.5px solid var(--sep)',
+      paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+    }}>
+      {tabs.map(tab => {
+        const isActive = active === tab.id
+        return (
+          <button
+            key={tab.id}
+            onClick={() => onChange(tab.id)}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 3,
+              padding: '8px 0 6px',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: isActive ? 'var(--blue)' : 'var(--label3, #8e8e93)',
+              transition: 'color 0.15s',
+            }}
+          >
+            <span style={{ fontSize: 22, lineHeight: 1 }}>{tab.icon}</span>
+            <span style={{
+              fontSize: 10,
+              fontWeight: isActive ? 600 : 400,
+              letterSpacing: '0.1px',
+            }}>
+              {tab.label}
+            </span>
+          </button>
+        )
+      })}
+    </nav>
+  )
+}
+
 /* ─── Main content (requires auth) ───────────────────────────────────────── */
 function AppContent() {
-  const [result, setResult] = useState(null)
-  const { user, loading }   = useAuth()
+  const { user, loading } = useAuth()
+  const [result, setResult]     = useState(null)
+  const [activeTab, setActiveTab] = useState('home')
 
   if (loading) return <SplashScreen />
   if (!user)   return <AuthPage />
 
-  return result
-    ? <ResultPage result={result} onReset={() => setResult(null)} />
-    : <UploadPage onResult={setResult} />
+  // When showing ResultPage, hide the tab bar for a focused experience
+  const showTabBar = !result
+
+  function handleTabChange(tab) {
+    setActiveTab(tab)
+    // Switching away from home resets any in-progress result
+    if (tab !== 'home') setResult(null)
+  }
+
+  return (
+    <>
+      {/* Page content — leave room at the bottom for the tab bar */}
+      <div style={{
+        height: '100%',
+        paddingBottom: showTabBar ? 'calc(49px + env(safe-area-inset-bottom, 0px))' : 0,
+        boxSizing: 'border-box',
+        overflowY: 'auto',
+      }}>
+        {result ? (
+          <ResultPage result={result} onReset={() => setResult(null)} />
+        ) : activeTab === 'home' ? (
+          <UploadPage onResult={setResult} />
+        ) : (
+          <ProfilePage />
+        )}
+      </div>
+
+      {showTabBar && (
+        <TabBar active={activeTab} onChange={handleTabChange} />
+      )}
+    </>
+  )
 }
 
 /* ─── Root ────────────────────────────────────────────────────────────────── */
