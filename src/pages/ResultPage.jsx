@@ -1,180 +1,400 @@
-import { CheckCircle2, TrendingUp, RotateCcw, Star, Dumbbell, Heart } from 'lucide-react'
+import { ChevronLeft, Star, TrendingUp, Dumbbell, ChevronDown, RotateCcw } from 'lucide-react'
 
+/* ─── Circular Score Ring ─────────────────────────────────────────────────── */
 function ScoreRing({ score, label, color }) {
-  const radius = 36
-  const circ = 2 * Math.PI * radius
+  const r    = 34
+  const circ = 2 * Math.PI * r
   const offset = circ - (score / 100) * circ
 
-  const colorMap = {
-    red:    { stroke: '#ef4444', text: 'text-red-400' },
-    blue:   { stroke: '#3b82f6', text: 'text-blue-400' },
-    green:  { stroke: '#22c55e', text: 'text-green-400' },
-    yellow: { stroke: '#eab308', text: 'text-yellow-400' },
-  }
-  const c = colorMap[color] || colorMap.red
-
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="relative w-24 h-24">
-        <svg className="w-full h-full -rotate-90" viewBox="0 0 88 88">
-          <circle cx="44" cy="44" r={radius} fill="none" stroke="#1e293b" strokeWidth="8" />
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      <div style={{ position: 'relative', width: 88, height: 88 }}>
+        <svg
+          width="88" height="88"
+          viewBox="0 0 88 88"
+          style={{ transform: 'rotate(-90deg)' }}
+        >
+          {/* Track */}
           <circle
-            cx="44" cy="44" r={radius} fill="none"
-            stroke={c.stroke} strokeWidth="8"
+            cx="44" cy="44" r={r}
+            fill="none"
+            stroke="var(--bg3)"
+            strokeWidth="7"
+          />
+          {/* Fill */}
+          <circle
+            cx="44" cy="44" r={r}
+            fill="none"
+            stroke={color}
+            strokeWidth="7"
+            strokeLinecap="round"
             strokeDasharray={circ}
             strokeDashoffset={offset}
-            strokeLinecap="round"
-            style={{ transition: 'stroke-dashoffset 0.8s ease' }}
+            style={{
+              '--ring-circ': circ,
+              '--ring-offset': offset,
+            }}
+            className="score-ring-fill"
           />
         </svg>
-        <span className="absolute inset-0 flex items-center justify-center text-2xl font-black text-white">
+        {/* Score number */}
+        <span style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          font: '800 22px/1 -apple-system, sans-serif',
+          letterSpacing: '-1px',
+          color: 'var(--label)',
+        }}>
           {score}
         </span>
       </div>
-      <span className={`text-xs font-semibold uppercase tracking-widest ${c.text}`}>{label}</span>
+      <span style={{
+        font: 'var(--text-caption2)',
+        fontWeight: 600,
+        letterSpacing: 0.5,
+        textTransform: 'uppercase',
+        color,
+      }}>
+        {label}
+      </span>
     </div>
   )
 }
 
-function Section({ icon: Icon, title, children, accent }) {
+/* ─── Grade config ────────────────────────────────────────────────────────── */
+function getGrade(score) {
+  if (score >= 90) return { letter: 'A+', color: 'var(--green)' }
+  if (score >= 80) return { letter: 'A',  color: 'var(--green)' }
+  if (score >= 70) return { letter: 'B',  color: 'var(--blue)' }
+  if (score >= 60) return { letter: 'C',  color: 'var(--orange)' }
+  return               { letter: 'D',  color: 'var(--red)' }
+}
+
+/* ─── Section Card ────────────────────────────────────────────────────────── */
+function SectionCard({ icon: Icon, iconColor, title, accentBg, children, delay = 0 }) {
   return (
-    <div className={`rounded-2xl border p-5 ${accent}`}>
-      <div className="flex items-center gap-2 mb-4">
-        <Icon size={18} />
-        <h3 className="font-bold text-sm uppercase tracking-widest">{title}</h3>
+    <div
+      className="ios-card card-animate"
+      style={{
+        background: accentBg,
+        marginBottom: 12,
+        animationDelay: `${delay}ms`,
+      }}
+    >
+      {/* Header */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        padding: '15px 16px 13px',
+        borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+      }}>
+        <div style={{
+          width: 30,
+          height: 30,
+          borderRadius: 8,
+          background: 'rgba(255,255,255,0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Icon size={16} color={iconColor} strokeWidth={2} />
+        </div>
+        <span style={{
+          font: 'var(--text-subhead)',
+          fontWeight: 600,
+          color: 'var(--label)',
+          letterSpacing: '-0.2px',
+        }}>
+          {title}
+        </span>
       </div>
-      {children}
+      {/* Body */}
+      <div style={{ padding: '14px 16px 16px' }}>
+        {children}
+      </div>
     </div>
   )
 }
 
+/* ─── Bullet Item ─────────────────────────────────────────────────────────── */
+function BulletItem({ text, dotColor }) {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 10,
+      padding: '6px 0',
+    }}>
+      <div style={{
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        background: dotColor,
+        marginTop: 6,
+        flexShrink: 0,
+      }} />
+      <span style={{
+        font: 'var(--text-subhead)',
+        color: 'var(--label)',
+        lineHeight: 1.5,
+        flex: 1,
+      }}>
+        {text}
+      </span>
+    </div>
+  )
+}
+
+/* ─── Data Row ────────────────────────────────────────────────────────────── */
+function DataRow({ label, value, last }) {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '10px 16px',
+      borderBottom: last ? 'none' : '0.5px solid var(--sep2)',
+    }}>
+      <span style={{ font: 'var(--text-subhead)', color: 'var(--label2)' }}>{label}</span>
+      <span style={{ font: 'var(--text-subhead)', fontWeight: 500, color: 'var(--label)', letterSpacing: '-0.2px' }}>
+        {value}
+      </span>
+    </div>
+  )
+}
+
+/* ─── Result Page ─────────────────────────────────────────────────────────── */
 export default function ResultPage({ result, onReset }) {
   const { feedback, metrics, action_type, processing_time_seconds } = result
-  const overall = feedback.overall_score
+  const overall     = feedback.overall_score
+  const grade       = getGrade(overall)
+  const actionLabel = action_type === 'swing' ? 'Batting Swing' : 'Pitching'
 
-  const grade =
-    overall >= 90 ? { letter: 'A+', color: 'text-green-400' } :
-    overall >= 80 ? { letter: 'A',  color: 'text-green-400' } :
-    overall >= 70 ? { letter: 'B',  color: 'text-blue-400'  } :
-    overall >= 60 ? { letter: 'C',  color: 'text-yellow-400'} :
-                    { letter: 'D',  color: 'text-red-400'   }
+  const rawData = [
+    { label: 'Peak Wrist Speed',   value: `${metrics.peak_wrist_speed.toFixed(1)} px/frame` },
+    { label: 'Hip–Shoulder Sep.',  value: `${metrics.hip_shoulder_separation.toFixed(1)}°` },
+    { label: 'Balance',            value: metrics.balance_score.toFixed(2) },
+    { label: 'Follow-Through',     value: metrics.follow_through ? 'Yes ✓' : 'No ✗' },
+    { label: 'Elbow Angle',        value: `${metrics.joint_angles.elbow_angle.toFixed(1)}°` },
+    { label: 'Shoulder Tilt',      value: `${metrics.joint_angles.shoulder_angle.toFixed(1)}°` },
+    { label: 'Hip Rotation',       value: `${metrics.joint_angles.hip_rotation.toFixed(1)}°` },
+    { label: 'Knee Bend',          value: `${metrics.joint_angles.knee_bend.toFixed(1)}°` },
+  ]
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="flex items-center gap-3 px-6 py-4 border-b border-slate-800">
-        <img src="/logo.png" alt="AIHomeRun" className="w-9 h-9 rounded-xl object-cover" />
-        <span className="text-xl font-bold tracking-tight text-white">AIHomeRun</span>
-        <button
-          onClick={onReset}
-          className="ml-auto flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+    <div style={{
+      background: 'var(--bg)',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+
+      {/* ── Navigation Bar ── */}
+      <nav className="ios-navbar">
+        <div className="ios-navbar-inner">
+          {/* Back */}
+          <button className="ios-back-btn" onClick={onReset}>
+            <ChevronLeft size={20} strokeWidth={2.5} />
+            Back
+          </button>
+
+          {/* Title */}
+          <span className="ios-navbar-title" style={{ flex: 1, textAlign: 'center' }}>
+            Results
+          </span>
+
+          {/* Right placeholder */}
+          <div style={{ minWidth: 60 }} />
+        </div>
+      </nav>
+
+      {/* ── Scrollable Content ── */}
+      <div
+        className="scroll-content"
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '20px 16px',
+          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 36px)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+
+        {/* ── Hero Score Card ── */}
+        <div
+          className="ios-card card-animate"
+          style={{
+            padding: '28px 20px 24px',
+            textAlign: 'center',
+            background: 'var(--bg2)',
+          }}
         >
-          <RotateCcw size={14} />
-          Analyze another video
-        </button>
-      </header>
+          {/* Action label */}
+          <span style={{
+            font: 'var(--text-caption2)',
+            fontWeight: 700,
+            letterSpacing: 1.4,
+            textTransform: 'uppercase',
+            color: 'var(--label3)',
+            display: 'block',
+            marginBottom: 16,
+          }}>
+            {actionLabel} Analysis
+          </span>
 
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-10 flex flex-col gap-6">
+          {/* Grade letter */}
+          <div
+            className="grade-pop"
+            style={{
+              font: '900 88px/1 -apple-system, "SF Pro Display", sans-serif',
+              letterSpacing: '-4px',
+              color: grade.color,
+              marginBottom: 8,
+            }}
+          >
+            {grade.letter}
+          </div>
 
-        {/* Overall score hero */}
-        <div className="rounded-2xl bg-slate-800/60 border border-slate-700 p-6 flex flex-col items-center text-center gap-2">
-          <p className="text-xs text-slate-500 uppercase tracking-widest font-medium">
-            {action_type === 'swing' ? 'Batting Swing' : 'Pitching'} Analysis
+          {/* Overall score */}
+          <p style={{
+            font: 'var(--text-callout)',
+            color: 'var(--label2)',
+            margin: '0 0 14px',
+          }}>
+            Overall Score:{' '}
+            <strong style={{ color: 'var(--label)' }}>{overall}</strong>
+            {' '}/100
           </p>
-          <div className={`text-8xl font-black ${grade.color}`}>{grade.letter}</div>
-          <p className="text-slate-300 text-sm font-medium">
-            Overall Score: <span className="text-white font-bold">{overall}/100</span>
-          </p>
-          <p className="text-slate-400 text-sm italic mt-1 max-w-sm">
-            "{feedback.encouragement}"
-          </p>
-          <p className="text-xs text-slate-600 mt-2">
+
+          {/* Encouragement quote */}
+          <div style={{
+            background: 'var(--fill4)',
+            borderRadius: 'var(--r-md)',
+            padding: '12px 16px',
+            margin: '0 0 14px',
+          }}>
+            <p style={{
+              font: 'var(--text-subhead)',
+              fontStyle: 'italic',
+              color: 'var(--label)',
+              margin: 0,
+              lineHeight: 1.5,
+            }}>
+              "{feedback.encouragement}"
+            </p>
+          </div>
+
+          {/* Meta */}
+          <p style={{
+            font: 'var(--text-caption2)',
+            color: 'var(--label4)',
+            margin: 0,
+          }}>
             {metrics.frames_analyzed} frames analyzed · {processing_time_seconds}s
           </p>
         </div>
 
-        {/* Score breakdown */}
-        <div className="grid grid-cols-3 gap-4">
-          <ScoreRing score={feedback.technique_score} label="Technique" color="blue" />
-          <ScoreRing score={feedback.power_score}     label="Power"     color="red" />
-          <ScoreRing score={feedback.balance_score}   label="Balance"   color="green" />
+        {/* ── Score Rings Card ── */}
+        <div
+          className="ios-card card-animate"
+          style={{
+            padding: '22px 16px',
+            background: 'var(--bg2)',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 8,
+            animationDelay: '60ms',
+          }}
+        >
+          <ScoreRing score={feedback.technique_score} label="Technique" color="var(--blue)" />
+          <ScoreRing score={feedback.power_score}     label="Power"     color="var(--red)" />
+          <ScoreRing score={feedback.balance_score}   label="Balance"   color="var(--green)" />
         </div>
 
-        {/* Strengths */}
-        <Section
+        {/* ── Strengths ── */}
+        <SectionCard
           icon={Star}
+          iconColor="var(--yellow)"
           title="What You're Doing Great"
-          accent="border-green-800/50 bg-green-950/30 text-green-300"
+          accentBg="rgba(48,209,88,0.07)"
+          delay={120}
         >
-          <ul className="flex flex-col gap-3">
-            {feedback.strengths.map((s, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-green-200">
-                <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-green-400" />
-                {s}
-              </li>
-            ))}
-          </ul>
-        </Section>
+          {feedback.strengths.map((s, i) => (
+            <BulletItem key={i} text={s} dotColor="var(--green)" />
+          ))}
+        </SectionCard>
 
-        {/* Improvements */}
-        <Section
+        {/* ── Improvements ── */}
+        <SectionCard
           icon={TrendingUp}
+          iconColor="var(--orange)"
           title="Areas to Improve"
-          accent="border-yellow-800/50 bg-yellow-950/30 text-yellow-300"
+          accentBg="rgba(255,159,10,0.07)"
+          delay={180}
         >
-          <ul className="flex flex-col gap-3">
-            {feedback.improvements.map((tip, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-yellow-200">
-                <TrendingUp size={16} className="mt-0.5 shrink-0 text-yellow-400" />
-                {tip}
-              </li>
-            ))}
-          </ul>
-        </Section>
+          {feedback.improvements.map((tip, i) => (
+            <BulletItem key={i} text={tip} dotColor="var(--orange)" />
+          ))}
+        </SectionCard>
 
-        {/* Drill */}
-        <Section
+        {/* ── Practice Drill ── */}
+        <SectionCard
           icon={Dumbbell}
+          iconColor="var(--blue)"
           title="Your Practice Drill"
-          accent="border-blue-800/50 bg-blue-950/30 text-blue-300"
+          accentBg="rgba(10,132,255,0.07)"
+          delay={240}
         >
-          <p className="text-sm text-blue-200 leading-relaxed">{feedback.drill}</p>
-        </Section>
+          <p style={{
+            font: 'var(--text-subhead)',
+            color: 'var(--label)',
+            margin: 0,
+            lineHeight: 1.65,
+          }}>
+            {feedback.drill}
+          </p>
+        </SectionCard>
 
-        {/* Raw metrics (collapsed) */}
-        <details className="rounded-2xl border border-slate-700 bg-slate-800/40 overflow-hidden">
-          <summary className="px-5 py-4 text-xs text-slate-500 font-medium uppercase tracking-widest cursor-pointer select-none hover:text-slate-300">
-            Raw Motion Data
+        {/* ── Raw Motion Data ── */}
+        <details
+          className="ios-card card-animate"
+          style={{ animationDelay: '300ms' }}
+        >
+          <summary style={{
+            padding: '14px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            cursor: 'pointer',
+            userSelect: 'none',
+            listStyle: 'none',
+            font: 'var(--text-subhead)',
+            fontWeight: 600,
+            color: 'var(--label2)',
+          }}>
+            <span>Raw Motion Data</span>
+            <ChevronDown size={16} color="var(--label3)" />
           </summary>
-          <div className="px-5 pb-5 grid grid-cols-2 gap-2 text-xs text-slate-400">
-            {[
-              ['Peak Wrist Speed', `${metrics.peak_wrist_speed} px/frame`],
-              ['Hip–Shoulder Sep.', `${metrics.hip_shoulder_separation}°`],
-              ['Balance Score', metrics.balance_score],
-              ['Follow-Through', metrics.follow_through ? 'Yes ✓' : 'No ✗'],
-              ['Elbow Angle', `${metrics.joint_angles.elbow_angle}°`],
-              ['Shoulder Tilt', `${metrics.joint_angles.shoulder_angle}°`],
-              ['Hip Rotation', `${metrics.joint_angles.hip_rotation}°`],
-              ['Knee Bend', `${metrics.joint_angles.knee_bend}°`],
-            ].map(([label, val]) => (
-              <div key={label} className="flex justify-between bg-slate-900/50 rounded-lg px-3 py-2">
-                <span className="text-slate-500">{label}</span>
-                <span className="text-slate-300 font-mono">{val}</span>
-              </div>
+          <div>
+            {rawData.map(({ label, value }, i) => (
+              <DataRow key={label} label={label} value={value} last={i === rawData.length - 1} />
             ))}
           </div>
         </details>
 
-        {/* Analyze again */}
-        <button
-          onClick={onReset}
-          className="w-full py-4 rounded-xl font-bold text-base
-            bg-red-600 hover:bg-red-500 text-white transition-colors
-            flex items-center justify-center gap-2"
-        >
-          ⚾ Analyze Another Video
+        {/* ── Analyze Again Button ── */}
+        <button className="ios-btn-secondary" onClick={onReset}>
+          <RotateCcw size={16} />
+          Analyze Another Video
         </button>
-      </main>
+
+      </div>
     </div>
   )
 }
