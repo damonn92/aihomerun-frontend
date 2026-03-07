@@ -317,20 +317,34 @@ export default function AuthPage() {
       >
 
         {/* Branding */}
-        <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <img
-            src="/logo-512.png"
-            alt="AIHomeRun"
-            style={{ width: 88, height: 88, borderRadius: 20, marginBottom: 12, objectFit: 'cover' }}
-          />
-          <h1 style={{
-            font: 'var(--text-title1)',
-            letterSpacing: '-0.7px',
-            color: 'var(--label)',
-            margin: '0 0 6px',
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          marginBottom: 36,
+          gap: 10,
+        }}>
+          {/* Logo + title on one row */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 14,
           }}>
-            {isForgot ? 'Reset Password' : 'AIHomeRun'}
-          </h1>
+            <img
+              src="/logo-512.png"
+              alt="AIHomeRun"
+              style={{ width: 64, height: 64, borderRadius: 16, objectFit: 'cover', flexShrink: 0 }}
+            />
+            <h1 style={{
+              font: 'var(--text-title1)',
+              letterSpacing: '-0.7px',
+              color: 'var(--label)',
+              margin: 0,
+            }}>
+              {isForgot ? 'Reset Password' : 'AIHomeRun'}
+            </h1>
+          </div>
           <p style={{
             font: 'var(--text-subhead)',
             color: 'var(--label2)',
