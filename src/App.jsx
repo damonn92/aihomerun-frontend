@@ -17,7 +17,11 @@ function SplashScreen() {
       background: 'var(--bg)',
       gap: 16,
     }}>
-      <span style={{ fontSize: 56, lineHeight: 1 }}>⚾</span>
+      <img
+        src="/logo-512.png"
+        alt="AIHomeRun"
+        style={{ width: 96, height: 96, borderRadius: 22, marginBottom: 4 }}
+      />
       <span style={{
         font: 'var(--text-headline)',
         color: 'var(--label2)',
@@ -32,7 +36,7 @@ function SplashScreen() {
 /* ─── Bottom tab bar ──────────────────────────────────────────────────────── */
 function TabBar({ active, onChange }) {
   const tabs = [
-    { id: 'home',    label: '主页',  icon: '⚾' },
+    { id: 'home',    label: '主页',  icon: null },
     { id: 'profile', label: '资料',  icon: '👤' },
   ]
   return (
@@ -70,7 +74,21 @@ function TabBar({ active, onChange }) {
               transition: 'color 0.15s',
             }}
           >
-            <span style={{ fontSize: 22, lineHeight: 1 }}>{tab.icon}</span>
+            {tab.icon ? (
+              <span style={{ fontSize: 22, lineHeight: 1 }}>{tab.icon}</span>
+            ) : (
+              <img
+                src="/logo-512.png"
+                alt="Home"
+                style={{
+                  width: 24, height: 24,
+                  borderRadius: 6,
+                  objectFit: 'cover',
+                  opacity: isActive ? 1 : 0.45,
+                  transition: 'opacity 0.15s',
+                }}
+              />
+            )}
             <span style={{
               fontSize: 10,
               fontWeight: isActive ? 600 : 400,

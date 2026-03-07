@@ -318,7 +318,11 @@ export default function AuthPage() {
 
         {/* Branding */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ fontSize: 52, lineHeight: 1, marginBottom: 12 }}>⚾</div>
+          <img
+            src="/logo-512.png"
+            alt="AIHomeRun"
+            style={{ width: 88, height: 88, borderRadius: 20, marginBottom: 12, objectFit: 'cover' }}
+          />
           <h1 style={{
             font: 'var(--text-title1)',
             letterSpacing: '-0.7px',
