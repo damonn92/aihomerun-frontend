@@ -947,7 +947,7 @@ export default function LandingPage() {
           flexWrap: 'wrap', gap: 12,
         }}>
           <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.2)' }}>
-            © 2026 QING SHEN · AIHomeRun · All rights reserved.
+            © 2026 AIHomeRun · All rights reserved.
           </div>
           <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.2)' }}>
             Made for young athletes everywhere ⚾
