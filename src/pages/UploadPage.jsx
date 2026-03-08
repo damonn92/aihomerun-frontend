@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Camera, AlertCircle, CheckCircle, LogOut, ChevronDown } from 'lucide-react'
+import { Camera, AlertCircle, CheckCircle, LogOut, ChevronDown, XCircle, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
@@ -321,18 +321,95 @@ function FilmingGuideCard({ actionType }) {
   )
 }
 
+/* ─── Quality Error Card ──────────────────────────────────────────────────── */
+function QualityErrorCard({ qualityError, onDismiss }) {
+  const errors   = qualityError.issues.filter(i => i.severity === 'error')
+  const warnings = qualityError.issues.filter(i => i.severity === 'warning')
+
+  return (
+    <div style={{
+      background: 'rgba(255,69,58,0.08)',
+      border: '1px solid rgba(255,69,58,0.25)',
+      borderRadius: 'var(--r-md)',
+      marginBottom: 12,
+      overflow: 'hidden',
+    }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        padding: '13px 14px 11px',
+        borderBottom: '0.5px solid rgba(255,69,58,0.18)',
+      }}>
+        <XCircle size={17} color="var(--red)" style={{ flexShrink: 0 }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ font: 'var(--text-callout)', fontWeight: 700, color: 'var(--red)' }}>
+            Video Quality Check Failed
+          </div>
+          <div style={{ font: 'var(--text-caption1)', color: 'var(--label3)', marginTop: 1 }}>
+            Please fix the issues below and re-upload your video
+          </div>
+        </div>
+        <button
+          onClick={onDismiss}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--label3)' }}
+        >✕</button>
+      </div>
+
+      {/* Error issues */}
+      <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {errors.map((issue, i) => (
+          <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+            <XCircle size={14} color="var(--red)" style={{ marginTop: 2, flexShrink: 0 }} />
+            <span style={{ font: 'var(--text-footnote)', color: 'var(--label)', lineHeight: 1.5 }}>
+              {issue.message}
+            </span>
+          </div>
+        ))}
+
+        {/* Warning issues (if any) */}
+        {warnings.length > 0 && (
+          <>
+            <div style={{ height: '0.5px', background: 'rgba(255,159,10,0.2)', margin: '2px 0' }} />
+            {warnings.map((issue, i) => (
+              <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                <AlertTriangle size={14} color="var(--orange)" style={{ marginTop: 2, flexShrink: 0 }} />
+                <span style={{ font: 'var(--text-footnote)', color: 'var(--label2)', lineHeight: 1.5 }}>
+                  {issue.message}
+                </span>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+
+      {/* Tip */}
+      <div style={{
+        padding: '10px 14px',
+        borderTop: '0.5px solid rgba(255,69,58,0.12)',
+        display: 'flex', gap: 8, alignItems: 'flex-start',
+      }}>
+        <span style={{ fontSize: 13, flexShrink: 0 }}>💡</span>
+        <span style={{ font: 'var(--text-caption1)', color: 'var(--label3)', lineHeight: 1.5 }}>
+          Check out the <strong style={{ color: 'var(--label2)' }}>Filming Guide</strong> above for camera setup tips.
+        </span>
+      </div>
+    </div>
+  )
+}
+
 /* ─── Upload Page ─────────────────────────────────────────────────────────── */
 export default function UploadPage({ onResult }) {
   const { user, signOut, getAccessToken } = useAuth()
 
-  const [file, setFile]             = useState(null)
-  const [preview, setPreview]       = useState(null)
-  const [actionType, setActionType] = useState('swing')
-  const [age, setAge]               = useState(10)
-  const [loading, setLoading]       = useState(false)
-  const [loadStep, setLoadStep]     = useState(0)
-  const [error, setError]           = useState(null)
-  const [dragOver, setDragOver]     = useState(false)
+  const [file, setFile]               = useState(null)
+  const [preview, setPreview]         = useState(null)
+  const [actionType, setActionType]   = useState('swing')
+  const [age, setAge]                 = useState(10)
+  const [loading, setLoading]         = useState(false)
+  const [loadStep, setLoadStep]       = useState(0)
+  const [error, setError]             = useState(null)
+  const [qualityError, setQualityError] = useState(null)   // structured quality gate failure
+  const [dragOver, setDragOver]       = useState(false)
 
   const inputRef     = useRef(null)
   const stepTimerRef = useRef(null)
@@ -341,6 +418,7 @@ export default function UploadPage({ onResult }) {
     if (!f) return
     setFile(f)
     setError(null)
+    setQualityError(null)
     setPreview(URL.createObjectURL(f))
   }
 
@@ -364,6 +442,7 @@ export default function UploadPage({ onResult }) {
     if (!file) return
     setLoading(true)
     setError(null)
+    setQualityError(null)
     startSteps()
 
     const form = new FormData()
@@ -376,10 +455,21 @@ export default function UploadPage({ onResult }) {
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const res  = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form, headers })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.detail || 'Analysis failed')
+
+      if (!res.ok) {
+        // Check for structured quality gate failure
+        const detail = data.detail
+        if (detail && typeof detail === 'object' && detail.error === 'video_quality_check_failed') {
+          setQualityError(detail)
+        } else {
+          setError(typeof detail === 'string' ? detail : (detail?.message || 'Analysis failed'))
+        }
+        return
+      }
+
       onResult(data)
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Network error — please check your connection and try again.')
     } finally {
       setLoading(false)
       clearInterval(stepTimerRef.current)
@@ -622,7 +712,15 @@ export default function UploadPage({ onResult }) {
         {/* ── Filming Guide Card ── */}
         <FilmingGuideCard actionType={actionType} />
 
-        {/* Error */}
+        {/* Quality Gate Structured Error */}
+        {qualityError && (
+          <QualityErrorCard
+            qualityError={qualityError}
+            onDismiss={() => setQualityError(null)}
+          />
+        )}
+
+        {/* Generic Error */}
         {error && (
           <div style={{
             background: 'rgba(255,69,58,0.10)',
