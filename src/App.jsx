@@ -5,6 +5,7 @@ import ResultPage   from './pages/ResultPage'
 import AuthPage     from './pages/AuthPage'
 import ProfilePage  from './pages/ProfilePage'
 import PrivacyPage  from './pages/PrivacyPage'
+import LandingPage  from './pages/LandingPage'
 
 /* ─── Detect /privacy route (works both as web URL and in-app nav) ────────── */
 function useRoute() {
@@ -159,9 +160,13 @@ function AppContent() {
 export default function App() {
   const path = useRoute()
 
+  // / → marketing landing page (public)
+  if (path === '/' || path === '') return <LandingPage />
+
   // /privacy is publicly accessible — no auth needed (required for App Store)
   if (path === '/privacy') return <PrivacyPage />
 
+  // /app and everything else → the actual web app (requires auth)
   return (
     <AuthProvider>
       <div className="app-shell">
