@@ -31,7 +31,7 @@ function AppStoreBadge({ href = '#', comingSoon = false }) {
       <img
         src="/badge-app-store.svg"
         alt="Download on the App Store"
-        style={{ display: 'block', height: 54, width: 'auto' }}
+        className="store-badge-img"
       />
       {comingSoon && (
         <span style={{
@@ -72,7 +72,7 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
       <img
         src="/badge-google-play.svg"
         alt="Get it on Google Play"
-        style={{ display: 'block', height: 54, width: 'auto' }}
+        className="store-badge-img"
       />
       {comingSoon && (
         <span style={{
@@ -90,7 +90,7 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
 /* ─── Phone Mockup ─────────────────────────────────────────────────────────── */
 function PhoneMockup() {
   return (
-    <div style={{
+    <div className="phone-shell" style={{
       position: 'relative', width: 270, height: 554,
       background: 'linear-gradient(160deg, #1a1a1a 0%, #0d0d0d 100%)',
       borderRadius: 46,
@@ -337,6 +337,7 @@ export default function LandingPage() {
         *, *::before, *::after { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { margin: 0; }
+
         @keyframes float-phone {
           0%, 100% { transform: translateY(0px) rotate(-1deg); }
           50%       { transform: translateY(-18px) rotate(-1deg); }
@@ -349,6 +350,7 @@ export default function LandingPage() {
           0%, 100% { box-shadow: 0 0 30px rgba(255,69,58,0.15); }
           50%       { box-shadow: 0 0 60px rgba(255,69,58,0.35); }
         }
+
         .nav-link-item {
           color: rgba(255,255,255,0.55);
           text-decoration: none;
@@ -358,6 +360,7 @@ export default function LandingPage() {
           letter-spacing: -0.2px;
         }
         .nav-link-item:hover { color: #fff; }
+
         .footer-link {
           font-size: 13.5px;
           color: rgba(255,255,255,0.45);
@@ -365,9 +368,106 @@ export default function LandingPage() {
           transition: color 0.2s;
         }
         .footer-link:hover { color: rgba(255,255,255,0.85); }
+
         .coming-card:hover {
           background: rgba(255,255,255,0.05) !important;
           border-color: rgba(255,69,58,0.2) !important;
+        }
+
+        /* Store badge default height */
+        .store-badge-img {
+          display: block;
+          height: 54px;
+          width: auto;
+        }
+
+        /* ════════════ RESPONSIVE: MOBILE (≤ 767px) ════════════ */
+        @media (max-width: 767px) {
+
+          /* 1. Navbar — hide desktop links, keep logo + CTA only */
+          .nav-links { display: none !important; }
+          .nav-cta {
+            padding: 7px 16px !important;
+            font-size: 13px !important;
+          }
+
+          /* 2. Hero — reduce vertical space, center phone */
+          .hero-section {
+            min-height: 0 !important;
+            padding: 84px 20px 60px !important;
+          }
+          .hero-flex {
+            flex-direction: column !important;
+            gap: 40px !important;
+            align-items: flex-start !important;
+          }
+          .hero-text-col { flex: none !important; width: 100% !important; }
+          .hero-phone-col {
+            flex: none !important;
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+            animation: none !important;
+            filter: drop-shadow(0 20px 40px rgba(255,69,58,0.15)) !important;
+          }
+          .hero-trust { gap: 8px 14px !important; }
+
+          /* 3. Stats bar — 2×2 grid */
+          .stats-inner {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 20px 12px !important;
+            justify-items: center;
+          }
+
+          /* 4. Sections — tighter padding on mobile */
+          .lp-section-pad { padding: 56px 20px !important; }
+
+          /* 5. Step cards — single column */
+          .step-cards-flex {
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          .step-cards-flex > * { flex: none !important; width: 100% !important; }
+
+          /* 6. Video req checklist — single column */
+          .req-box { padding: 20px 16px !important; }
+          .req-checklist-grid { grid-template-columns: 1fr !important; }
+
+          /* 7. CTA badges — centered */
+          .cta-badges { justify-content: center !important; }
+
+          /* 8. Footer */
+          .footer-main {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 28px !important;
+          }
+          .footer-links-group { gap: 28px !important; }
+          .footer-bottom {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 4px !important;
+          }
+
+          /* 9. Store badges slightly smaller on mobile */
+          .store-badge-img { height: 46px !important; }
+
+          /* 10. Phone mockup — scale down on very small screens */
+          .phone-shell {
+            width: 248px !important;
+            height: 510px !important;
+            border-radius: 40px !important;
+          }
+        }
+
+        @media (max-width: 390px) {
+          .phone-shell {
+            width: 228px !important;
+            height: 468px !important;
+            border-radius: 36px !important;
+          }
         }
       `}</style>
 
@@ -395,29 +495,32 @@ export default function LandingPage() {
             <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: -0.5 }}>AIHomeRun</span>
           </a>
 
-          {/* Desktop nav */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
+          {/* Desktop nav links — hidden on mobile */}
+          <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
             <a href="#features" className="nav-link-item">Features</a>
             <a href="#how-to-use" className="nav-link-item">How to Use</a>
             <a href="#download" className="nav-link-item">Download</a>
             <a href="mailto:info@aihomerun.app" className="nav-link-item" style={{ fontSize:14 }}>Contact</a>
-            <a href="#download" style={{
-              background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
-              color: '#fff', borderRadius: 20, padding: '8px 22px',
-              fontSize: 14, fontWeight: 600, textDecoration: 'none',
-              letterSpacing: -0.2,
-              boxShadow: '0 4px 14px rgba(255,69,58,0.3)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.opacity='0.85'; e.currentTarget.style.transform='translateY(-1px)' }}
-            onMouseLeave={e => { e.currentTarget.style.opacity='1'; e.currentTarget.style.transform='translateY(0)' }}
-            >Download Free</a>
           </div>
+
+          {/* CTA — always visible */}
+          <a href="#download" className="nav-cta" style={{
+            background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
+            color: '#fff', borderRadius: 20, padding: '8px 22px',
+            fontSize: 14, fontWeight: 600, textDecoration: 'none',
+            letterSpacing: -0.2,
+            boxShadow: '0 4px 14px rgba(255,69,58,0.3)',
+            transition: 'all 0.2s ease',
+            whiteSpace: 'nowrap',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.opacity='0.85'; e.currentTarget.style.transform='translateY(-1px)' }}
+          onMouseLeave={e => { e.currentTarget.style.opacity='1'; e.currentTarget.style.transform='translateY(0)' }}
+          >Download Free</a>
         </div>
       </nav>
 
       {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="hero-section" style={{
         minHeight: '100vh',
         display: 'flex', alignItems: 'center',
         padding: 'clamp(100px, 12vw, 140px) 28px 80px',
@@ -444,13 +547,13 @@ export default function LandingPage() {
           pointerEvents:'none',
         }}/>
 
-        <div style={{
+        <div className="hero-flex" style={{
           maxWidth: 1120, width: '100%', margin: '0 auto',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           gap: 60, flexWrap: 'wrap',
         }}>
           {/* Left col */}
-          <div style={{ flex: '1 1 440px', animation: 'fade-up 0.85s ease both' }}>
+          <div className="hero-text-col" style={{ flex: '1 1 440px', animation: 'fade-up 0.85s ease both' }}>
             {/* Tag */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 7,
@@ -492,7 +595,7 @@ export default function LandingPage() {
             </div>
 
             {/* Trust pills */}
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <div className="hero-trust" style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               {[
                 { icon: '✓', text: '100% Free Forever' },
                 { icon: '✓', text: 'No Subscription' },
@@ -508,7 +611,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right col — phone */}
-          <div style={{
+          <div className="hero-phone-col" style={{
             flex: '0 0 auto', display: 'flex', justifyContent: 'center', alignItems: 'center',
             animation: 'float-phone 7s ease-in-out infinite, fade-up 0.85s ease 0.15s both',
             filter: 'drop-shadow(0 40px 80px rgba(255,69,58,0.18))',
@@ -525,7 +628,7 @@ export default function LandingPage() {
         background: 'rgba(255,255,255,0.015)',
         padding: '28px 28px',
       }}>
-        <div style={{
+        <div className="stats-inner" style={{
           maxWidth: 1120, margin: '0 auto',
           display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 24,
         }}>
@@ -549,7 +652,7 @@ export default function LandingPage() {
       </div>
 
       {/* ── FEATURES ────────────────────────────────────────────────────── */}
-      <section id="features" style={{ padding: 'clamp(70px, 8vw, 110px) 28px', background: '#000' }}>
+      <section id="features" className="lp-section-pad" style={{ padding: 'clamp(70px, 8vw, 110px) 28px', background: '#000' }}>
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <SectionLabel>Core Features</SectionLabel>
@@ -594,7 +697,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW TO USE ──────────────────────────────────────────────────── */}
-      <section id="how-to-use" style={{
+      <section id="how-to-use" className="lp-section-pad" style={{
         padding: 'clamp(70px, 8vw, 110px) 28px',
         background: '#050505',
         borderTop: '1px solid rgba(255,255,255,0.05)',
@@ -609,7 +712,7 @@ export default function LandingPage() {
           </div>
 
           {/* Step cards */}
-          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 48 }}>
+          <div className="step-cards-flex" style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 48 }}>
             <StepCard
               num="1"
               title="Record Your Video"
@@ -645,7 +748,7 @@ export default function LandingPage() {
           </div>
 
           {/* Video requirements highlight */}
-          <div style={{
+          <div className="req-box" style={{
             background: 'rgba(255,69,58,0.06)',
             border: '1px solid rgba(255,69,58,0.18)',
             borderRadius: 22, padding: '28px 36px',
@@ -657,11 +760,11 @@ export default function LandingPage() {
               background: 'rgba(255,69,58,0.12)', border: '1px solid rgba(255,69,58,0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
             }}>📋</div>
-            <div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10, letterSpacing: -0.3 }}>
                 Video Requirements Checklist
               </div>
-              <div style={{
+              <div className="req-checklist-grid" style={{
                 display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '6px 24px',
               }}>
                 {[
@@ -686,7 +789,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── COMING SOON ─────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="lp-section-pad" style={{
         padding: 'clamp(70px, 8vw, 110px) 28px',
         background: '#000',
         borderTop: '1px solid rgba(255,255,255,0.05)',
@@ -738,7 +841,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── DOWNLOAD CTA ────────────────────────────────────────────────── */}
-      <section style={{
+      <section className="lp-section-pad" style={{
         padding: 'clamp(70px, 8vw, 120px) 28px',
         borderTop: '1px solid rgba(255,255,255,0.05)',
         background: `
@@ -771,7 +874,7 @@ export default function LandingPage() {
             Just powerful AI baseball coaching — completely free.
           </p>
 
-          <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
+          <div className="cta-badges" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
             <AppStoreBadge href="#" comingSoon={false} />
             <GooglePlayBadge comingSoon={true} />
           </div>
@@ -791,7 +894,7 @@ export default function LandingPage() {
         borderTop: '1px solid rgba(255,255,255,0.06)',
         background: '#000',
       }}>
-        <div style={{
+        <div className="footer-main" style={{
           maxWidth: 1120, margin: '0 auto',
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
           flexWrap: 'wrap', gap: 32,
@@ -812,7 +915,7 @@ export default function LandingPage() {
           </div>
 
           {/* Links */}
-          <div style={{ display: 'flex', gap: 56, flexWrap: 'wrap' }}>
+          <div className="footer-links-group" style={{ display: 'flex', gap: 56, flexWrap: 'wrap' }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: 14 }}>Product</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -837,7 +940,7 @@ export default function LandingPage() {
         </div>
 
         {/* Bottom bar */}
-        <div style={{
+        <div className="footer-bottom" style={{
           maxWidth: 1120, margin: '32px auto 0',
           paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.05)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
