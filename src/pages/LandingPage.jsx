@@ -143,13 +143,11 @@ function PhoneMockup() {
 
         {/* App header */}
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{
-            width:38, height:38, borderRadius:10,
-            background:'linear-gradient(135deg, #FF453A, #FF6B35)',
-            display:'flex', alignItems:'center', justifyContent:'center',
-            fontSize:18, flexShrink:0,
-            boxShadow:'0 4px 12px rgba(255,69,58,0.4)',
-          }}>⚾</div>
+          <img
+            src="/logo-512.png"
+            alt="AIHomeRun"
+            style={{ width:38, height:38, borderRadius:10, objectFit:'cover', flexShrink:0, boxShadow:'0 4px 12px rgba(0,0,0,0.4)' }}
+          />
           <div>
             <div style={{ fontSize:15, fontWeight:700, color:'#fff', letterSpacing:-0.3 }}>AIHomeRun</div>
             <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)' }}>AI Baseball Coach</div>
@@ -388,12 +386,11 @@ export default function LandingPage() {
         }}>
           {/* Brand */}
           <a href="#" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none', color:'#fff' }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: 8,
-              background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 16, boxShadow: '0 3px 10px rgba(255,69,58,0.4)',
-            }}>⚾</div>
+            <img
+              src="/logo-512.png"
+              alt="AIHomeRun"
+              style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }}
+            />
             <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: -0.5 }}>AIHomeRun</span>
           </a>
 
@@ -750,14 +747,16 @@ export default function LandingPage() {
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: 580, margin: '0 auto' }}>
-          <div style={{
-            width: 88, height: 88, borderRadius: 22, margin: '0 auto 28px',
-            background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 44,
-            boxShadow: '0 20px 60px rgba(255,69,58,0.35), 0 0 0 1px rgba(255,69,58,0.2)',
-            animation: 'pulse-glow 3s ease-in-out infinite',
-          }}>⚾</div>
+          <img
+            src="/logo-512.png"
+            alt="AIHomeRun"
+            style={{
+              width: 88, height: 88, borderRadius: 22, margin: '0 auto 28px',
+              objectFit: 'cover', display: 'block',
+              boxShadow: '0 20px 60px rgba(255,69,58,0.35)',
+              animation: 'pulse-glow 3s ease-in-out infinite',
+            }}
+          />
 
           <SectionTitle>
             Start your free<br/>analysis today
@@ -799,12 +798,11 @@ export default function LandingPage() {
           {/* Brand */}
           <div style={{ maxWidth: 260 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 12 }}>
-              <div style={{
-                width: 30, height: 30, borderRadius: 8,
-                background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 15,
-              }}>⚾</div>
+              <img
+                src="/logo-512.png"
+                alt="AIHomeRun"
+                style={{ width: 30, height: 30, borderRadius: 8, objectFit: 'cover' }}
+              />
               <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: -0.4 }}>AIHomeRun</span>
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)', lineHeight: 1.65 }}>
