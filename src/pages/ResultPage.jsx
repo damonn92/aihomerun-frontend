@@ -460,13 +460,13 @@ export default function ResultPage({ result, onReset }) {
       {/* ── Scrollable Content ── */}
       <div
         className="scroll-content"
-        style={{
-          flex: 1, overflowY: 'auto',
-          padding: '20px 16px',
-          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 36px)',
-          display: 'grid', gridTemplateColumns: '1fr', gap: 12, alignContent: 'start',
-        }}
+        style={{ flex: 1, overflowY: 'auto' }}
       >
+      <div style={{
+        padding: '20px 16px',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 36px)',
+        display: 'flex', flexDirection: 'column', gap: 12,
+      }}>
 
         {/* ── Parent Mode Banner ── */}
         {parentMode && (
@@ -664,7 +664,8 @@ export default function ResultPage({ result, onReset }) {
           Analyze Another Video
         </button>
 
-      </div>
+      </div>{/* end inner layout div */}
+      </div>{/* end scroll-content */}
     </div>
   )
 }
