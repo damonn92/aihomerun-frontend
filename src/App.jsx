@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Capacitor } from '@capacitor/core'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import UploadPage   from './pages/UploadPage'
 import ResultPage   from './pages/ResultPage'
@@ -160,7 +161,18 @@ function AppContent() {
 export default function App() {
   const path = useRoute()
 
-  // / → marketing landing page (public)
+  // Native iOS/Android app → skip landing page, go directly to app
+  if (Capacitor.isNativePlatform()) {
+    return (
+      <AuthProvider>
+        <div className="app-shell">
+          <AppContent />
+        </div>
+      </AuthProvider>
+    )
+  }
+
+  // Web: / → marketing landing page (public)
   if (path === '/' || path === '') return <LandingPage />
 
   // /privacy is publicly accessible — no auth needed (required for App Store)

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SUPABASE_URL</key>
+	<string>https://ypfpreoycrhujqucjiid.supabase.co</string>
+	<key>SUPABASE_ANON_KEY</key>
+	<string>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwZnByZW95Y3JodWpxdWNqaWlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDc1NDUsImV4cCI6MjA4ODQyMzU0NX0.IPyjso-Uugtmm4Vj9KOtW11yvvSjHfWvLi0AObRZNO0</string>
+	<key>API_BASE_URL</key>
+	<string>https://api.aihomerun.app</string>
+	<key>GOOGLE_CLIENT_ID</key>
+	<string>993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i.apps.googleusercontent.com</string>
+</dict>
+</plist>

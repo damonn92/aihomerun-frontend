@@ -2,9 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CAPACITOR_DEBUG</key>
-	<string>$(CAPACITOR_DEBUG)</string>
-
 	<!-- Bundle info -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -23,7 +20,20 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>2</string>
+
+	<!-- Google Sign-In URL scheme -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i</string>
+			</array>
+		</dict>
+	</array>
+	<key>GIDClientID</key>
+	<string>993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i.apps.googleusercontent.com</string>
 
 	<!-- Required hardware -->
 	<key>LSRequiresIPhoneOS</key>
@@ -44,15 +54,11 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 
-	<!-- UI -->
+	<!-- SwiftUI launch screen (no storyboard main entry) -->
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
 
 	<!-- Privacy permissions — App Store requires usage descriptions -->
 	<key>NSCameraUsageDescription</key>
@@ -64,7 +70,7 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>AIHomeRun may save analysis results to your photo library.</string>
 
-	<!-- ATS: allow HTTPS connections -->
+	<!-- ATS: allow HTTPS connections only -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

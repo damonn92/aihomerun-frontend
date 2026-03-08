@@ -7,27 +7,59 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
-		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
-		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
-		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
-		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
+		AB0002000000000000000000 /* AIHomeRunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0001000000000000000000 /* AIHomeRunApp.swift */; };
+		AB0004000000000000000000 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0003000000000000000000 /* ContentView.swift */; };
+		AB0006000000000000000000 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0005000000000000000000 /* AppConfig.swift */; };
+		AB0008000000000000000000 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB0007000000000000000000 /* Config.plist */; };
+		AB000A000000000000000000 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0009000000000000000000 /* SupabaseService.swift */; };
+		AB000C000000000000000000 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000B000000000000000000 /* APIClient.swift */; };
+		AB000E000000000000000000 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000D000000000000000000 /* KeychainService.swift */; };
+		AB0010000000000000000000 /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000F000000000000000000 /* AnalysisResult.swift */; };
+		AB0012000000000000000000 /* ProfileModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0011000000000000000000 /* ProfileModels.swift */; };
+		AB0014000000000000000000 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0013000000000000000000 /* AuthViewModel.swift */; };
+		AB0016000000000000000000 /* UploadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0015000000000000000000 /* UploadViewModel.swift */; };
+		AB0018000000000000000000 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0017000000000000000000 /* ProfileViewModel.swift */; };
+		AB001A000000000000000000 /* AuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0019000000000000000000 /* AuthView.swift */; };
+		AB001C000000000000000000 /* UploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB001B000000000000000000 /* UploadView.swift */; };
+		AB001E000000000000000000 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB001D000000000000000000 /* LoadingView.swift */; };
+		AB0020000000000000000000 /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB001F000000000000000000 /* ResultView.swift */; };
+		AB0022000000000000000000 /* ScoreRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0021000000000000000000 /* ScoreRingView.swift */; };
+		AB0024000000000000000000 /* GrowthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0023000000000000000000 /* GrowthChartView.swift */; };
+		AB0026000000000000000000 /* CompareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0025000000000000000000 /* CompareCardView.swift */; };
+		AB0028000000000000000000 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0027000000000000000000 /* ProfileView.swift */; };
+		AB002A000000000000000000 /* ChildEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0029000000000000000000 /* ChildEditorView.swift */; };
+		AB0204000000000000000000 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AB0202000000000000000000 /* Supabase */; };
+		AB0206000000000000000000 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AB0203000000000000000000 /* GoogleSignIn */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
-		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
-		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
+		AB0001000000000000000000 /* AIHomeRunApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHomeRunApp.swift; sourceTree = "<group>"; };
+		AB0003000000000000000000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AB0005000000000000000000 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		AB0007000000000000000000 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
+		AB0009000000000000000000 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
+		AB000B000000000000000000 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		AB000D000000000000000000 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		AB000F000000000000000000 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
+		AB0011000000000000000000 /* ProfileModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileModels.swift; sourceTree = "<group>"; };
+		AB0013000000000000000000 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		AB0015000000000000000000 /* UploadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadViewModel.swift; sourceTree = "<group>"; };
+		AB0017000000000000000000 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		AB0019000000000000000000 /* AuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthView.swift; sourceTree = "<group>"; };
+		AB001B000000000000000000 /* UploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadView.swift; sourceTree = "<group>"; };
+		AB001D000000000000000000 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		AB001F000000000000000000 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
+		AB0021000000000000000000 /* ScoreRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRingView.swift; sourceTree = "<group>"; };
+		AB0023000000000000000000 /* GrowthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthChartView.swift; sourceTree = "<group>"; };
+		AB0025000000000000000000 /* CompareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareCardView.swift; sourceTree = "<group>"; };
+		AB0027000000000000000000 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		AB0029000000000000000000 /* ChildEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildEditorView.swift; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
-		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +67,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */,
+				AB0204000000000000000000 /* Supabase in Frameworks */,
+				AB0206000000000000000000 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,7 +78,6 @@
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
-				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
 			);
@@ -62,16 +94,96 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
-				50379B222058CBB4000EE86E /* capacitor.config.json */,
-				504EC3071FED79650016851F /* AppDelegate.swift */,
-				504EC30B1FED79650016851F /* Main.storyboard */,
+				AB0001000000000000000000 /* AIHomeRunApp.swift */,
+				AB0003000000000000000000 /* ContentView.swift */,
+				AB0005000000000000000000 /* AppConfig.swift */,
+				AB0007000000000000000000 /* Config.plist */,
+				AB0100000000000000000000 /* Services */,
+				AB0101000000000000000000 /* Models */,
+				AB0102000000000000000000 /* ViewModels */,
+				AB0103000000000000000000 /* Views */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
-				2FAD9762203C412B000D30F8 /* config.xml */,
-				50B271D01FEDC1A000F3C39B /* public */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		AB0100000000000000000000 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				AB0009000000000000000000 /* SupabaseService.swift */,
+				AB000B000000000000000000 /* APIClient.swift */,
+				AB000D000000000000000000 /* KeychainService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		AB0101000000000000000000 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AB000F000000000000000000 /* AnalysisResult.swift */,
+				AB0011000000000000000000 /* ProfileModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AB0102000000000000000000 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AB0013000000000000000000 /* AuthViewModel.swift */,
+				AB0015000000000000000000 /* UploadViewModel.swift */,
+				AB0017000000000000000000 /* ProfileViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AB0103000000000000000000 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AB0104000000000000000000 /* Auth */,
+				AB0105000000000000000000 /* Upload */,
+				AB0106000000000000000000 /* Result */,
+				AB0107000000000000000000 /* Profile */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AB0104000000000000000000 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				AB0019000000000000000000 /* AuthView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		AB0105000000000000000000 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				AB001B000000000000000000 /* UploadView.swift */,
+				AB001D000000000000000000 /* LoadingView.swift */,
+			);
+			path = Upload;
+			sourceTree = "<group>";
+		};
+		AB0106000000000000000000 /* Result */ = {
+			isa = PBXGroup;
+			children = (
+				AB001F000000000000000000 /* ResultView.swift */,
+				AB0021000000000000000000 /* ScoreRingView.swift */,
+				AB0023000000000000000000 /* GrowthChartView.swift */,
+				AB0025000000000000000000 /* CompareCardView.swift */,
+			);
+			path = Result;
+			sourceTree = "<group>";
+		};
+		AB0107000000000000000000 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				AB0027000000000000000000 /* ProfileView.swift */,
+				AB0029000000000000000000 /* ChildEditorView.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -91,7 +203,8 @@
 			);
 			name = App;
 			packageProductDependencies = (
-				4D22ABE82AF431CB00220026 /* CapApp-SPM */,
+				AB0202000000000000000000 /* Supabase */,
+				AB0203000000000000000000 /* GoogleSignIn */,
 			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
@@ -103,18 +216,18 @@
 		504EC2FC1FED79650016851F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					504EC3031FED79650016851F = {
-						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1100;
+						CreatedOnToolsVersion = 15.0;
+						LastSwiftMigration = 1500;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
 			buildConfigurationList = 504EC2FF1FED79650016851F /* Build configuration list for PBXProject "App" */;
-			compatibilityVersion = "Xcode 8.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -123,7 +236,8 @@
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
-				D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */,
+				AB0200000000000000000000 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
@@ -140,11 +254,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
-				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
-				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
-				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
-				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
+				AB0008000000000000000000 /* Config.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,21 +266,32 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				AB0002000000000000000000 /* AIHomeRunApp.swift in Sources */,
+				AB0004000000000000000000 /* ContentView.swift in Sources */,
+				AB0006000000000000000000 /* AppConfig.swift in Sources */,
+				AB000A000000000000000000 /* SupabaseService.swift in Sources */,
+				AB000C000000000000000000 /* APIClient.swift in Sources */,
+				AB000E000000000000000000 /* KeychainService.swift in Sources */,
+				AB0010000000000000000000 /* AnalysisResult.swift in Sources */,
+				AB0012000000000000000000 /* ProfileModels.swift in Sources */,
+				AB0014000000000000000000 /* AuthViewModel.swift in Sources */,
+				AB0016000000000000000000 /* UploadViewModel.swift in Sources */,
+				AB0018000000000000000000 /* ProfileViewModel.swift in Sources */,
+				AB001A000000000000000000 /* AuthView.swift in Sources */,
+				AB001C000000000000000000 /* UploadView.swift in Sources */,
+				AB001E000000000000000000 /* LoadingView.swift in Sources */,
+				AB0020000000000000000000 /* ResultView.swift in Sources */,
+				AB0022000000000000000000 /* ScoreRingView.swift in Sources */,
+				AB0024000000000000000000 /* GrowthChartView.swift in Sources */,
+				AB0026000000000000000000 /* CompareCardView.swift in Sources */,
+				AB0028000000000000000000 /* ProfileView.swift in Sources */,
+				AB002A000000000000000000 /* ChildEditorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		504EC30B1FED79650016851F /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				504EC30C1FED79650016851F /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		504EC3101FED79650016851F /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -183,13 +305,11 @@
 /* Begin XCBuildConfiguration section */
 		504EC3141FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -211,7 +331,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -230,7 +349,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -245,8 +364,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -268,7 +386,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -281,7 +398,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -292,24 +409,22 @@
 		};
 		504EC3171FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 958DCC722DB07C7200EA8C5F /* debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.aihomerun.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -317,10 +432,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -328,9 +445,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.aihomerun.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				PROVISIONING_PROFILE_SPECIFIER = "AIHomeRun AppStore";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -357,18 +474,35 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "CapApp-SPM";
+/* Begin XCRemoteSwiftPackageReference section */
+		AB0200000000000000000000 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "2.0.0";
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+		AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "8.0.0";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4D22ABE82AF431CB00220026 /* CapApp-SPM */ = {
+		AB0202000000000000000000 /* Supabase */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */;
-			productName = "CapApp-SPM";
+			package = AB0200000000000000000000 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		AB0203000000000000000000 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
