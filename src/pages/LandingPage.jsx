@@ -83,19 +83,19 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
       }}
     >
       {/*
-        Google Play icon — official 4-color play button
-        Colors: blue-left / green-top / red-bottom / yellow-right-tip
-        Based on official Google Play badge visual identity
+        Google Play icon — Font Awesome brand icon paths (viewBox 0 0 512 512)
+        4 sub-paths forming the exact official play-button shape:
+        left-body(blue) / top-right(yellow) / bottom-right(red) / right-tip(amber)
       */}
-      <svg width="21" height="23" viewBox="0 0 21 23" fill="none" aria-hidden="true">
-        {/* Left body — blue */}
-        <path d="M1 0.8L1 22.2L13.2 11.5L1 0.8Z" fill="#4FC3F7"/>
-        {/* Top triangle — green */}
-        <path d="M1 0.8L17.5 7L13.2 11.5L1 0.8Z" fill="#3DDC84"/>
-        {/* Bottom triangle — red */}
-        <path d="M1 22.2L13.2 11.5L17.5 16L1 22.2Z" fill="#FF3D3D"/>
-        {/* Right tip — amber/yellow */}
-        <path d="M17.5 7L20.5 11.5L17.5 16L13.2 11.5L17.5 7Z" fill="#FFBB00"/>
+      <svg width="22" height="24" viewBox="0 0 512 512" fill="none" aria-hidden="true">
+        {/* Left body — cyan/blue */}
+        <path fill="#4FC3F7" d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z"/>
+        {/* Top-right segment — yellow */}
+        <path fill="#FFD900" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1z"/>
+        {/* Bottom-right segment — red */}
+        <path fill="#FF3D3D" d="M104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+        {/* Right tip — amber */}
+        <path fill="#FFBC00" d="M425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c17.1-9.9 17.1-34.7 0-44.6l-1.2-.3z"/>
       </svg>
       <div style={{ lineHeight: 1.2 }}>
         {/* Google Play guideline: "Get it on" is the official tag text */}
