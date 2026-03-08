@@ -464,7 +464,7 @@ export default function ResultPage({ result, onReset }) {
           flex: 1, overflowY: 'auto',
           padding: '20px 16px',
           paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 36px)',
-          display: 'flex', flexDirection: 'column', gap: 12,
+          display: 'grid', gridTemplateColumns: '1fr', gap: 12, alignContent: 'start',
         }}
       >
 
