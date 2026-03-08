@@ -8,7 +8,7 @@ struct UploadView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject private var vm   = UploadViewModel()
     @StateObject private var feed = HomeFeedViewModel()
-    @State private var selectedItem: PhotosPickerItem?
+    @State private var selectedItems: [PhotosPickerItem] = []
 
     var body: some View {
         NavigationStack {
@@ -38,9 +38,9 @@ struct UploadView: View {
             let token = await authVM.accessToken()
             await feed.loadFeed(token: token)
         }
-        .onChange(of: selectedItem) { item in
+        .onChange(of: selectedItems) { items in
             Task {
-                guard let item,
+                guard let item = items.first,
                       let data = try? await item.loadTransferable(type: Data.self) else { return }
                 let url = FileManager.default.temporaryDirectory
                     .appendingPathComponent(UUID().uuidString)
@@ -103,7 +103,7 @@ struct UploadView: View {
     private var quickRecordCard: some View {
         VStack(spacing: 12) {
             // Hero tap area
-            PhotosPicker(selection: $selectedItem, matching: .videos) {
+            PhotosPicker(selection: $selectedItems, maxSelectionCount: 1, matching: .videos) {
                 ZStack {
                     LinearGradient(
                         colors: [Color.hrBlue.opacity(0.28), Color.hrCard],
