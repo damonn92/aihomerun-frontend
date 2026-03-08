@@ -6,6 +6,9 @@
 import { useEffect, useState } from 'react'
 
 /* ─── App Store Badge ──────────────────────────────────────────────────────── */
+/* Follows Apple App Store Marketing Guidelines:
+   - Pure black background, white border (part of official artwork)
+   - Standard Apple logo (bitten apple), correct text casing */
 function AppStoreBadge({ href = '#', comingSoon = false }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -13,39 +16,47 @@ function AppStoreBadge({ href = '#', comingSoon = false }) {
       href={comingSoon ? undefined : href}
       target={!comingSoon && href !== '#' ? '_blank' : undefined}
       rel="noopener noreferrer"
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => !comingSoon && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      title={comingSoon ? 'Available on App Store soon' : 'Download on the App Store'}
+      title={comingSoon ? 'Coming soon to the App Store' : 'Download on the App Store'}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 11,
-        background: hovered && !comingSoon ? '#1c1c1e' : '#111',
-        border: `1.5px solid ${hovered && !comingSoon ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.2)'}`,
-        borderRadius: 14, padding: '12px 20px',
+        display: 'inline-flex', alignItems: 'center', gap: 13,
+        background: '#000',
+        /* Apple guidelines: gray border is part of official artwork */
+        border: '1px solid rgba(255,255,255,0.3)',
+        borderRadius: 12, padding: '11px 22px',
         textDecoration: 'none', color: '#fff',
         cursor: comingSoon ? 'default' : 'pointer',
         opacity: comingSoon ? 0.55 : 1,
-        transform: hovered && !comingSoon ? 'translateY(-2px)' : 'translateY(0)',
-        transition: 'all 0.2s ease',
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         userSelect: 'none', flexShrink: 0,
-        boxShadow: hovered && !comingSoon ? '0 8px 24px rgba(0,0,0,0.5)' : 'none',
+        boxShadow: hovered ? '0 8px 28px rgba(0,0,0,0.7)' : 'none',
+        minWidth: 158,
       }}
     >
-      {/* Official Apple logo shape */}
-      <svg width="22" height="27" viewBox="0 0 22 27" fill="white" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16.16 13.56c-.02-2.56 2.08-3.78 2.18-3.84-1.19-1.73-3.03-1.97-3.69-2-1.56-.16-3.06.92-3.86.92-.8 0-2.03-.9-3.34-.87-1.7.02-3.29 1-4.17 2.53-1.79 3.1-.46 7.69 1.28 10.21.86 1.23 1.87 2.6 3.2 2.55 1.29-.05 1.77-.82 3.32-.82 1.55 0 1.99.82 3.35.79 1.38-.02 2.25-1.24 3.08-2.47.99-1.4 1.39-2.77 1.41-2.84-.03-.01-2.76-1.06-2.76-4.16z"/>
-        <path d="M13.47 5.42c.71-.86 1.19-2.06 1.06-3.27-1.02.04-2.27.68-3 1.54-.66.75-1.24 1.96-1.09 3.11 1.15.09 2.32-.58 3.03-1.38z"/>
+      {/*
+        Apple logo — standard bitten apple silhouette
+        viewBox 0 0 384 512 (Font Awesome / standard proportions)
+      */}
+      <svg width="18" height="23" viewBox="0 0 384 512" fill="white" aria-hidden="true">
+        <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
       </svg>
-      <div style={{ lineHeight: 1 }}>
-        <div style={{ fontSize: 9.5, opacity: 0.65, letterSpacing: 0.9, textTransform: 'uppercase', marginBottom: 2.5 }}>
-          {comingSoon ? 'Coming Soon' : 'Download on the'}
+      <div style={{ lineHeight: 1.2 }}>
+        {/* Apple guideline: "Download on the" is the official modifier text */}
+        <div style={{ fontSize: 10, fontWeight: 400, opacity: 0.75, letterSpacing: 0.15, marginBottom: 1 }}>
+          {comingSoon ? 'Coming soon on' : 'Download on the'}
         </div>
-        <div style={{ fontSize: 19, fontWeight: 600, letterSpacing: -0.5 }}>App Store</div>
+        <div style={{ fontSize: 20, fontWeight: 600, letterSpacing: -0.5, lineHeight: 1 }}>App Store</div>
       </div>
     </a>
   )
 }
 
 /* ─── Google Play Badge ────────────────────────────────────────────────────── */
+/* Follows Google Play Badge Guidelines:
+   - Black background, official 4-color play icon
+   - "Get it on" / "Google Play" text hierarchy */
 function GooglePlayBadge({ href = '#', comingSoon = true }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -53,34 +64,45 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
       href={comingSoon ? undefined : href}
       target={!comingSoon && href !== '#' ? '_blank' : undefined}
       rel="noopener noreferrer"
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => !comingSoon && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      title={comingSoon ? 'Coming soon to Google Play' : 'Get it on Google Play'}
+      title={comingSoon ? 'Coming soon on Google Play' : 'Get it on Google Play'}
       style={{
-        display: 'inline-flex', alignItems: 'center', gap: 11,
-        background: hovered && !comingSoon ? '#1c1c1e' : '#111',
-        border: `1.5px solid ${hovered && !comingSoon ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.2)'}`,
-        borderRadius: 14, padding: '12px 20px',
+        display: 'inline-flex', alignItems: 'center', gap: 13,
+        background: '#000',
+        border: '1px solid rgba(255,255,255,0.18)',
+        borderRadius: 12, padding: '11px 22px',
         textDecoration: 'none', color: '#fff',
         cursor: comingSoon ? 'default' : 'pointer',
         opacity: comingSoon ? 0.5 : 1,
-        transform: hovered && !comingSoon ? 'translateY(-2px)' : 'translateY(0)',
-        transition: 'all 0.2s ease',
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
         userSelect: 'none', flexShrink: 0,
+        boxShadow: hovered ? '0 8px 28px rgba(0,0,0,0.7)' : 'none',
+        minWidth: 158,
       }}
     >
-      {/* Google Play triangle logo */}
-      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1.5 1.2L13.8 12L1.5 22.8V1.2Z" fill="#00BCD4"/>
-        <path d="M1.5 1.2L17 7.8L13.8 12L1.5 1.2Z" fill="#4CAF50"/>
-        <path d="M1.5 22.8L13.8 12L17 16.2L1.5 22.8Z" fill="#F44336"/>
-        <path d="M17 7.8L21 12L17 16.2L13.8 12L17 7.8Z" fill="#FFC107"/>
+      {/*
+        Google Play icon — official 4-color play button
+        Colors: blue-left / green-top / red-bottom / yellow-right-tip
+        Based on official Google Play badge visual identity
+      */}
+      <svg width="21" height="23" viewBox="0 0 21 23" fill="none" aria-hidden="true">
+        {/* Left body — blue */}
+        <path d="M1 0.8L1 22.2L13.2 11.5L1 0.8Z" fill="#4FC3F7"/>
+        {/* Top triangle — green */}
+        <path d="M1 0.8L17.5 7L13.2 11.5L1 0.8Z" fill="#3DDC84"/>
+        {/* Bottom triangle — red */}
+        <path d="M1 22.2L13.2 11.5L17.5 16L1 22.2Z" fill="#FF3D3D"/>
+        {/* Right tip — amber/yellow */}
+        <path d="M17.5 7L20.5 11.5L17.5 16L13.2 11.5L17.5 7Z" fill="#FFBB00"/>
       </svg>
-      <div style={{ lineHeight: 1 }}>
-        <div style={{ fontSize: 9.5, opacity: 0.65, letterSpacing: 0.9, textTransform: 'uppercase', marginBottom: 2.5 }}>
-          {comingSoon ? 'Coming Soon' : 'Get it on'}
+      <div style={{ lineHeight: 1.2 }}>
+        {/* Google Play guideline: "Get it on" is the official tag text */}
+        <div style={{ fontSize: 10, fontWeight: 400, opacity: 0.75, letterSpacing: 0.15, marginBottom: 1 }}>
+          {comingSoon ? 'Coming soon on' : 'Get it on'}
         </div>
-        <div style={{ fontSize: 19, fontWeight: 600, letterSpacing: -0.5 }}>Google Play</div>
+        <div style={{ fontSize: 20, fontWeight: 600, letterSpacing: -0.5, lineHeight: 1 }}>Google Play</div>
       </div>
     </a>
   )
