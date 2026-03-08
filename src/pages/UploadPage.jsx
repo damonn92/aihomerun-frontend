@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Camera, AlertCircle, CheckCircle, LogOut } from 'lucide-react'
+import { Camera, AlertCircle, CheckCircle, LogOut, ChevronDown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
@@ -24,7 +24,6 @@ function LoadingScreen({ step }) {
       padding: '0 32px',
       gap: 0,
     }}>
-      {/* Baseball icon */}
       <div className="baseball-spin" style={{ marginBottom: 36 }}>⚾</div>
 
       <h2 style={{
@@ -45,53 +44,30 @@ function LoadingScreen({ step }) {
         Your AI coach is watching…
       </p>
 
-      {/* Steps */}
-      <div style={{
-        width: '100%',
-        maxWidth: 300,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-      }}>
+      <div style={{ width: '100%', maxWidth: 300, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {LOAD_STEPS.map((s, i) => {
           const done    = i < step
           const current = i === step
           const pending = i > step
           return (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 14,
-                opacity: pending ? 0.3 : 1,
-                transition: 'opacity 0.45s ease',
-              }}
-            >
-              {/* Step indicator */}
+            <div key={i} style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              opacity: pending ? 0.3 : 1,
+              transition: 'opacity 0.45s ease',
+            }}>
               <div style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: done    ? 'var(--green)' :
-                            current ? 'var(--brand)' :
-                                      'var(--fill3)',
+                width: 32, height: 32, borderRadius: 16, flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: done ? 'var(--green)' : current ? 'var(--brand)' : 'var(--fill3)',
                 transition: 'background 0.4s ease',
                 fontSize: done ? 16 : 14,
               }}>
                 {done ? '✓' : s.emoji}
               </div>
-
               <span style={{
                 font: current ? 'var(--text-subhead)' : 'var(--text-footnote)',
                 fontWeight: current ? 600 : 400,
-                color: done    ? 'var(--label2)' :
-                       current ? 'var(--label)'  :
-                                 'var(--label3)',
+                color: done ? 'var(--label2)' : current ? 'var(--label)' : 'var(--label3)',
                 transition: 'color 0.4s ease',
               }}>
                 {s.text}
@@ -104,21 +80,262 @@ function LoadingScreen({ step }) {
   )
 }
 
+/* ─── Filming Guide Card ──────────────────────────────────────────────────── */
+function FilmingGuideCard({ actionType }) {
+  const [open, setOpen] = useState(false)
+  const isPitch = actionType === 'pitch'
+
+  /* ── Content data ── */
+  const angles = isPitch ? [
+    {
+      label: 'Front View',
+      color: '#0A84FF',
+      bg: 'rgba(10,132,255,0.1)',
+      border: 'rgba(10,132,255,0.2)',
+      desc: 'Along the pitcher → home plate line',
+      detail: 'Camera behind catcher or behind the pitcher',
+    },
+    {
+      label: 'Side View',
+      color: '#30D158',
+      bg: 'rgba(48,209,88,0.1)',
+      border: 'rgba(48,209,88,0.2)',
+      desc: 'Perpendicular to pitch direction',
+      detail: 'First-base or third-base side of the mound',
+    },
+  ] : [
+    {
+      label: 'Side View',
+      color: '#0A84FF',
+      bg: 'rgba(10,132,255,0.1)',
+      border: 'rgba(10,132,255,0.2)',
+      desc: 'Open-stance angle (recommended)',
+      detail: 'Stand level with the batter on their open side',
+    },
+    {
+      label: 'Catcher View',
+      color: '#BF5AF2',
+      bg: 'rgba(191,90,242,0.1)',
+      border: 'rgba(191,90,242,0.2)',
+      desc: 'Directly behind the batter',
+      detail: 'Camera at catcher position, facing pitcher',
+    },
+  ]
+
+  const checklist = isPitch ? [
+    { text: 'Full body in frame — head to toe' },
+    { text: 'Distance: 6–10 m (20–33 ft) from pitcher' },
+    { text: 'Camera at waist height, level and stable' },
+    { text: 'Use a tripod or prop camera on flat surface' },
+    { text: 'One pitch per video only' },
+  ] : [
+    { text: 'One complete swing per video' },
+    { text: 'Full body in frame — head to toe' },
+    { text: 'Distance: 5–8 m (16–26 ft) from batter' },
+    { text: 'Camera at roughly hip height' },
+    { text: 'Use a tripod or prop camera on flat surface' },
+  ]
+
+  const avoid = isPitch ? [
+    'Backlight or sun directly behind the pitcher',
+    'Net, fence, or chain-link blocking the view',
+    'Busy background (crowds, moving players)',
+    'Handheld shaking — even small movement hurts accuracy',
+  ] : [
+    'Multiple swings in one clip — one rep only',
+    'Mixing pitch types (e.g. tee + live in same video)',
+    'Backlight or sun directly behind the batter',
+    'Net, fence, or chain-link blocking the view',
+  ]
+
+  return (
+    <div className="ios-card" style={{ marginBottom: 12, overflow: 'hidden' }}>
+
+      {/* ── Header (always visible) ── */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', padding: '13px 16px',
+          display: 'flex', alignItems: 'center', gap: 12,
+          background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+        }}
+      >
+        {/* Icon */}
+        <div style={{
+          width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+          background: 'linear-gradient(135deg, rgba(10,132,255,0.16), rgba(10,132,255,0.07))',
+          border: '1px solid rgba(10,132,255,0.18)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 17,
+        }}>
+          📷
+        </div>
+
+        {/* Text */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ font: 'var(--text-callout)', fontWeight: 600, color: 'var(--label)' }}>
+            Filming Guide
+          </div>
+          <div style={{ font: 'var(--text-caption1)', color: 'var(--label3)', marginTop: 1 }}>
+            {isPitch
+              ? 'Camera setup tips for pitching'
+              : 'Camera setup tips for batting swing'}
+          </div>
+        </div>
+
+        {/* Chevron */}
+        <ChevronDown
+          size={17}
+          color="var(--label3)"
+          style={{
+            flexShrink: 0,
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.22s ease',
+          }}
+        />
+      </button>
+
+      {/* ── Expanded Body ── */}
+      {open && (
+        <div style={{
+          borderTop: '0.5px solid var(--sep)',
+          padding: '16px 16px',
+          display: 'flex', flexDirection: 'column', gap: 20,
+        }}>
+
+          {/* Camera Angles */}
+          <div>
+            <p style={{
+              font: 'var(--text-caption2)', fontWeight: 700,
+              letterSpacing: 0.8, textTransform: 'uppercase',
+              color: 'var(--label3)', margin: '0 0 9px',
+            }}>
+              Recommended Camera Positions
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {angles.map((a, i) => (
+                <div key={i} style={{
+                  flex: 1, borderRadius: 12,
+                  background: a.bg, border: `1px solid ${a.border}`,
+                  padding: '11px 12px',
+                }}>
+                  <div style={{
+                    display: 'inline-block',
+                    fontSize: 10, fontWeight: 700, letterSpacing: 0.5,
+                    textTransform: 'uppercase',
+                    color: a.color,
+                    background: `${a.color}18`,
+                    padding: '2px 7px', borderRadius: 4,
+                    marginBottom: 7,
+                  }}>
+                    {a.label}
+                  </div>
+                  <div style={{ font: 'var(--text-caption1)', fontWeight: 600, color: 'var(--label)', marginBottom: 3 }}>
+                    {a.desc}
+                  </div>
+                  <div style={{ font: 'var(--text-caption2)', color: 'var(--label3)', lineHeight: 1.4 }}>
+                    {a.detail}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Checklist */}
+          <div>
+            <p style={{
+              font: 'var(--text-caption2)', fontWeight: 700,
+              letterSpacing: 0.8, textTransform: 'uppercase',
+              color: 'var(--label3)', margin: '0 0 9px',
+            }}>
+              Setup Checklist
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {checklist.map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                    background: 'rgba(48,209,88,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginTop: 1,
+                  }}>
+                    <span style={{ color: 'var(--green)', fontSize: 11, fontWeight: 700, lineHeight: 1 }}>✓</span>
+                  </div>
+                  <span style={{ font: 'var(--text-footnote)', color: 'var(--label2)', lineHeight: 1.5 }}>
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Avoid */}
+          <div>
+            <p style={{
+              font: 'var(--text-caption2)', fontWeight: 700,
+              letterSpacing: 0.8, textTransform: 'uppercase',
+              color: 'var(--label3)', margin: '0 0 9px',
+            }}>
+              Avoid
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {avoid.map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                    background: 'rgba(255,69,58,0.12)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginTop: 1,
+                  }}>
+                    <span style={{ color: 'var(--red)', fontSize: 11, fontWeight: 700, lineHeight: 1 }}>✕</span>
+                  </div>
+                  <span style={{ font: 'var(--text-footnote)', color: 'var(--label2)', lineHeight: 1.5 }}>
+                    {item}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pro tip — different for each type */}
+          <div style={{
+            background: isPitch
+              ? 'rgba(48,209,88,0.06)'
+              : 'rgba(255,159,10,0.06)',
+            border: `1px solid ${isPitch ? 'rgba(48,209,88,0.16)' : 'rgba(255,159,10,0.18)'}`,
+            borderRadius: 10, padding: '11px 13px',
+            display: 'flex', gap: 9, alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: 15, flexShrink: 0 }}>💡</span>
+            <span style={{ font: 'var(--text-caption1)', color: 'var(--label2)', lineHeight: 1.55 }}>
+              {isPitch
+                ? <>A tripod is strongly recommended — even slight camera movement can reduce pose tracking accuracy.</>
+                : <>Tee work, front toss, and live pitching use different AI models. Always upload them as <strong>separate videos</strong> for best results.</>
+              }
+            </span>
+          </div>
+
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ─── Upload Page ─────────────────────────────────────────────────────────── */
 export default function UploadPage({ onResult }) {
   const { user, signOut, getAccessToken } = useAuth()
 
-  const [file, setFile]           = useState(null)
-  const [preview, setPreview]     = useState(null)
+  const [file, setFile]             = useState(null)
+  const [preview, setPreview]       = useState(null)
   const [actionType, setActionType] = useState('swing')
-  const [age, setAge]             = useState(10)
-  const [loading, setLoading]     = useState(false)
-  const [loadStep, setLoadStep]   = useState(0)
-  const [error, setError]         = useState(null)
-  const [dragOver, setDragOver]   = useState(false)
+  const [age, setAge]               = useState(10)
+  const [loading, setLoading]       = useState(false)
+  const [loadStep, setLoadStep]     = useState(0)
+  const [error, setError]           = useState(null)
+  const [dragOver, setDragOver]     = useState(false)
 
-  const inputRef      = useRef(null)
-  const stepTimerRef  = useRef(null)
+  const inputRef     = useRef(null)
+  const stepTimerRef = useRef(null)
 
   function handleFile(f) {
     if (!f) return
@@ -191,10 +408,8 @@ export default function UploadPage({ onResult }) {
 
           {/* Right: user avatar + logout */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Avatar */}
             <div style={{
-              width: 30, height: 30,
-              borderRadius: 15,
+              width: 30, height: 30, borderRadius: 15,
               background: 'var(--fill2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden',
@@ -206,7 +421,6 @@ export default function UploadPage({ onResult }) {
                   </span>
               }
             </div>
-            {/* Logout */}
             <button
               onClick={signOut}
               title="Sign out"
@@ -266,56 +480,41 @@ export default function UploadPage({ onResult }) {
                 ? 'none'
                 : '1.5px dashed var(--sep)',
             minHeight: preview ? 'auto' : 200,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'border-color 0.15s var(--ease)',
           }}
         >
           {preview ? (
-            /* Video preview */
             <div style={{ width: '100%' }}>
               <div style={{ position: 'relative' }}>
                 <video
                   src={preview}
                   style={{ width: '100%', display: 'block', maxHeight: 260, objectFit: 'cover' }}
-                  controls
-                  muted
-                  playsInline
+                  controls muted playsInline
                 />
-                {/* Remove button */}
                 <button
                   onClick={e => { e.stopPropagation(); setFile(null); setPreview(null) }}
                   style={{
                     position: 'absolute', top: 10, right: 10,
                     background: 'rgba(0,0,0,0.72)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: 30, height: 30,
-                    fontSize: 13, fontWeight: 600,
+                    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                    color: '#fff', border: 'none', borderRadius: '50%',
+                    width: 30, height: 30, fontSize: 13, fontWeight: 600,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer',
                   }}
                 >✕</button>
               </div>
-              {/* File info row */}
               <div style={{
-                padding: '12px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                padding: '12px 16px', display: 'flex',
+                alignItems: 'center', justifyContent: 'space-between',
                 borderTop: '0.5px solid var(--sep)',
               }}>
                 <span style={{ font: 'var(--text-footnote)', color: 'var(--label2)' }}>
                   📹 {file?.name?.length > 28 ? file.name.slice(0, 28) + '…' : file?.name}
                 </span>
                 <span style={{
-                  font: 'var(--text-footnote)',
-                  fontWeight: 600,
-                  color: 'var(--green)',
+                  font: 'var(--text-footnote)', fontWeight: 600, color: 'var(--green)',
                   display: 'flex', alignItems: 'center', gap: 4,
                 }}>
                   <CheckCircle size={13} /> Ready
@@ -323,40 +522,22 @@ export default function UploadPage({ onResult }) {
               </div>
             </div>
           ) : (
-            /* Empty state */
             <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 12,
-              padding: '36px 24px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: 12, padding: '36px 24px',
             }}>
-              {/* Icon container — SF Symbol style */}
               <div style={{
-                width: 64,
-                height: 64,
-                borderRadius: 18,
+                width: 64, height: 64, borderRadius: 18,
                 background: 'var(--fill3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <Camera size={30} color="var(--label3)" strokeWidth={1.5} />
               </div>
               <div style={{ textAlign: 'center' }}>
-                <p style={{
-                  font: 'var(--text-callout)',
-                  fontWeight: 600,
-                  color: 'var(--label)',
-                  margin: '0 0 5px',
-                }}>
+                <p style={{ font: 'var(--text-callout)', fontWeight: 600, color: 'var(--label)', margin: '0 0 5px' }}>
                   Tap to Upload Video
                 </p>
-                <p style={{
-                  font: 'var(--text-caption1)',
-                  color: 'var(--label3)',
-                  margin: 0,
-                }}>
+                <p style={{ font: 'var(--text-caption1)', color: 'var(--label3)', margin: 0 }}>
                   MP4 · MOV · AVI · Max 100 MB
                 </p>
               </div>
@@ -378,12 +559,9 @@ export default function UploadPage({ onResult }) {
           {/* Action Type — Segmented Control */}
           <div style={{ padding: '14px 16px' }}>
             <div style={{
-              font: 'var(--text-caption2)',
-              fontWeight: 600,
-              letterSpacing: 0.8,
-              textTransform: 'uppercase',
-              color: 'var(--label3)',
-              marginBottom: 10,
+              font: 'var(--text-caption2)', fontWeight: 600,
+              letterSpacing: 0.8, textTransform: 'uppercase',
+              color: 'var(--label3)', marginBottom: 10,
             }}>
               Action Type
             </div>
@@ -410,48 +588,39 @@ export default function UploadPage({ onResult }) {
               <button
                 onClick={() => setAge(a => Math.max(6, a - 1))}
                 style={{
-                  width: 30, height: 30,
-                  borderRadius: 15,
-                  background: 'var(--fill1)',
-                  color: 'var(--label)',
-                  fontSize: 20,
-                  fontWeight: 300,
+                  width: 30, height: 30, borderRadius: 15,
+                  background: 'var(--fill1)', color: 'var(--label)',
+                  fontSize: 20, fontWeight: 300,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'opacity 0.1s',
                 }}
                 onMouseDown={e => e.currentTarget.style.opacity = '0.6'}
                 onMouseUp={e => e.currentTarget.style.opacity = '1'}
-              >
-                −
-              </button>
+              >−</button>
               <span style={{
-                font: 'var(--text-headline)',
-                color: 'var(--label)',
-                minWidth: 52,
-                textAlign: 'center',
+                font: 'var(--text-headline)', color: 'var(--label)',
+                minWidth: 52, textAlign: 'center',
               }}>
                 {age} yrs
               </span>
               <button
                 onClick={() => setAge(a => Math.min(18, a + 1))}
                 style={{
-                  width: 30, height: 30,
-                  borderRadius: 15,
-                  background: 'var(--fill1)',
-                  color: 'var(--label)',
-                  fontSize: 20,
-                  fontWeight: 300,
+                  width: 30, height: 30, borderRadius: 15,
+                  background: 'var(--fill1)', color: 'var(--label)',
+                  fontSize: 20, fontWeight: 300,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'opacity 0.1s',
                 }}
                 onMouseDown={e => e.currentTarget.style.opacity = '0.6'}
                 onMouseUp={e => e.currentTarget.style.opacity = '1'}
-              >
-                +
-              </button>
+              >+</button>
             </div>
           </div>
         </div>
+
+        {/* ── Filming Guide Card ── */}
+        <FilmingGuideCard actionType={actionType} />
 
         {/* Error */}
         {error && (
@@ -460,9 +629,7 @@ export default function UploadPage({ onResult }) {
             border: '1px solid rgba(255,69,58,0.28)',
             borderRadius: 'var(--r-md)',
             padding: '12px 14px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: 10,
+            display: 'flex', alignItems: 'flex-start', gap: 10,
             marginBottom: 12,
           }}>
             <AlertCircle size={16} color="var(--red)" style={{ marginTop: 2, flexShrink: 0 }} />
@@ -483,11 +650,8 @@ export default function UploadPage({ onResult }) {
 
         {/* Footer */}
         <p style={{
-          textAlign: 'center',
-          marginTop: 24,
-          font: 'var(--text-caption2)',
-          color: 'var(--label4)',
-          letterSpacing: 0.2,
+          textAlign: 'center', marginTop: 24,
+          font: 'var(--text-caption2)', color: 'var(--label4)', letterSpacing: 0.2,
         }}>
           Powered by Claude AI · MediaPipe Pose
         </p>
