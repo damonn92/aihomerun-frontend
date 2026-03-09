@@ -95,11 +95,34 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
+            RankingsView()
+                .tabItem {
+                    Label("Rankings", systemImage: "trophy.fill")
+                }
+                .tag(1)
+
+            AICoachView()
+                .tabItem {
+                    Label {
+                        Text("AI Coach")
+                    } icon: {
+                        Image("AICoachIcon")
+                            .renderingMode(.template)
+                    }
+                }
+                .tag(2)
+
+            FieldBookingView()
+                .tabItem {
+                    Label("Fields", systemImage: "mappin.and.ellipse")
+                }
+                .tag(3)
+
             ProfileView()
                 .tabItem {
                     Label("Profile", systemImage: "person.circle.fill")
                 }
-                .tag(1)
+                .tag(4)
         }
         .tint(.hrBlue)
     }

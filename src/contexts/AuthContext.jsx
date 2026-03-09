@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
@@ -66,22 +66,24 @@ export function AuthProvider({ children }) {
   }
 
   /** Return the current access token for API calls */
-  function getAccessToken() {
+  const getAccessToken = useCallback(() => {
     return session?.access_token ?? null
-  }
+  }, [session])
+
+  const value = useMemo(() => ({
+    user,
+    loading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    signInWithApple,
+    resetPassword,
+    signOut,
+    getAccessToken,
+  }), [user, loading, getAccessToken])
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      signIn,
-      signUp,
-      signInWithGoogle,
-      signInWithApple,
-      resetPassword,
-      signOut,
-      getAccessToken,
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

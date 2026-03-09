@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 5173
+    },
+    {
+      "name": "baseball-api",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/damon/Documents/ClaudeAI/baseball-ai-backend/run_server.py"],
+      "port": 8000
     }
   ]
 }

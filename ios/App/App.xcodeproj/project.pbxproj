@@ -28,6 +28,18 @@
 		AB0026000000000000000000 /* CompareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0025000000000000000000 /* CompareCardView.swift */; };
 		AB0028000000000000000000 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0027000000000000000000 /* ProfileView.swift */; };
 		AB002A000000000000000000 /* ChildEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0029000000000000000000 /* ChildEditorView.swift */; };
+		AB002C000000000000000000 /* RankingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB002B000000000000000000 /* RankingsView.swift */; };
+		AB002E000000000000000000 /* AICoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB002D000000000000000000 /* AICoachView.swift */; };
+		AB0030000000000000000000 /* FieldBookingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB002F000000000000000000 /* FieldBookingView.swift */; };
+		AB0032000000000000000000 /* BaseballBanners.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0031000000000000000000 /* BaseballBanners.swift */; };
+		AB0034000000000000000000 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0033000000000000000000 /* LocationManager.swift */; };
+		AB0036000000000000000000 /* FieldModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0035000000000000000000 /* FieldModels.swift */; };
+		AB0038000000000000000000 /* FieldBookingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0037000000000000000000 /* FieldBookingViewModel.swift */; };
+		AB003A000000000000000000 /* FieldMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0039000000000000000000 /* FieldMapView.swift */; };
+		AB003C000000000000000000 /* FieldSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB003B000000000000000000 /* FieldSearchBar.swift */; };
+		AB003E000000000000000000 /* FieldCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB003D000000000000000000 /* FieldCardView.swift */; };
+		AB0040000000000000000000 /* FieldDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB003F000000000000000000 /* FieldDetailSheet.swift */; };
+		AB0042000000000000000000 /* GooglePlacesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0041000000000000000000 /* GooglePlacesService.swift */; };
 		AB0204000000000000000000 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AB0202000000000000000000 /* Supabase */; };
 		AB0206000000000000000000 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AB0203000000000000000000 /* GoogleSignIn */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
@@ -56,6 +68,18 @@
 		AB0025000000000000000000 /* CompareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareCardView.swift; sourceTree = "<group>"; };
 		AB0027000000000000000000 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		AB0029000000000000000000 /* ChildEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildEditorView.swift; sourceTree = "<group>"; };
+		AB002B000000000000000000 /* RankingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RankingsView.swift; sourceTree = "<group>"; };
+		AB002D000000000000000000 /* AICoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachView.swift; sourceTree = "<group>"; };
+		AB002F000000000000000000 /* FieldBookingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldBookingView.swift; sourceTree = "<group>"; };
+		AB0031000000000000000000 /* BaseballBanners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseballBanners.swift; sourceTree = "<group>"; };
+		AB0033000000000000000000 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		AB0035000000000000000000 /* FieldModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldModels.swift; sourceTree = "<group>"; };
+		AB0037000000000000000000 /* FieldBookingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldBookingViewModel.swift; sourceTree = "<group>"; };
+		AB0039000000000000000000 /* FieldMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldMapView.swift; sourceTree = "<group>"; };
+		AB003B000000000000000000 /* FieldSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldSearchBar.swift; sourceTree = "<group>"; };
+		AB003D000000000000000000 /* FieldCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldCardView.swift; sourceTree = "<group>"; };
+		AB003F000000000000000000 /* FieldDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldDetailSheet.swift; sourceTree = "<group>"; };
+		AB0041000000000000000000 /* GooglePlacesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesService.swift; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -115,6 +139,8 @@
 				AB0009000000000000000000 /* SupabaseService.swift */,
 				AB000B000000000000000000 /* APIClient.swift */,
 				AB000D000000000000000000 /* KeychainService.swift */,
+				AB0033000000000000000000 /* LocationManager.swift */,
+				AB0041000000000000000000 /* GooglePlacesService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -124,6 +150,7 @@
 			children = (
 				AB000F000000000000000000 /* AnalysisResult.swift */,
 				AB0011000000000000000000 /* ProfileModels.swift */,
+				AB0035000000000000000000 /* FieldModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -134,6 +161,7 @@
 				AB0013000000000000000000 /* AuthViewModel.swift */,
 				AB0015000000000000000000 /* UploadViewModel.swift */,
 				AB0017000000000000000000 /* ProfileViewModel.swift */,
+				AB0037000000000000000000 /* FieldBookingViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -145,6 +173,10 @@
 				AB0105000000000000000000 /* Upload */,
 				AB0106000000000000000000 /* Result */,
 				AB0107000000000000000000 /* Profile */,
+				AB0108000000000000000000 /* Rankings */,
+				AB0109000000000000000000 /* AICoach */,
+				AB010A000000000000000000 /* FieldBooking */,
+			AB010B000000000000000000 /* Shared */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -184,6 +216,42 @@
 				AB0029000000000000000000 /* ChildEditorView.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		AB0108000000000000000000 /* Rankings */ = {
+			isa = PBXGroup;
+			children = (
+				AB002B000000000000000000 /* RankingsView.swift */,
+			);
+			path = Rankings;
+			sourceTree = "<group>";
+		};
+		AB0109000000000000000000 /* AICoach */ = {
+			isa = PBXGroup;
+			children = (
+				AB002D000000000000000000 /* AICoachView.swift */,
+			);
+			path = AICoach;
+			sourceTree = "<group>";
+		};
+		AB010A000000000000000000 /* FieldBooking */ = {
+			isa = PBXGroup;
+			children = (
+				AB002F000000000000000000 /* FieldBookingView.swift */,
+				AB0039000000000000000000 /* FieldMapView.swift */,
+				AB003B000000000000000000 /* FieldSearchBar.swift */,
+				AB003D000000000000000000 /* FieldCardView.swift */,
+				AB003F000000000000000000 /* FieldDetailSheet.swift */,
+			);
+			path = FieldBooking;
+			sourceTree = "<group>";
+		};
+		AB010B000000000000000000 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				AB0031000000000000000000 /* BaseballBanners.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -286,6 +354,18 @@
 				AB0026000000000000000000 /* CompareCardView.swift in Sources */,
 				AB0028000000000000000000 /* ProfileView.swift in Sources */,
 				AB002A000000000000000000 /* ChildEditorView.swift in Sources */,
+				AB002C000000000000000000 /* RankingsView.swift in Sources */,
+				AB002E000000000000000000 /* AICoachView.swift in Sources */,
+				AB0030000000000000000000 /* FieldBookingView.swift in Sources */,
+			AB0032000000000000000000 /* BaseballBanners.swift in Sources */,
+				AB0034000000000000000000 /* LocationManager.swift in Sources */,
+				AB0036000000000000000000 /* FieldModels.swift in Sources */,
+				AB0038000000000000000000 /* FieldBookingViewModel.swift in Sources */,
+				AB003A000000000000000000 /* FieldMapView.swift in Sources */,
+				AB003C000000000000000000 /* FieldSearchBar.swift in Sources */,
+				AB003E000000000000000000 /* FieldCardView.swift in Sources */,
+				AB0040000000000000000000 /* FieldDetailSheet.swift in Sources */,
+				AB0042000000000000000000 /* GooglePlacesService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,8 +491,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -432,9 +513,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;

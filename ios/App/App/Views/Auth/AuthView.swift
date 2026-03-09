@@ -173,22 +173,23 @@ struct AuthView: View {
                             SignInWithAppleButton(
                                 mode == .signIn ? .signIn : .signUp
                             ) { request in
-                                request.requestedScopes = [.fullName, .email]
-                            } onCompletion: { _ in }
+                                authVM.configureAppleRequest(request)
+                            } onCompletion: { result in
+                                authVM.handleAppleSignInCompletion(result)
+                            }
                             .signInWithAppleButtonStyle(.white)
                             .frame(height: 52)
                             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                            .onTapGesture {
-                                Task { await authVM.signInWithApple() }
-                            }
 
                             // Google
                             Button {
                                 Task { await authVM.signInWithGoogle() }
                             } label: {
                                 HStack(spacing: 10) {
-                                    Image(systemName: "globe")
-                                        .font(.body.weight(.medium))
+                                    Image("GoogleLogo")
+                                        .resizable()
+                                        .renderingMode(.original)
+                                        .frame(width: 22, height: 22)
                                     Text("Continue with Google")
                                         .font(.subheadline.weight(.semibold))
                                 }
@@ -346,3 +347,4 @@ struct ForgotPasswordView: View {
         .preferredColorScheme(.dark)
     }
 }
+

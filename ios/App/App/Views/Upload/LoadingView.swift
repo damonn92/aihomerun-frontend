@@ -7,7 +7,7 @@ struct LoadingView: View {
     private let steps: [(icon: String, label: String, sub: String)] = [
         ("arrow.up.circle.fill",    "Uploading Video",      "Sending to AI server…"),
         ("figure.walk.circle.fill", "Analyzing Pose",       "Detecting body landmarks…"),
-        ("brain.head.profile",      "Generating Feedback",  "Building your report…"),
+        ("wand.and.stars",          "Generating Feedback",  "Building your report…"),
         ("checkmark.circle.fill",   "Almost Done",          "Finalizing results…"),
     ]
 

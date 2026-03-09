@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import PhotosUI
 
 // MARK: - Action Type
 
@@ -23,6 +24,8 @@ class UploadViewModel: ObservableObject {
     @Published var result: AnalysisResult?
     @Published var error: String?
     @Published var qualityError: QualityError?
+    @Published var isPreparing = false
+    @Published var prepareProgress: Double = 0
 
     func analyze(token: String?) async {
         guard let videoURL else { return }
@@ -33,6 +36,28 @@ class UploadViewModel: ObservableObject {
         qualityError = nil
         result = nil
 
+        // Simulated progress task: advances the bar during the AI processing phase
+        // (after upload completes, the real callback stops at ~0.40)
+        let simTask = Task { [weak self] in
+            // Wait until real upload has started (progress > 0.36)
+            var wait = 0
+            while (self?.uploadProgress ?? 1.0) < 0.36, wait < 120, !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                wait += 1
+            }
+            // Slowly creep from current progress up to 0.95
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 700_000_000)
+                guard let self, !Task.isCancelled else { break }
+                let cur = self.uploadProgress
+                guard cur < 0.95 else { break }
+                self.uploadProgress = min(0.95, cur + Double.random(in: 0.007...0.018))
+                let p = self.uploadProgress
+                if p > 0.52 && self.loadStep < 2 { self.loadStep = 2 }
+                if p > 0.78 && self.loadStep < 3 { self.loadStep = 3 }
+            }
+        }
+
         do {
             let analysisResult = try await APIClient.shared.analyzeVideo(
                 fileURL: videoURL,
@@ -41,20 +66,54 @@ class UploadViewModel: ObservableObject {
                 token: token
             ) { [weak self] progress in
                 Task { @MainActor in
-                    self?.uploadProgress = progress
-                    if progress > 0.35 && (self?.loadStep ?? 0) < 1 { self?.loadStep = 1 }
-                    if progress > 0.70 && (self?.loadStep ?? 0) < 2 { self?.loadStep = 2 }
-                    if progress > 0.90 && (self?.loadStep ?? 0) < 3 { self?.loadStep = 3 }
+                    guard let self else { return }
+                    // Only advance, never retreat
+                    if progress > self.uploadProgress { self.uploadProgress = progress }
+                    if progress > 0.35 && self.loadStep < 1 { self.loadStep = 1 }
                 }
             }
+            simTask.cancel()
+            uploadProgress = 1.0
             self.result = analysisResult
         } catch APIError.qualityGateFailure(let qe) {
+            simTask.cancel()
             qualityError = qe
         } catch {
+            simTask.cancel()
             self.error = error.localizedDescription
         }
 
         isLoading = false
+    }
+
+    /// Load the selected video file and animate a "preparing" progress bar.
+    func prepareVideo(from item: PhotosPickerItem) async {
+        isPreparing = true
+        prepareProgress = 0
+        videoURL = nil
+
+        // Animate progress while loading
+        let simTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 120_000_000)
+                guard let self, !Task.isCancelled else { break }
+                let cur = self.prepareProgress
+                guard cur < 0.90 else { break }
+                self.prepareProgress = min(0.90, cur + Double.random(in: 0.03...0.08))
+            }
+        }
+
+        if let movie = try? await item.loadTransferable(type: MovieTransferable.self) {
+            videoURL = movie.url
+        }
+
+        simTask.cancel()
+        withAnimation(.easeOut(duration: 0.3)) {
+            prepareProgress = 1.0
+        }
+        // Brief pause at 100% so user sees completion
+        try? await Task.sleep(nanoseconds: 400_000_000)
+        isPreparing = false
     }
 
     func reset() {
@@ -64,6 +123,8 @@ class UploadViewModel: ObservableObject {
         qualityError = nil
         loadStep = 0
         uploadProgress = 0
+        isPreparing = false
+        prepareProgress = 0
     }
 }
 
@@ -80,6 +141,7 @@ class HomeFeedViewModel: ObservableObject {
     @Published var sessionHistory: [SessionSummary] = []
     @Published var lastResult: CachedResult?
     @Published var isLoadingFeed = false
+    @Published var feedError: String?
 
     private let cacheKey = "hr_last_result_v1"
 
@@ -89,12 +151,16 @@ class HomeFeedViewModel: ObservableObject {
 
     func loadFeed(token: String?) async {
         isLoadingFeed = true
+        feedError = nil
         defer { isLoadingFeed = false }
         do {
             let history = try await APIClient.shared.fetchHistory(token: token)
             sessionHistory = history
         } catch {
-            // Silently keep cached data on network error
+            print("[AIHomeRun] loadFeed error: \(error.localizedDescription)")
+            if sessionHistory.isEmpty {
+                feedError = "Could not load history. Pull to refresh."
+            }
         }
     }
 

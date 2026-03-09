@@ -15,28 +15,59 @@ struct ProfileView: View {
             ZStack {
                 Color.hrBg.ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
+                if vm.isLoading && vm.profile == nil {
                     VStack(spacing: 16) {
-
-                        // ── Profile header ─────────────────────────────────
-                        profileHeader
-
-                        // ── Personal info ──────────────────────────────────
-                        profileSection
-
-                        // ── Account ────────────────────────────────────────
-                        accountSection
-
-                        // ── Players ────────────────────────────────────────
-                        playersSection
-
-                        // ── Sign out ───────────────────────────────────────
-                        signOutButton
-
-                        Spacer(minLength: 40)
+                        ProgressView()
+                            .tint(.white)
+                        Text("Loading profile...")
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.45))
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 16) {
+
+                            if let error = vm.error {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundStyle(Color.hrOrange)
+                                    Text(error)
+                                        .font(.caption)
+                                        .foregroundStyle(.white.opacity(0.70))
+                                    Spacer()
+                                    Button("Retry") {
+                                        if let uid = authVM.user?.id.uuidString {
+                                            Task { await vm.load(userId: uid) }
+                                        }
+                                    }
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color.hrBlue)
+                                }
+                                .padding(12)
+                                .background(Color.hrOrange.opacity(0.12))
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            }
+
+                            // ── Profile header ─────────────────────────────────
+                            profileHeader
+
+                            // ── Personal info ──────────────────────────────────
+                            profileSection
+
+                            // ── Account ────────────────────────────────────────
+                            accountSection
+
+                            // ── Players ────────────────────────────────────────
+                            playersSection
+
+                            // ── Sign out ───────────────────────────────────────
+                            signOutButton
+
+                            Spacer(minLength: 40)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                    }
                 }
             }
             .navigationTitle("Profile")

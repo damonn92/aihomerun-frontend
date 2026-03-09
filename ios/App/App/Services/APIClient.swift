@@ -20,6 +20,16 @@ enum APIError: LocalizedError {
 
 class APIClient {
     static let shared = APIClient()
+
+    /// Shared session with explicit timeouts for API requests
+    private let session: URLSession = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForResource = 300
+        config.waitsForConnectivity = true
+        return URLSession(configuration: config)
+    }()
+
     private init() {}
 
     // MARK: - Analyze Video
@@ -106,7 +116,7 @@ class APIClient {
         request.httpMethod = "GET"
         if let token { request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization") }
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse,
               (200..<300).contains(http.statusCode) else {
             throw APIError.httpError((response as? HTTPURLResponse)?.statusCode ?? 0, data)
@@ -164,7 +174,10 @@ class APIClient {
             let delegate = UploadDelegate(totalBytes: Int64(body.count), progressHandler: progressHandler) { result in
                 continuation.resume(with: result)
             }
-            let session = URLSession(configuration: .default, delegate: delegate, delegateQueue: nil)
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = 60
+            config.timeoutIntervalForResource = 600
+            let session = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
             let task = session.uploadTask(with: request, from: body)
             delegate.task = task
             task.resume()

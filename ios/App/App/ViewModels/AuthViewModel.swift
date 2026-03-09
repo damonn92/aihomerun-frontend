@@ -73,28 +73,47 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Apple Sign In
 
-    func signInWithApple() async {
-        error = nil
+    /// Raw nonce kept in memory so we can forward it to Supabase after Apple returns.
+    private var currentNonce: String?
+
+    /// Called inside the `SignInWithAppleButton` request closure.
+    func configureAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
         let nonce = randomNonceString()
-        let hashedNonce = sha256(nonce)
-
-        let provider = ASAuthorizationAppleIDProvider()
-        let request = provider.createRequest()
+        currentNonce = nonce
         request.requestedScopes = [.fullName, .email]
-        request.nonce = hashedNonce
+        request.nonce = sha256(nonce)
+    }
 
-        let controller = ASAuthorizationController(authorizationRequests: [request])
-        let delegate = AppleSignInDelegate()
-
-        do {
-            let credential = try await delegate.signIn(controller: controller)
-            guard let idTokenString = String(data: credential.identityToken!, encoding: .utf8) else {
-                self.error = "Apple Sign In: missing identity token"
-                return
+    /// Called inside the `SignInWithAppleButton` onCompletion closure.
+    func handleAppleSignInCompletion(_ result: Result<ASAuthorization, Error>) {
+        Task {
+            error = nil
+            switch result {
+            case .success(let authorization):
+                guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
+                    self.error = "Apple Sign In: unexpected credential type"
+                    return
+                }
+                guard let tokenData = credential.identityToken,
+                      let idTokenString = String(data: tokenData, encoding: .utf8),
+                      !idTokenString.isEmpty else {
+                    self.error = "Apple Sign In: missing identity token"
+                    return
+                }
+                guard let nonce = currentNonce else {
+                    self.error = "Apple Sign In: missing nonce"
+                    return
+                }
+                do {
+                    try await supabase.signInWithApple(idToken: idTokenString, nonce: nonce)
+                } catch {
+                    self.error = error.localizedDescription
+                }
+            case .failure(let err):
+                // User cancelled – don't show an error
+                if (err as NSError).code == ASAuthorizationError.canceled.rawValue { return }
+                self.error = err.localizedDescription
             }
-            try await supabase.signInWithApple(idToken: idTokenString, nonce: nonce)
-        } catch {
-            self.error = error.localizedDescription
         }
     }
 
@@ -133,10 +152,12 @@ class AuthViewModel: ObservableObject {
     // MARK: - Helpers
 
     private func randomNonceString(length: Int = 32) -> String {
+        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
         var randomBytes = [UInt8](repeating: 0, count: length)
         let errorCode = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
-        precondition(errorCode == errSecSuccess, "Unable to generate nonce")
-        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        if errorCode != errSecSuccess {
+            randomBytes = (0..<length).map { _ in UInt8.random(in: 0...255) }
+        }
         return String(randomBytes.map { charset[Int($0) % charset.count] })
     }
 
@@ -147,33 +168,3 @@ class AuthViewModel: ObservableObject {
     }
 }
 
-// MARK: - Apple Sign In Delegate Helper
-
-@MainActor
-private class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private var continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>?
-
-    func signIn(controller: ASAuthorizationController) async throws -> ASAuthorizationAppleIDCredential {
-        controller.delegate = self
-        controller.presentationContextProvider = self
-        return try await withCheckedThrowingContinuation { cont in
-            self.continuation = cont
-            controller.performRequests()
-        }
-    }
-
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
-        continuation?.resume(returning: credential)
-    }
-
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        continuation?.resume(throwing: error)
-    }
-
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .first?.windows.first ?? ASPresentationAnchor()
-    }
-}

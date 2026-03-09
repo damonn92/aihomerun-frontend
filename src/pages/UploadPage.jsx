@@ -416,6 +416,18 @@ export default function UploadPage({ onResult }) {
 
   function handleFile(f) {
     if (!f) return
+    // Validate file type and size
+    const allowed = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-m4v']
+    if (!allowed.includes(f.type) && !f.name.match(/\.(mp4|mov|avi|m4v)$/i)) {
+      setError('Please upload a video file (MP4, MOV, AVI, or M4V).')
+      return
+    }
+    if (f.size > 100 * 1024 * 1024) {
+      setError('Video must be under 100 MB.')
+      return
+    }
+    // Revoke previous Object URL to prevent memory leak
+    if (preview) URL.revokeObjectURL(preview)
     setFile(f)
     setError(null)
     setQualityError(null)
@@ -450,10 +462,15 @@ export default function UploadPage({ onResult }) {
     form.append('action_type', actionType)
     form.append('age', age)
 
+    const controller = new AbortController()
+
     try {
       const token = getAccessToken()
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res  = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form, headers })
+      const res  = await fetch(`${API_BASE}/analyze`, {
+        method: 'POST', body: form, headers,
+        signal: controller.signal,
+      })
       const data = await res.json()
 
       if (!res.ok) {
@@ -469,6 +486,7 @@ export default function UploadPage({ onResult }) {
 
       onResult(data)
     } catch (err) {
+      if (err.name === 'AbortError') return
       setError(err.message || 'Network error — please check your connection and try again.')
     } finally {
       setLoading(false)

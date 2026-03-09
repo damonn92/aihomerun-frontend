@@ -2,7 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Bundle info -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -19,10 +18,6 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleVersion</key>
-	<string>2</string>
-
-	<!-- Google Sign-In URL scheme -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -32,18 +27,35 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>11</string>
 	<key>GIDClientID</key>
 	<string>993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i.apps.googleusercontent.com</string>
-
-	<!-- Required hardware -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>AIHomeRun needs camera access to record baseball swing and pitch videos for AI analysis.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>AIHomeRun uses the microphone to capture audio when recording video for AI coaching analysis.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>AIHomeRun may save analysis results to your photo library.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>AIHomeRun needs access to your photo library so you can upload existing baseball videos for AI analysis.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>AIHomeRun uses your location to find baseball and softball fields near you.</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>
 	</array>
-
-	<!-- Portrait only -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -53,28 +65,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-
-	<!-- SwiftUI launch screen (no storyboard main entry) -->
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-
-	<!-- Privacy permissions — App Store requires usage descriptions -->
-	<key>NSCameraUsageDescription</key>
-	<string>AIHomeRun needs camera access to record baseball swing and pitch videos for AI analysis.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>AIHomeRun uses the microphone to capture audio when recording video for AI coaching analysis.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>AIHomeRun needs access to your photo library so you can upload existing baseball videos for AI analysis.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>AIHomeRun may save analysis results to your photo library.</string>
-
-	<!-- ATS: allow HTTPS connections only -->
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-	</dict>
 </dict>
 </plist>

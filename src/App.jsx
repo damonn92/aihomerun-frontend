@@ -1,12 +1,40 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense, Component } from 'react'
 import { Capacitor } from '@capacitor/core'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
-import UploadPage   from './pages/UploadPage'
-import ResultPage   from './pages/ResultPage'
-import AuthPage     from './pages/AuthPage'
-import ProfilePage  from './pages/ProfilePage'
-import PrivacyPage  from './pages/PrivacyPage'
-import LandingPage  from './pages/LandingPage'
+
+const UploadPage   = lazy(() => import('./pages/UploadPage'))
+const ResultPage   = lazy(() => import('./pages/ResultPage'))
+const AuthPage     = lazy(() => import('./pages/AuthPage'))
+const ProfilePage  = lazy(() => import('./pages/ProfilePage'))
+const PrivacyPage  = lazy(() => import('./pages/PrivacyPage'))
+const LandingPage  = lazy(() => import('./pages/LandingPage'))
+
+/* ─── Error Boundary ─────────────────────────────────────────────────────── */
+class ErrorBoundary extends Component {
+  state = { hasError: false }
+  static getDerivedStateFromError() { return { hasError: true } }
+  componentDidCatch(err, info) { console.error('ErrorBoundary caught:', err, info) }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 32, textAlign: 'center', color: 'var(--label)' }}>
+          <h2 style={{ font: 'var(--text-title2)', marginBottom: 8 }}>Something went wrong</h2>
+          <p style={{ font: 'var(--text-body)', color: 'var(--label2)', marginBottom: 16 }}>
+            Please try refreshing the page.
+          </p>
+          <button
+            onClick={() => { this.setState({ hasError: false }); window.location.reload() }}
+            className="ios-btn-primary"
+            style={{ maxWidth: 200, margin: '0 auto' }}
+          >
+            Refresh
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 /* ─── Detect /privacy route (works both as web URL and in-app nav) ────────── */
 function useRoute() {
@@ -14,7 +42,11 @@ function useRoute() {
   useEffect(() => {
     const handler = () => setPath(window.location.pathname)
     window.addEventListener('popstate', handler)
-    return () => window.removeEventListener('popstate', handler)
+    window.addEventListener('pushstate', handler)
+    return () => {
+      window.removeEventListener('popstate', handler)
+      window.removeEventListener('pushstate', handler)
+    }
   }, [])
   return path
 }
@@ -50,8 +82,8 @@ function SplashScreen() {
 /* ─── Bottom tab bar ──────────────────────────────────────────────────────── */
 function TabBar({ active, onChange }) {
   const tabs = [
-    { id: 'home',    label: '主页',  icon: null },
-    { id: 'profile', label: '资料',  icon: '👤' },
+    { id: 'home',    label: 'Home',  icon: null },
+    { id: 'profile', label: 'Profile',  icon: '👤' },
   ]
   return (
     <nav style={{
@@ -161,29 +193,39 @@ function AppContent() {
 export default function App() {
   const path = useRoute()
 
+  const suspenseFallback = <SplashScreen />
+
   // Native iOS/Android app → skip landing page, go directly to app
   if (Capacitor.isNativePlatform()) {
     return (
-      <AuthProvider>
-        <div className="app-shell">
-          <AppContent />
-        </div>
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <Suspense fallback={suspenseFallback}>
+            <div className="app-shell">
+              <AppContent />
+            </div>
+          </Suspense>
+        </AuthProvider>
+      </ErrorBoundary>
     )
   }
 
   // Web: / → marketing landing page (public)
-  if (path === '/' || path === '') return <LandingPage />
+  if (path === '/' || path === '') return <ErrorBoundary><Suspense fallback={suspenseFallback}><LandingPage /></Suspense></ErrorBoundary>
 
   // /privacy is publicly accessible — no auth needed (required for App Store)
-  if (path === '/privacy') return <PrivacyPage />
+  if (path === '/privacy') return <ErrorBoundary><Suspense fallback={suspenseFallback}><PrivacyPage /></Suspense></ErrorBoundary>
 
   // /app and everything else → the actual web app (requires auth)
   return (
-    <AuthProvider>
-      <div className="app-shell">
-        <AppContent />
-      </div>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Suspense fallback={suspenseFallback}>
+          <div className="app-shell">
+            <AppContent />
+          </div>
+        </Suspense>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }

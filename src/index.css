@@ -91,14 +91,19 @@ button, input, select, textarea {
   font: inherit;
   border: none;
   background: none;
-  outline: none;
+}
+
+/* Restore focus outline for keyboard navigation (a11y) */
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }
 
 button { cursor: pointer; }
 
 /* ─── App Shell (iOS phone frame on desktop) ──────────────────────────────── */
 .app-shell {
-  height: 100vh;
+  height: 100dvh;
   max-width: 430px;
   margin: 0 auto;
   background: var(--bg);

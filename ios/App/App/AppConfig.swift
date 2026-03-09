@@ -94,4 +94,8 @@ enum AppConfig {
     static var googleClientID: String {
         dict["GOOGLE_CLIENT_ID"] as? String ?? ""
     }
+
+    static var googlePlacesAPIKey: String {
+        dict["GOOGLE_PLACES_API_KEY"] as? String ?? ""
+    }
 }

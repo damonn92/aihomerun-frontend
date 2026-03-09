@@ -10,5 +10,7 @@
 	<string>https://api.aihomerun.app</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i.apps.googleusercontent.com</string>
+	<key>GOOGLE_PLACES_API_KEY</key>
+	<string>AIzaSyCjsqIBPzkthvMwHR1rfI8-XwQZXRMuKmw</string>
 </dict>
 </plist>

@@ -1,6 +1,25 @@
 import SwiftUI
 import PhotosUI
 import Charts
+import UniformTypeIdentifiers
+
+// MARK: - Video file transferable for PhotosPicker
+
+struct MovieTransferable: Transferable {
+    let url: URL
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(contentType: .movie) { movie in
+            SentTransferredFile(movie.url)
+        } importing: { received in
+            let dest = FileManager.default.temporaryDirectory
+                .appendingPathComponent(UUID().uuidString)
+                .appendingPathExtension("mov")
+            try FileManager.default.copyItem(at: received.file, to: dest)
+            return Self(url: dest)
+        }
+    }
+}
 
 // MARK: - UploadView (Training Dashboard Home)
 
@@ -30,8 +49,10 @@ struct UploadView: View {
                 Button("OK") { vm.error = nil }
             } message: { Text(vm.error ?? "") }
             .sheet(isPresented: .constant(vm.qualityError != nil)) {
-                QualityErrorSheet(qualityError: vm.qualityError!) { vm.qualityError = nil }
-                    .presentationDetents([.medium])
+                if let qe = vm.qualityError {
+                    QualityErrorSheet(qualityError: qe) { vm.qualityError = nil }
+                        .presentationDetents([.medium])
+                }
             }
         }
         .task {
@@ -40,13 +61,8 @@ struct UploadView: View {
         }
         .onChange(of: selectedItems) { items in
             Task {
-                guard let item = items.first,
-                      let data = try? await item.loadTransferable(type: Data.self) else { return }
-                let url = FileManager.default.temporaryDirectory
-                    .appendingPathComponent(UUID().uuidString)
-                    .appendingPathExtension("mov")
-                try? data.write(to: url)
-                vm.videoURL = url
+                guard let item = items.first else { return }
+                await vm.prepareVideo(from: item)
             }
         }
     }
@@ -58,8 +74,14 @@ struct UploadView: View {
             Color.hrBg.ignoresSafeArea()
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
-                    greetingHeader
+                    // Hero baseball banner
+                    BaseballHeroBanner(greeting: greeting, subtitle: dateString)
+
+                    // Quick stats summary
+                    quickStatsSummary
+
                     quickRecordCard
+                    if vm.videoURL != nil && !vm.isPreparing { startAnalysisButton }
                     if let cached = feed.lastResult {
                         lastAnalysisCard(cached)
                     } else {
@@ -68,8 +90,9 @@ struct UploadView: View {
                     todaysDrillCard
                     if feed.sessionHistory.count >= 2 { progressTrendCard }
                     ageRankingCard
+                    // Rotating pro tips
+                    BaseballTipsCard()
                     filmingGuideCard
-                    if vm.videoURL != nil { analyzeButton }
                     Spacer(minLength: 32)
                 }
                 .padding(.horizontal, 20)
@@ -79,23 +102,17 @@ struct UploadView: View {
         }
     }
 
-    // MARK: - 1. Greeting
+    // MARK: - 1. Quick Stats
 
-    private var greetingHeader: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(greeting)
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.40))
-                Text(dateString)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.25))
-            }
-            Spacer()
-            if feed.isLoadingFeed {
-                ProgressView().scaleEffect(0.7).tint(.white.opacity(0.3))
-            }
-        }
+    private var quickStatsSummary: some View {
+        let scores = feed.sessionHistory.compactMap { $0.overallScore }
+        let best   = scores.max() ?? 0
+        let avg    = scores.isEmpty ? 0 : scores.reduce(0, +) / scores.count
+        return QuickStatsBar(
+            sessions:  feed.sessionHistory.count,
+            bestScore: best,
+            avgScore:  avg
+        )
     }
 
     // MARK: - 2. Quick Record
@@ -103,8 +120,8 @@ struct UploadView: View {
     private var quickRecordCard: some View {
         VStack(spacing: 12) {
             // Hero tap area
-            PhotosPicker(selection: $selectedItems, maxSelectionCount: 1, matching: .videos) {
-                ZStack {
+            PhotosPicker(selection: $selectedItems, matching: .videos) {
+                ZStack(alignment: .bottom) {
                     LinearGradient(
                         colors: [Color.hrBlue.opacity(0.28), Color.hrCard],
                         startPoint: .topLeading, endPoint: .bottomTrailing
@@ -113,19 +130,28 @@ struct UploadView: View {
                         ZStack {
                             Circle().fill(Color.hrBlue.opacity(0.20)).frame(width: 64, height: 64)
                             Circle().fill(Color.hrBlue.opacity(0.28)).frame(width: 52, height: 52)
-                            Image(systemName: vm.videoURL == nil ? "video.badge.plus" : "video.fill.badge.checkmark")
-                                .font(.system(size: 24, weight: .medium))
-                                .foregroundStyle(.white)
+                            if vm.isPreparing {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                                    .tint(.white)
+                            } else {
+                                Image(systemName: vm.videoURL == nil ? "video.badge.plus" : "video.fill.badge.checkmark")
+                                    .font(.system(size: 24, weight: .medium))
+                                    .foregroundStyle(.white)
+                            }
                         }
                         VStack(alignment: .leading, spacing: 5) {
-                            Text(vm.videoURL == nil ? "Analyze Your Swing" : "Video Ready")
+                            Text(vm.isPreparing ? "Preparing Video…"
+                                 : vm.videoURL == nil ? "Analyze Your Swing"
+                                 : "Video Ready")
                                 .font(.title3.bold()).foregroundStyle(.white)
-                            Text(vm.videoURL == nil
+                            Text(vm.isPreparing ? "Loading your video, please wait"
+                                 : vm.videoURL == nil
                                  ? "Choose a video to get your AI coaching report"
-                                 : "Tap Analyze below — or tap here to change video")
+                                 : "Tap here to change video")
                                 .font(.footnote).foregroundStyle(.white.opacity(0.52))
                                 .lineLimit(2).fixedSize(horizontal: false, vertical: true)
-                            if vm.videoURL != nil {
+                            if vm.videoURL != nil && !vm.isPreparing {
                                 Label("Selected ✓", systemImage: "checkmark.circle.fill")
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(Color.hrGreen)
@@ -133,19 +159,42 @@ struct UploadView: View {
                             }
                         }
                         Spacer(minLength: 0)
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.white.opacity(0.28))
+                        if !vm.isPreparing {
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(.white.opacity(0.28))
+                        }
                     }
                     .padding(20)
+
+                    // Inline progress bar at the bottom of the card
+                    if vm.isPreparing || (vm.prepareProgress > 0 && vm.prepareProgress < 1.0) {
+                        GeometryReader { geo in
+                            VStack(spacing: 0) {
+                                Spacer()
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 2)
+                                        .fill(Color.white.opacity(0.10))
+                                        .frame(height: 4)
+                                    RoundedRectangle(cornerRadius: 2)
+                                        .fill(Color.hrBlue)
+                                        .frame(width: geo.size.width * vm.prepareProgress, height: 4)
+                                        .animation(.easeOut(duration: 0.15), value: vm.prepareProgress)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
+                    }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(Color.hrBlue.opacity(0.32), lineWidth: 1)
+                        .stroke(vm.isPreparing ? Color.hrBlue.opacity(0.50) : Color.hrBlue.opacity(0.32), lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)
+            .disabled(vm.isPreparing)
 
             // Inline settings row
             HStack(spacing: 12) {
@@ -450,9 +499,9 @@ struct UploadView: View {
         }
     }
 
-    // MARK: - 8. Analyze Button
+    // MARK: - 8. Start Analysis Button
 
-    private var analyzeButton: some View {
+    private var startAnalysisButton: some View {
         Button {
             Task {
                 let token = await authVM.accessToken()
@@ -462,7 +511,7 @@ struct UploadView: View {
             HStack(spacing: 10) {
                 Image(systemName: "waveform.and.magnifyingglass")
                     .font(.system(size: 17, weight: .semibold))
-                Text("Analyze Video").font(.headline)
+                Text("Start Analysis").font(.headline)
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity).frame(height: 56)
@@ -473,6 +522,7 @@ struct UploadView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .shadow(color: Color.hrBlue.opacity(0.55), radius: 14, y: 5)
         }
+        .transition(.move(edge: .top).combined(with: .opacity))
     }
 
     // MARK: - Shared helpers
@@ -680,3 +730,4 @@ struct QualityErrorSheet: View {
         .preferredColorScheme(.dark)
     }
 }
+

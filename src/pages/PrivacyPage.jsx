@@ -10,6 +10,20 @@ export default function PrivacyPage() {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       lineHeight: 1.7,
     }}>
+      {/* Back navigation */}
+      <button
+        onClick={() => window.history.length > 1 ? window.history.back() : (window.location.href = '/')}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          marginBottom: 16, padding: '6px 0',
+          background: 'none', border: 'none', cursor: 'pointer',
+          font: 'var(--text-body, 17px -apple-system, sans-serif)',
+          color: 'var(--blue, #007aff)',
+        }}
+      >
+        &larr; Back
+      </button>
+
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
         <img src="/logo-512.png" alt="AIHomeRun" style={{ width: 52, height: 52, borderRadius: 12 }} />

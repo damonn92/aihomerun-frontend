@@ -9,10 +9,10 @@ class SupabaseService: ObservableObject {
     let client: SupabaseClient
 
     private init() {
-        client = SupabaseClient(
-            supabaseURL: URL(string: AppConfig.supabaseURL)!,
-            supabaseKey: AppConfig.supabaseAnonKey
-        )
+        guard let url = URL(string: AppConfig.supabaseURL), !AppConfig.supabaseURL.isEmpty else {
+            fatalError("Invalid SUPABASE_URL in Config.plist. Check your configuration.")
+        }
+        client = SupabaseClient(supabaseURL: url, supabaseKey: AppConfig.supabaseAnonKey)
     }
 
     // MARK: - Auth
