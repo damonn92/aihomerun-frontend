@@ -3,10 +3,34 @@
    High-end app promotion website (NOT the app itself)
 ───────────────────────────────────────────────────────────────────────────── */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+
+/* ─── Scroll-triggered Fade-In Hook ──────────────────────────────────────── */
+function useFadeIn(threshold = 0.12) {
+  const [ref, setRef] = useState(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    if (!ref) return
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); obs.disconnect() } },
+      { threshold }
+    )
+    obs.observe(ref)
+    return () => obs.disconnect()
+  }, [ref, threshold])
+
+  return {
+    ref: setRef,
+    style: {
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0)' : 'translateY(32px)',
+      transition: 'opacity 0.75s ease, transform 0.75s ease',
+    },
+  }
+}
 
 /* ─── App Store Badge ──────────────────────────────────────────────────────── */
-/* Uses the official Apple-provided badge SVG file exactly as-is */
 function AppStoreBadge({ href = '#', comingSoon = false }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -27,7 +51,6 @@ function AppStoreBadge({ href = '#', comingSoon = false }) {
         filter: hovered ? 'brightness(1.12) drop-shadow(0 8px 16px rgba(0,0,0,0.6))' : 'none',
       }}
     >
-      {/* Official Apple badge SVG — downloaded from Apple Marketing Guidelines */}
       <img
         src="/badge-app-store.svg"
         alt="Download on the App Store"
@@ -47,7 +70,6 @@ function AppStoreBadge({ href = '#', comingSoon = false }) {
 }
 
 /* ─── Google Play Badge ────────────────────────────────────────────────────── */
-/* Uses the official Google-provided badge SVG file exactly as-is */
 function GooglePlayBadge({ href = '#', comingSoon = true }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -68,7 +90,6 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
         filter: hovered ? 'brightness(1.12) drop-shadow(0 8px 16px rgba(0,0,0,0.6))' : 'none',
       }}
     >
-      {/* Official Google badge SVG — downloaded from Google Play Partner Marketing Hub */}
       <img
         src="/badge-google-play.svg"
         alt="Get it on Google Play"
@@ -87,13 +108,19 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
   )
 }
 
-/* ─── Phone Mockup ─────────────────────────────────────────────────────────── */
-function PhoneMockup() {
+/* ─── Screenshot Phone Mockup ─────────────────────────────────────────────── */
+function ScreenshotPhone({ src, alt = 'App screenshot', size = 'normal', className = '' }) {
+  const dims = size === 'small'
+    ? { width: 220, height: 451, radius: 38 }
+    : { width: 270, height: 554, radius: 46 }
+
   return (
-    <div className="phone-shell" style={{
-      position: 'relative', width: 270, height: 554,
+    <div className={`phone-shell ${className}`} style={{
+      position: 'relative',
+      width: dims.width,
+      height: dims.height,
       background: 'linear-gradient(160deg, #1a1a1a 0%, #0d0d0d 100%)',
-      borderRadius: 46,
+      borderRadius: dims.radius,
       border: '2px solid rgba(255,255,255,0.1)',
       boxShadow: `
         0 0 0 1px rgba(255,255,255,0.04),
@@ -101,7 +128,8 @@ function PhoneMockup() {
         0 0 80px rgba(255,69,58,0.12),
         inset 0 1px 0 rgba(255,255,255,0.08)
       `,
-      overflow: 'hidden', flexShrink: 0,
+      overflow: 'hidden',
+      flexShrink: 0,
     }}>
       {/* Side buttons */}
       <div style={{ position:'absolute', right:-3, top:100, width:3, height:32, background:'rgba(255,255,255,0.08)', borderRadius:'0 2px 2px 0' }}/>
@@ -115,119 +143,20 @@ function PhoneMockup() {
         border:'1px solid rgba(255,255,255,0.06)',
       }}/>
 
-      {/* Screen */}
-      <div style={{
-        position:'absolute', inset:0,
-        background:'linear-gradient(180deg, #000 0%, #080808 100%)',
-        display:'flex', flexDirection:'column',
-        padding:'58px 16px 20px', gap:12, overflow:'hidden',
-      }}>
-        {/* Status bar */}
-        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0 4px', marginBottom:4 }}>
-          <div style={{ fontSize:12, fontWeight:600, color:'rgba(255,255,255,0.8)' }}>9:41</div>
-          <div style={{ display:'flex', gap:5, alignItems:'center' }}>
-            {/* Signal bars */}
-            <svg width="16" height="12" viewBox="0 0 16 12" fill="rgba(255,255,255,0.8)">
-              <rect x="0" y="8" width="3" height="4" rx="1"/>
-              <rect x="4.5" y="5" width="3" height="7" rx="1"/>
-              <rect x="9" y="2" width="3" height="10" rx="1"/>
-              <rect x="13.5" y="0" width="3" height="12" rx="1" opacity="0.3"/>
-            </svg>
-            {/* Battery */}
-            <svg width="22" height="12" viewBox="0 0 22 12" fill="none">
-              <rect x="0.5" y="0.5" width="18" height="11" rx="2.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1"/>
-              <rect x="2" y="2" width="12" height="8" rx="1.5" fill="rgba(255,255,255,0.8)"/>
-              <path d="M20 4.5v3a1.5 1.5 0 000-3z" fill="rgba(255,255,255,0.5)"/>
-            </svg>
-          </div>
-        </div>
-
-        {/* App header */}
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <img
-            src="/logo-512.png"
-            alt="AIHomeRun"
-            style={{ width:38, height:38, borderRadius:10, objectFit:'cover', flexShrink:0, boxShadow:'0 4px 12px rgba(0,0,0,0.4)' }}
-          />
-          <div>
-            <div style={{ fontSize:15, fontWeight:700, color:'#fff', letterSpacing:-0.3 }}>AIHomeRun</div>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.35)' }}>AI Baseball Coach</div>
-          </div>
-        </div>
-
-        {/* Upload zone */}
-        <div style={{
-          background:'rgba(255,69,58,0.07)',
-          border:'1.5px dashed rgba(255,69,58,0.35)',
-          borderRadius:16, padding:'18px 12px',
-          display:'flex', flexDirection:'column',
-          alignItems:'center', gap:7,
-        }}>
-          <div style={{ fontSize:26 }}>📹</div>
-          <div style={{ fontSize:11.5, color:'rgba(255,255,255,0.65)', textAlign:'center', fontWeight:500, lineHeight:1.4 }}>
-            Upload your swing<br/>or pitch video
-          </div>
-          <div style={{
-            marginTop:2, background:'linear-gradient(135deg, #FF453A, #FF6B35)',
-            borderRadius:8, padding:'5px 14px',
-            fontSize:11, fontWeight:600, color:'#fff',
-          }}>Choose Video</div>
-        </div>
-
-        {/* Score row */}
-        <div style={{ display:'flex', gap:8 }}>
-          {[
-            { label:'Overall', score:85, color:'#30D158', bg:'rgba(48,209,88,0.1)' },
-            { label:'Technique', score:78, color:'#FF9F0A', bg:'rgba(255,159,10,0.1)' },
-          ].map(({ label, score, color, bg }) => (
-            <div key={label} style={{
-              flex:1, background:bg, borderRadius:12, padding:'9px 11px',
-              border:`1px solid ${color}22`,
-            }}>
-              <div style={{ fontSize:9, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:0.5, marginBottom:2 }}>{label}</div>
-              <div style={{ fontSize:22, fontWeight:700, color, letterSpacing:-0.5 }}>{score}</div>
-            </div>
-          ))}
-          <div style={{
-            flex:1, background:'rgba(10,132,255,0.1)', borderRadius:12, padding:'9px 11px',
-            border:'1px solid rgba(10,132,255,0.2)',
-          }}>
-            <div style={{ fontSize:9, color:'rgba(255,255,255,0.4)', textTransform:'uppercase', letterSpacing:0.5, marginBottom:2 }}>Power</div>
-            <div style={{ fontSize:22, fontWeight:700, color:'#0A84FF', letterSpacing:-0.5 }}>72</div>
-          </div>
-        </div>
-
-        {/* Feedback card */}
-        <div style={{
-          background:'rgba(255,255,255,0.04)', borderRadius:12, padding:'10px 12px',
-          border:'1px solid rgba(255,255,255,0.06)',
-        }}>
-          <div style={{ fontSize:10, color:'rgba(255,255,255,0.35)', marginBottom:5, fontWeight:500, textTransform:'uppercase', letterSpacing:0.4 }}>💡 AI Coaching</div>
-          <div style={{ fontSize:11.5, color:'rgba(255,255,255,0.7)', lineHeight:1.5 }}>
-            Great hip rotation! Focus on follow-through for more power. Try the tee drill 3x daily.
-          </div>
-        </div>
-
-        {/* Drill badge */}
-        <div style={{
-          display:'flex', alignItems:'center', gap:8,
-          background:'rgba(191,90,242,0.1)', borderRadius:10, padding:'8px 12px',
-          border:'1px solid rgba(191,90,242,0.2)',
-        }}>
-          <span style={{ fontSize:16 }}>🏋️</span>
-          <div>
-            <div style={{ fontSize:10, color:'rgba(191,90,242,0.8)', fontWeight:600, textTransform:'uppercase', letterSpacing:0.4 }}>Today's Drill</div>
-            <div style={{ fontSize:11, color:'rgba(255,255,255,0.6)' }}>Hip Drive Progression</div>
-          </div>
-        </div>
-
-        {/* Screen glow */}
-        <div style={{
-          position:'absolute', bottom:-20, left:-20, right:-20, height:80,
-          background:'radial-gradient(ellipse, rgba(255,69,58,0.1) 0%, transparent 70%)',
-          pointerEvents:'none',
-        }}/>
-      </div>
+      {/* Screenshot image */}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: dims.radius - 2,
+        }}
+      />
     </div>
   )
 }
@@ -313,15 +242,137 @@ function SectionTitle({ children }) {
   )
 }
 
+/* ─── Features Showcase (Tab-based phone viewer) ──────────────────────────── */
+function FeaturesShowcase() {
+  const [activeTab, setActiveTab] = useState(0)
+  const fadeIn = useFadeIn()
+
+  const screenshots = [
+    { src: '/screenshots/home.png',      label: 'AI Analysis',  desc: 'Upload any swing or pitch video and get instant AI-powered scores across 4 performance dimensions.' },
+    { src: '/screenshots/ai-coach.png',  label: 'AI Coach',     desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
+    { src: '/screenshots/rankings.png',  label: 'Rankings',     desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
+    { src: '/screenshots/fields.png',    label: 'Find Fields',  desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
+  ]
+
+  // For the 3-phone display: previous, active, next indices
+  const prevIdx = (activeTab - 1 + screenshots.length) % screenshots.length
+  const nextIdx = (activeTab + 1) % screenshots.length
+
+  return (
+    <section id="showcase" className="lp-section-pad" ref={fadeIn.ref} style={{
+      padding: 'clamp(70px, 8vw, 110px) 28px',
+      background: '#050505',
+      borderTop: '1px solid rgba(255,255,255,0.05)',
+      ...fadeIn.style,
+    }}>
+      <div style={{ maxWidth: 1120, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 48 }}>
+          <SectionLabel>App Preview</SectionLabel>
+          <SectionTitle>See AIHomeRun in action</SectionTitle>
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.4)', maxWidth: 480, margin: '0 auto', lineHeight: 1.68 }}>
+            Explore the key features that make AIHomeRun your ultimate baseball training companion.
+          </p>
+        </div>
+
+        {/* Tab buttons */}
+        <div className="showcase-tabs" style={{
+          display: 'flex', justifyContent: 'center', gap: 8,
+          marginBottom: 48, flexWrap: 'wrap',
+        }}>
+          {screenshots.map((s, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveTab(i)}
+              style={{
+                padding: '10px 22px', borderRadius: 24, border: 'none',
+                background: i === activeTab
+                  ? 'linear-gradient(135deg, rgba(255,69,58,0.2), rgba(255,107,53,0.15))'
+                  : 'rgba(255,255,255,0.04)',
+                color: i === activeTab ? '#FF6B35' : 'rgba(255,255,255,0.45)',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                outline: 'none',
+                boxShadow: i === activeTab ? '0 0 0 1px rgba(255,69,58,0.3)' : '0 0 0 1px rgba(255,255,255,0.08)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Phone display area */}
+        <div className="showcase-phones" style={{
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          gap: 28, perspective: '1200px', minHeight: 460,
+        }}>
+          {/* Left phone (previous) */}
+          <div className="showcase-side-phone" style={{
+            transform: 'rotateY(12deg) scale(0.85)',
+            opacity: 0.4,
+            transition: 'all 0.5s ease',
+            filter: 'blur(1px)',
+          }}>
+            <ScreenshotPhone src={screenshots[prevIdx].src} alt={screenshots[prevIdx].label} size="small" />
+          </div>
+
+          {/* Center phone (active) */}
+          <div style={{
+            transform: 'scale(1)',
+            transition: 'all 0.5s ease',
+            zIndex: 2,
+          }}>
+            <ScreenshotPhone src={screenshots[activeTab].src} alt={screenshots[activeTab].label} size="normal" />
+          </div>
+
+          {/* Right phone (next) */}
+          <div className="showcase-side-phone" style={{
+            transform: 'rotateY(-12deg) scale(0.85)',
+            opacity: 0.4,
+            transition: 'all 0.5s ease',
+            filter: 'blur(1px)',
+          }}>
+            <ScreenshotPhone src={screenshots[nextIdx].src} alt={screenshots[nextIdx].label} size="small" />
+          </div>
+        </div>
+
+        {/* Active feature description */}
+        <div style={{ textAlign: 'center', marginTop: 36 }}>
+          <div style={{
+            fontSize: 22, fontWeight: 700, color: '#fff',
+            letterSpacing: -0.3, marginBottom: 8,
+            transition: 'all 0.3s ease',
+          }}>
+            {screenshots[activeTab].label}
+          </div>
+          <div style={{
+            fontSize: 15, color: 'rgba(255,255,255,0.45)',
+            maxWidth: 420, margin: '0 auto', lineHeight: 1.65,
+            transition: 'all 0.3s ease',
+          }}>
+            {screenshots[activeTab].desc}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ─── Main Landing Page ─────────────────────────────────────────────────────  */
 export default function LandingPage() {
-  /* Scroll-based navbar opacity */
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  /* Fade-in hooks for each section */
+  const statsFade     = useFadeIn()
+  const featuresFade  = useFadeIn()
+  const howToFade     = useFadeIn()
+  const roadmapFade   = useFadeIn()
+  const ctaFade       = useFadeIn()
 
   const base = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif',
@@ -374,7 +425,6 @@ export default function LandingPage() {
           border-color: rgba(255,69,58,0.2) !important;
         }
 
-        /* Store badge default height */
         .store-badge-img {
           display: block;
           height: 54px;
@@ -384,14 +434,12 @@ export default function LandingPage() {
         /* ════════════ RESPONSIVE: MOBILE (≤ 767px) ════════════ */
         @media (max-width: 767px) {
 
-          /* 1. Navbar — hide desktop links, keep logo + CTA only */
           .nav-links { display: none !important; }
           .nav-cta {
             padding: 7px 16px !important;
             font-size: 13px !important;
           }
 
-          /* 2. Hero — reduce vertical space, center phone */
           .hero-section {
             min-height: 0 !important;
             padding: 84px 20px 60px !important;
@@ -412,7 +460,6 @@ export default function LandingPage() {
           }
           .hero-trust { gap: 8px 14px !important; }
 
-          /* 3. Stats bar — 2×2 grid */
           .stats-inner {
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
@@ -420,24 +467,19 @@ export default function LandingPage() {
             justify-items: center;
           }
 
-          /* 4. Sections — tighter padding on mobile */
           .lp-section-pad { padding: 56px 20px !important; }
 
-          /* 5. Step cards — single column */
           .step-cards-flex {
             flex-direction: column !important;
             align-items: stretch !important;
           }
           .step-cards-flex > * { flex: none !important; width: 100% !important; }
 
-          /* 6. Video req checklist — single column */
           .req-box { padding: 20px 16px !important; }
           .req-checklist-grid { grid-template-columns: 1fr !important; }
 
-          /* 7. CTA badges — centered */
           .cta-badges { justify-content: center !important; }
 
-          /* 8. Footer */
           .footer-main {
             flex-direction: column !important;
             align-items: flex-start !important;
@@ -451,14 +493,36 @@ export default function LandingPage() {
             gap: 4px !important;
           }
 
-          /* 9. Store badges slightly smaller on mobile */
           .store-badge-img { height: 46px !important; }
 
-          /* 10. Phone mockup — scale down on very small screens */
           .phone-shell {
             width: 248px !important;
             height: 510px !important;
             border-radius: 40px !important;
+          }
+
+          /* Showcase: hide side phones, show only center */
+          .showcase-side-phone {
+            display: none !important;
+          }
+          .showcase-phones {
+            gap: 0 !important;
+            min-height: 420px !important;
+          }
+          .showcase-tabs {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            justify-content: flex-start !important;
+            padding: 0 4px !important;
+          }
+          .showcase-tabs::-webkit-scrollbar { display: none; }
+
+          /* Features grid: single column */
+          .features-grid-top,
+          .features-grid-bottom {
+            grid-template-columns: 1fr !important;
+            max-width: 100% !important;
           }
         }
 
@@ -485,25 +549,19 @@ export default function LandingPage() {
           maxWidth: 1120, width: '100%', margin: '0 auto',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          {/* Brand */}
           <a href="#" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none', color:'#fff' }}>
-            <img
-              src="/logo-512.png"
-              alt="AIHomeRun"
-              style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }}
-            />
+            <img src="/logo-512.png" alt="AIHomeRun" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
             <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: -0.5 }}>AIHomeRun</span>
           </a>
 
-          {/* Desktop nav links — hidden on mobile */}
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
+            <a href="#showcase" className="nav-link-item">Preview</a>
             <a href="#features" className="nav-link-item">Features</a>
             <a href="#how-to-use" className="nav-link-item">How to Use</a>
             <a href="#download" className="nav-link-item">Download</a>
             <a href="mailto:info@aihomerun.app" className="nav-link-item" style={{ fontSize:14 }}>Contact</a>
           </div>
 
-          {/* CTA — always visible */}
           <a href="#download" className="nav-cta" style={{
             background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
             color: '#fff', borderRadius: 20, padding: '8px 22px',
@@ -540,7 +598,6 @@ export default function LandingPage() {
           `,
           backgroundSize: '64px 64px',
         }}/>
-        {/* Top fade */}
         <div style={{
           position:'absolute', top:0, left:0, right:0, height:200,
           background:'linear-gradient(180deg, #000 0%, transparent 100%)',
@@ -554,7 +611,6 @@ export default function LandingPage() {
         }}>
           {/* Left col */}
           <div className="hero-text-col" style={{ flex: '1 1 440px', animation: 'fade-up 0.85s ease both' }}>
-            {/* Tag */}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 7,
               background: 'rgba(255,69,58,0.1)', border: '1px solid rgba(255,69,58,0.28)',
@@ -583,18 +639,16 @@ export default function LandingPage() {
               fontSize: 18, color: 'rgba(255,255,255,0.5)', lineHeight: 1.72,
               maxWidth: 460, margin: '0 0 42px', letterSpacing: -0.1,
             }}>
-              Upload a video of your swing or pitch and receive
-              instant AI-powered coaching feedback. Professional-grade
-              analysis, completely free — for every young athlete.
+              Upload a video for instant AI analysis, chat with your personal
+              AI coach, climb the rankings, and find fields near you.
+              Professional-grade baseball training — completely free.
             </p>
 
-            {/* Store badges */}
             <div id="download" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 36 }}>
               <AppStoreBadge href="#" comingSoon={false} />
               <GooglePlayBadge comingSoon={true} />
             </div>
 
-            {/* Trust pills */}
             <div className="hero-trust" style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               {[
                 { icon: '✓', text: '100% Free Forever' },
@@ -610,33 +664,34 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Right col — phone */}
+          {/* Right col — phone with real screenshot */}
           <div className="hero-phone-col" style={{
             flex: '0 0 auto', display: 'flex', justifyContent: 'center', alignItems: 'center',
             animation: 'float-phone 7s ease-in-out infinite, fade-up 0.85s ease 0.15s both',
             filter: 'drop-shadow(0 40px 80px rgba(255,69,58,0.18))',
           }}>
-            <PhoneMockup />
+            <ScreenshotPhone src="/screenshots/home.png" alt="AIHomeRun analyze screen" />
           </div>
         </div>
       </section>
 
       {/* ── STATS BAR ───────────────────────────────────────────────────── */}
-      <div style={{
+      <div ref={statsFade.ref} style={{
         borderTop: '1px solid rgba(255,255,255,0.05)',
         borderBottom: '1px solid rgba(255,255,255,0.05)',
         background: 'rgba(255,255,255,0.015)',
         padding: '28px 28px',
+        ...statsFade.style,
       }}>
         <div className="stats-inner" style={{
           maxWidth: 1120, margin: '0 auto',
           display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 24,
         }}>
           {[
+            { num: '5',       label: 'Powerful features\nin one free app' },
             { num: '20+',     label: 'Biomechanical\ndata points analyzed' },
-            { num: '4',       label: 'Performance\ndimensions scored' },
             { num: '<30s',    label: 'Instant AI\nfeedback per video' },
-            { num: 'Free',    label: 'Always free\nno hidden fees' },
+            { num: '100%',    label: 'Free forever\nno ads, no fees' },
           ].map(({ num, label }) => (
             <div key={num} style={{ textAlign: 'center', padding: '0 20px' }}>
               <div style={{
@@ -651,8 +706,16 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* ── FEATURES SHOWCASE (Tab-based phone viewer) ─────────────────── */}
+      <FeaturesShowcase />
+
       {/* ── FEATURES ────────────────────────────────────────────────────── */}
-      <section id="features" className="lp-section-pad" style={{ padding: 'clamp(70px, 8vw, 110px) 28px', background: '#000' }}>
+      <section id="features" className="lp-section-pad" ref={featuresFade.ref} style={{
+        padding: 'clamp(70px, 8vw, 110px) 28px',
+        background: '#000',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        ...featuresFade.style,
+      }}>
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <SectionLabel>Core Features</SectionLabel>
@@ -663,44 +726,63 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div style={{
+          {/* Row 1: 3 feature cards */}
+          <div className="features-grid-top" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 18,
+            marginBottom: 18,
           }}>
             <FeatureCard
               icon="🎯"
               title="AI Swing & Pitch Analysis"
               accent="#FF453A"
-              desc="Upload any video and our AI instantly analyzes 20+ biomechanical data points — hip rotation, bat path, shoulder alignment, follow-through, weight transfer, and more."
+              desc="Upload any video and our AI instantly analyzes biomechanical data points — hip rotation, bat path, shoulder alignment, and more. Get scored on Overall, Technique, Power, and Balance."
             />
             <FeatureCard
-              icon="📊"
-              title="Detailed Action Report"
-              accent="#FF9F0A"
-              desc="Receive a full scorecard with Overall, Technique, Power, and Balance scores. Each session includes strengths, areas to improve, and AI-recommended drills."
+              icon="🏆"
+              title="Player Rankings"
+              accent="#FFD60A"
+              desc="See where you stand among other players on the leaderboard. Compare your scores, track your position, and stay motivated by competing with athletes nationwide."
             />
             <FeatureCard
-              icon="📈"
-              title="Before & After Comparison"
+              icon="🤖"
+              title="AI Coach Chat"
+              accent="#0A84FF"
+              desc="Chat one-on-one with your personal AI coach. Get biomechanics advice, training tips, and answers personalized to your analysis history — like having a private coach 24/7."
+            />
+          </div>
+
+          {/* Row 2: 2 feature cards centered */}
+          <div className="features-grid-bottom" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 18,
+            maxWidth: '67%',
+            margin: '0 auto',
+          }}>
+            <FeatureCard
+              icon="📍"
+              title="Find Baseball Fields"
               accent="#30D158"
-              desc="Upload multiple sessions to visually track your progress over time. See exactly how your mechanics have changed and celebrate measurable improvement."
+              desc="Discover nearby baseball fields and batting cages with integrated maps. Get directions, see facility details, and find the perfect place to practice."
             />
             <FeatureCard
-              icon="🗺️"
-              title="Personalized Growth Path"
+              icon="👤"
+              title="Player Profile & History"
               accent="#BF5AF2"
-              desc="AI-generated training plans tailored to your unique weaknesses. Focused drill recommendations that target exactly what you need to work on most."
+              desc="Track your complete session history, view your progress over time, and manage your athlete profile. Every analysis is saved so you can see how far you've come."
             />
           </div>
         </div>
       </section>
 
       {/* ── HOW TO USE ──────────────────────────────────────────────────── */}
-      <section id="how-to-use" className="lp-section-pad" style={{
+      <section id="how-to-use" className="lp-section-pad" ref={howToFade.ref} style={{
         padding: 'clamp(70px, 8vw, 110px) 28px',
         background: '#050505',
         borderTop: '1px solid rgba(255,255,255,0.05)',
+        ...howToFade.style,
       }}>
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -711,7 +793,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Step cards */}
           <div className="step-cards-flex" style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 48 }}>
             <StepCard
               num="1"
@@ -741,8 +822,9 @@ export default function LandingPage() {
               items={[
                 'View your scores across all 4 dimensions',
                 'Read AI-generated strengths and coaching tips',
-                'Follow the recommended training drill',
-                'Upload again to track your progress over time',
+                'Chat with AI Coach for personalized training advice',
+                'Find nearby fields to practice your new drills',
+                'Upload again to track progress and climb the rankings',
               ]}
             />
           </div>
@@ -789,10 +871,11 @@ export default function LandingPage() {
       </section>
 
       {/* ── COMING SOON ─────────────────────────────────────────────────── */}
-      <section className="lp-section-pad" style={{
+      <section className="lp-section-pad" ref={roadmapFade.ref} style={{
         padding: 'clamp(70px, 8vw, 110px) 28px',
         background: '#000',
         borderTop: '1px solid rgba(255,255,255,0.05)',
+        ...roadmapFade.style,
       }}>
         <div style={{ maxWidth: 1120, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 52 }}>
@@ -810,12 +893,12 @@ export default function LandingPage() {
             gap: 16,
           }}>
             {[
-              { icon: '⚡', title: 'Session Comparison',    desc: 'Side-by-side video playback to see your technique evolution' },
               { icon: '🏆', title: 'Achievement Badges',    desc: 'Earn milestone rewards as your skills improve session by session' },
               { icon: '👨‍🏫', title: 'Coach Dashboard',      desc: 'Coaches review player sessions and add personal feedback notes' },
               { icon: '👪', title: 'Family Mode',           desc: 'Manage multiple young athletes under one parent account' },
               { icon: '🏟️', title: 'Team Features',         desc: 'Compare performance across a full team roster and track group progress' },
-              { icon: '🤖', title: 'Expanded AI Models',    desc: 'Analysis for pitching mechanics, fielding, and more baseball movements' },
+              { icon: '🎬', title: 'Video Annotations',     desc: 'AI-annotated video replay highlighting joint angles and key positions in your swing or pitch' },
+              { icon: '📅', title: 'Training Programs',     desc: 'Multi-week structured training plans generated by AI, tailored to your specific improvement areas' },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="coming-card" style={{
                 background: 'rgba(255,255,255,0.02)',
@@ -841,7 +924,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── DOWNLOAD CTA ────────────────────────────────────────────────── */}
-      <section className="lp-section-pad" style={{
+      <section className="lp-section-pad" ref={ctaFade.ref} style={{
         padding: 'clamp(70px, 8vw, 120px) 28px',
         borderTop: '1px solid rgba(255,255,255,0.05)',
         background: `
@@ -849,6 +932,7 @@ export default function LandingPage() {
           #000
         `,
         textAlign: 'center',
+        ...ctaFade.style,
       }}>
         <div style={{ maxWidth: 580, margin: '0 auto' }}>
           <img
@@ -870,8 +954,8 @@ export default function LandingPage() {
             fontSize: 18, color: 'rgba(255,255,255,0.45)', lineHeight: 1.72,
             margin: '0 0 42px', letterSpacing: -0.1,
           }}>
-            No subscription. No ads. No hidden fees.<br/>
-            Just powerful AI baseball coaching — completely free.
+            AI video analysis, personal coaching, player rankings,
+            and field finder — all completely free. No subscription. No ads.
           </p>
 
           <div className="cta-badges" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
@@ -899,14 +983,9 @@ export default function LandingPage() {
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
           flexWrap: 'wrap', gap: 32,
         }}>
-          {/* Brand */}
           <div style={{ maxWidth: 260 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 12 }}>
-              <img
-                src="/logo-512.png"
-                alt="AIHomeRun"
-                style={{ width: 30, height: 30, borderRadius: 8, objectFit: 'cover' }}
-              />
+              <img src="/logo-512.png" alt="AIHomeRun" style={{ width: 30, height: 30, borderRadius: 8, objectFit: 'cover' }} />
               <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: -0.4 }}>AIHomeRun</span>
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.28)', lineHeight: 1.65 }}>
@@ -914,11 +993,11 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Links */}
           <div className="footer-links-group" style={{ display: 'flex', gap: 56, flexWrap: 'wrap' }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: 14 }}>Product</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <a href="#showcase" className="footer-link">App Preview</a>
                 <a href="#features" className="footer-link">Features</a>
                 <a href="#how-to-use" className="footer-link">How to Use</a>
                 <a href="#download" className="footer-link">Download App</a>
@@ -939,7 +1018,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="footer-bottom" style={{
           maxWidth: 1120, margin: '32px auto 0',
           paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.05)',
