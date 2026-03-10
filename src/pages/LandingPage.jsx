@@ -108,55 +108,61 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
   )
 }
 
-/* ─── Screenshot Phone Mockup ─────────────────────────────────────────────── */
+/* ─── Screenshot Phone Mockup (iPhone 15 Pro Max frame) ───────────────────── */
+/* iPhone 15 Pro Max: 159.9×76.7mm, 6.7" display, screen ratio ~1:2.163
+   Frame adds ~4px bezel on each side. Corner radius matches real device (55pt). */
 function ScreenshotPhone({ src, alt = 'App screenshot', size = 'normal', className = '' }) {
+  // Screen dimensions match iPhone 15 Pro Max aspect ratio (1284:2778 ≈ 1:2.163)
   const dims = size === 'small'
-    ? { width: 220, height: 451, radius: 38 }
-    : { width: 270, height: 554, radius: 46 }
+    ? { width: 200, height: 433, screenW: 192, screenH: 416, radius: 44, screenRadius: 38, bezel: 4 }
+    : { width: 260, height: 563, screenW: 250, screenH: 541, radius: 55, screenRadius: 48, bezel: 5 }
 
   return (
     <div className={`phone-shell ${className}`} style={{
       position: 'relative',
       width: dims.width,
       height: dims.height,
-      background: 'linear-gradient(160deg, #1a1a1a 0%, #0d0d0d 100%)',
+      background: '#1a1a1a',
       borderRadius: dims.radius,
-      border: '2px solid rgba(255,255,255,0.1)',
+      border: '1.5px solid rgba(255,255,255,0.15)',
       boxShadow: `
-        0 0 0 1px rgba(255,255,255,0.04),
+        0 0 0 0.5px rgba(255,255,255,0.06),
         0 40px 100px rgba(0,0,0,0.9),
-        0 0 80px rgba(255,69,58,0.12),
-        inset 0 1px 0 rgba(255,255,255,0.08)
+        0 0 60px rgba(255,69,58,0.1),
+        inset 0 0.5px 0 rgba(255,255,255,0.1)
       `,
       overflow: 'hidden',
       flexShrink: 0,
     }}>
-      {/* Side buttons */}
-      <div style={{ position:'absolute', right:-3, top:100, width:3, height:32, background:'rgba(255,255,255,0.08)', borderRadius:'0 2px 2px 0' }}/>
-      <div style={{ position:'absolute', left:-3, top:88, width:3, height:24, background:'rgba(255,255,255,0.08)', borderRadius:'2px 0 0 2px' }}/>
-      <div style={{ position:'absolute', left:-3, top:120, width:3, height:40, background:'rgba(255,255,255,0.08)', borderRadius:'2px 0 0 2px' }}/>
+      {/* Side buttons — power (right), volume + silent switch (left) */}
+      <div style={{ position:'absolute', right:-2.5, top:'28%', width:2.5, height:28, background:'rgba(255,255,255,0.1)', borderRadius:'0 2px 2px 0' }}/>
+      <div style={{ position:'absolute', left:-2.5, top:'18%', width:2.5, height:18, background:'rgba(255,255,255,0.1)', borderRadius:'2px 0 0 2px' }}/>
+      <div style={{ position:'absolute', left:-2.5, top:'25%', width:2.5, height:36, background:'rgba(255,255,255,0.1)', borderRadius:'2px 0 0 2px' }}/>
+      <div style={{ position:'absolute', left:-2.5, top:'33%', width:2.5, height:36, background:'rgba(255,255,255,0.1)', borderRadius:'2px 0 0 2px' }}/>
 
-      {/* Dynamic Island */}
+      {/* Screen area with screenshot */}
       <div style={{
-        position:'absolute', top:12, left:'50%', transform:'translateX(-50%)',
-        width:116, height:34, background:'#000', borderRadius:20, zIndex:10,
-        border:'1px solid rgba(255,255,255,0.06)',
-      }}/>
-
-      {/* Screenshot image */}
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          borderRadius: dims.radius - 2,
-        }}
-      />
+        position: 'absolute',
+        top: dims.bezel,
+        left: dims.bezel,
+        width: dims.screenW,
+        height: dims.screenH,
+        borderRadius: dims.screenRadius,
+        overflow: 'hidden',
+        background: '#000',
+      }}>
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+          }}
+        />
+      </div>
     </div>
   )
 }
