@@ -112,18 +112,17 @@ function GooglePlayBadge({ href = '#', comingSoon = true }) {
 /* iPhone 15 Pro Max: 159.9×76.7mm, 6.7" display, screen ratio ~1:2.163
    Frame adds ~4px bezel on each side. Corner radius matches real device (55pt). */
 function ScreenshotPhone({ src, alt = 'App screenshot', size = 'normal', className = '' }) {
-  // Screen dimensions match iPhone 15 Pro Max aspect ratio (1284:2778 ≈ 1:2.163)
-  const dims = size === 'small'
-    ? { width: 200, height: 433, screenW: 192, screenH: 416, radius: 44, screenRadius: 38, bezel: 4 }
-    : { width: 260, height: 563, screenW: 250, screenH: 541, radius: 55, screenRadius: 48, bezel: 5 }
+  // iPhone 15 Pro Max proportions — bezel and radius scale with CSS overrides
+  const isSmall = size === 'small'
+  const bezel = isSmall ? 4 : 5
 
   return (
-    <div className={`phone-shell ${className}`} style={{
+    <div className={`phone-shell ${isSmall ? 'phone-small' : ''} ${className}`} style={{
       position: 'relative',
-      width: dims.width,
-      height: dims.height,
+      width: isSmall ? 200 : 260,
+      height: isSmall ? 433 : 563,
       background: '#1a1a1a',
-      borderRadius: dims.radius,
+      borderRadius: isSmall ? 44 : 55,
       border: '1.5px solid rgba(255,255,255,0.15)',
       boxShadow: `
         0 0 0 0.5px rgba(255,255,255,0.06),
@@ -140,14 +139,14 @@ function ScreenshotPhone({ src, alt = 'App screenshot', size = 'normal', classNa
       <div style={{ position:'absolute', left:-2.5, top:'25%', width:2.5, height:36, background:'rgba(255,255,255,0.1)', borderRadius:'2px 0 0 2px' }}/>
       <div style={{ position:'absolute', left:-2.5, top:'33%', width:2.5, height:36, background:'rgba(255,255,255,0.1)', borderRadius:'2px 0 0 2px' }}/>
 
-      {/* Screen area with screenshot */}
-      <div style={{
+      {/* Screen area — uses right/bottom so it auto-adjusts when CSS overrides shell size */}
+      <div className="phone-screen" style={{
         position: 'absolute',
-        top: dims.bezel,
-        left: dims.bezel,
-        width: dims.screenW,
-        height: dims.screenH,
-        borderRadius: dims.screenRadius,
+        top: bezel,
+        left: bezel,
+        right: bezel,
+        bottom: bezel,
+        borderRadius: isSmall ? 38 : 48,
         overflow: 'hidden',
         background: '#000',
       }}>
@@ -506,6 +505,9 @@ export default function LandingPage() {
             height: 510px !important;
             border-radius: 40px !important;
           }
+          .phone-screen {
+            border-radius: 34px !important;
+          }
 
           /* Showcase: hide side phones, show only center */
           .showcase-side-phone {
@@ -537,6 +539,9 @@ export default function LandingPage() {
             width: 228px !important;
             height: 468px !important;
             border-radius: 36px !important;
+          }
+          .phone-screen {
+            border-radius: 30px !important;
           }
         }
       `}</style>
