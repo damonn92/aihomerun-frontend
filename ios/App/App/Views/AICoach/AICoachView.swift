@@ -5,6 +5,7 @@ import SwiftUI
 struct AICoachView: View {
     @EnvironmentObject var authVM: AuthViewModel
     @StateObject private var vm = AICoachViewModel()
+    @StateObject private var profileVM = ProfileViewModel()
     @FocusState private var inputFocused: Bool
     @State private var appeared = false
     @Namespace private var scrollAnchor
@@ -16,7 +17,16 @@ struct AICoachView: View {
 
                 VStack(spacing: 0) {
                     // Coach header banner — rich AI tech design
-                    CoachHeroBanner(sessionCount: vm.sessionCount)
+                    CoachHeroBanner(sessionCount: vm.sessionCount,
+                                    isDemoMode: vm.isDemoMode)
+
+                    // Pitch count card (toggleable)
+                    if vm.showPitchCount {
+                        PitchCountCard(vm: vm)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
 
                     // Quick prompts (if at top)
                     if !vm.hasConversation {
@@ -86,18 +96,42 @@ struct AICoachView: View {
             .toolbarBackground(Color.hrBg.opacity(0.95), for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        withAnimation(.spring(duration: 0.35)) { vm.reset() }
-                    } label: {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.45))
+                    HStack(spacing: 14) {
+                        // Pitch count toggle
+                        Button {
+                            withAnimation(.spring(duration: 0.3)) {
+                                vm.showPitchCount.toggle()
+                            }
+                        } label: {
+                            Image(systemName: vm.showPitchCount
+                                  ? "number.circle.fill"
+                                  : "number.circle")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(vm.showPitchCount
+                                                 ? Color.hrOrange
+                                                 : .white.opacity(0.45))
+                        }
+                        // New chat
+                        Button {
+                            withAnimation(.spring(duration: 0.35)) { vm.reset() }
+                        } label: {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(.white.opacity(0.45))
+                        }
                     }
                 }
             }
         }
-        .onAppear {
-            appeared = true
+        .task {
+            guard let userId = authVM.user?.id.uuidString else {
+                vm.configure(child: nil)
+                if !vm.hasConversation { vm.loadWelcome() }
+                return
+            }
+            await profileVM.load(userId: userId)
+            let firstChild = profileVM.children.first
+            vm.configure(child: firstChild)
             if !vm.hasConversation { vm.loadWelcome() }
         }
     }
@@ -257,18 +291,45 @@ struct AICoachView: View {
 struct ChatBubble: View {
     let message: AICoachViewModel.Message
 
+    private var bubbleBackground: Color {
+        guard message.isCoach else { return Color.hrBlue.opacity(0.85) }
+        switch message.messageType {
+        case .safetyAlert: return Color.hrRed.opacity(0.15)
+        case .pitchCount:  return Color.hrOrange.opacity(0.12)
+        case .normal:      return Color.hrCard
+        }
+    }
+
+    private var borderColor: Color {
+        guard message.isCoach else { return Color.hrBlue.opacity(0.40) }
+        switch message.messageType {
+        case .safetyAlert: return Color.hrRed.opacity(0.50)
+        case .pitchCount:  return Color.hrOrange.opacity(0.40)
+        case .normal:      return Color.white.opacity(0.08)
+        }
+    }
+
+    private var avatarColor: Color {
+        switch message.messageType {
+        case .safetyAlert: return Color.hrRed
+        case .pitchCount:  return Color.hrOrange
+        case .normal:      return Color.hrBlue
+        }
+    }
+
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             if message.isCoach {
                 // Coach avatar
                 ZStack {
-                    Circle().fill(Color.hrBlue.opacity(0.20)).frame(width: 28, height: 28)
-                    Image("AICoachIcon")
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 14, height: 14)
-                        .foregroundStyle(Color.hrBlue)
+                    Circle().fill(avatarColor.opacity(0.20)).frame(width: 28, height: 28)
+                    Image(systemName: message.messageType == .safetyAlert
+                          ? "exclamationmark.triangle.fill"
+                          : message.messageType == .pitchCount
+                          ? "number.circle.fill"
+                          : "brain.head.profile")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(avatarColor)
                 }
             } else {
                 Spacer(minLength: 60)
@@ -280,9 +341,7 @@ struct ChatBubble: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(message.isCoach
-                                ? Color.hrCard
-                                : Color.hrBlue.opacity(0.85))
+                    .background(bubbleBackground)
                     .clipShape(
                         RoundedRectangle(
                             cornerRadius: 18,
@@ -291,10 +350,7 @@ struct ChatBubble: View {
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .stroke(message.isCoach
-                                    ? Color.white.opacity(0.08)
-                                    : Color.hrBlue.opacity(0.40),
-                                    lineWidth: 0.5)
+                            .stroke(borderColor, lineWidth: message.messageType == .safetyAlert ? 1.0 : 0.5)
                     )
 
                 Text(message.timeString)
@@ -356,121 +412,4 @@ struct TypingIndicator: View {
     }
 }
 
-// MARK: - AI Coach ViewModel
-
-@MainActor
-class AICoachViewModel: ObservableObject {
-    struct Message: Identifiable {
-        let id = UUID()
-        let text: String
-        let isCoach: Bool
-        let date = Date()
-
-        var timeString: String {
-            let f = DateFormatter()
-            f.dateFormat = "h:mm a"
-            return f.string(from: date)
-        }
-    }
-
-    struct PromptCard {
-        let title: String
-        let subtitle: String
-        let icon: String
-        let color: Color
-    }
-
-    @Published var messages: [Message] = []
-    @Published var inputText = ""
-    @Published var isTyping = false
-    @Published var sessionCount = 4
-
-    var hasConversation: Bool { !messages.isEmpty }
-
-    let initialPrompts: [PromptCard] = [
-        PromptCard(title: "Improve my swing", subtitle: "Bat path & contact tips",
-                   icon: "figure.baseball", color: .hrBlue),
-        PromptCard(title: "Fix my stance", subtitle: "Balance & weight transfer",
-                   icon: "person.fill", color: .hrGold),
-        PromptCard(title: "Pitching mechanics", subtitle: "Velocity & accuracy drills",
-                   icon: "figure.softball", color: .hrGreen),
-        PromptCard(title: "Warm-up routine", subtitle: "Pre-game preparation",
-                   icon: "flame.fill", color: .hrOrange),
-    ]
-
-    var quickPrompts: [String] {
-        ["Follow-up drill", "Show me an example", "Any video tips?", "How often to practice?"]
-    }
-
-    private let coachResponses: [String: [String]] = [
-        "Improve my swing": [
-            "Great focus area! For a stronger swing, start with your hip rotation. Fire your hips before your hands — this generates power from your lower body first.",
-            "Keep your back elbow down at contact. A high back elbow causes the bat to loop. Try the 'palm up, palm down' drill at contact position.",
-            "Your follow-through should finish high across your opposite shoulder. Film yourself from behind to check if the bat is staying through the zone."
-        ],
-        "Fix my stance": [
-            "A balanced stance is the foundation of everything. Your feet should be shoulder-width apart, weight on the balls of your feet — never on your heels.",
-            "Check your load: as the pitcher winds up, shift your weight slightly to your back foot without drifting. Think 'load, stride, fire.'",
-            "Keep your hands close to your body in your stance — hands by your back shoulder, not behind your head. It shortens your swing path significantly."
-        ],
-        "Pitching mechanics": [
-            "For pitching velocity, it's all about the kinetic chain: legs → hips → torso → shoulder → elbow → wrist. If any link breaks down, you lose speed.",
-            "Focus on your stride length first. Stride at least 80-90% of your height toward the plate. A short stride limits your power dramatically.",
-            "After release, your throwing arm should continue down across your body naturally. Stopping short puts stress on your elbow and shoulder."
-        ],
-        "Warm-up routine": [
-            "Here's a solid 10-minute pre-game routine:\n1. Light jog (2 min)\n2. Arm circles, leg swings (2 min)\n3. Band shoulder exercises (2 min)\n4. Soft toss / flip drill (4 min)",
-            "Always warm up your shoulder before throwing hard. Start at 30 feet and work back to full distance over 8-10 throws before any max-effort throws.",
-            "Include hip flexor stretches — tight hips are one of the main causes of mechanical breakdown in young players."
-        ],
-    ]
-
-    func loadWelcome() {
-        let welcome = Message(
-            text: "Hi! I'm your AI baseball coach. I'm here to help you improve your swing mechanics, pitching form, and overall game. What would you like to work on today?",
-            isCoach: true
-        )
-        messages = [welcome]
-    }
-
-    func send(_ text: String) {
-        let trimmed = text.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return }
-
-        // Add user message
-        messages.append(Message(text: trimmed, isCoach: false))
-        inputText = ""
-        isTyping = true
-
-        // Find best matching response
-        let matchedKey = coachResponses.keys.first { trimmed.localizedCaseInsensitiveContains($0) }
-        let responses = matchedKey.flatMap { coachResponses[$0] } ?? defaultResponses(for: trimmed)
-
-        // Simulate typing delay
-        let delay = Double.random(in: 1.2...2.2)
-        let idx = Int.random(in: 0..<responses.count)
-
-        Task {
-            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-            isTyping = false
-            messages.append(Message(text: responses[idx], isCoach: true))
-            sessionCount += 1
-        }
-    }
-
-    private func defaultResponses(for text: String) -> [String] {
-        [
-            "That's a great question! Based on your recent analysis, I'd focus on your hip rotation timing. Early hip rotation is one of the most common issues I see in players.",
-            "Let's break that down. The key thing to remember is that baseball skills take repetition — 300 quality reps a week will create muscle memory faster than 1,000 careless swings.",
-            "I'd recommend filming yourself from the side and tagging the video in this app. The AI analysis will give us concrete numbers to work with. Then we can make targeted adjustments.",
-            "Good thinking! Consistency beats perfection. Set a 20-minute daily practice goal focused on one mechanic at a time rather than trying to fix everything at once.",
-        ]
-    }
-
-    func reset() {
-        messages = []
-        inputText = ""
-        isTyping = false
-        loadWelcome()
-    }
-}
+// AICoachViewModel is now in ViewModels/AICoachViewModel.swift

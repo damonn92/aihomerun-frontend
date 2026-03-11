@@ -35,3 +35,6 @@ keys/
 ios/App/App/public/
 # CocoaPods lock (can be large and is reproducible)
 ios/App/Pods/
+
+# Secrets — NEVER commit API keys
+ios/App/App/Secrets.plist

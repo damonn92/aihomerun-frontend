@@ -7,10 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B18462274C217FBE06013D3 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C447AD58077F63B1A27A882 /* VideoTimelineView.swift */; };
+		3AE2FBA9DAB91A9AD98034D4 /* PoseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB1A7ED985D884DFDD64BE0 /* PoseData.swift */; };
+		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
+		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
+		84BA60F20AF61E0F6D227060 /* PoseOverlayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2648345BFE3D9065C74CA /* PoseOverlayViewModel.swift */; };
+		A8A812259FAFEEE2E9D74B08 /* SkeletonOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74536B3CB70F2FAC6446D1AF /* SkeletonOverlayView.swift */; };
+		A9340B74362B0E69F93BF735 /* PoseDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98180CB00E150BF054FD2BF8 /* PoseDetectionService.swift */; };
 		AB0002000000000000000000 /* AIHomeRunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0001000000000000000000 /* AIHomeRunApp.swift */; };
 		AB0004000000000000000000 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0003000000000000000000 /* ContentView.swift */; };
 		AB0006000000000000000000 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0005000000000000000000 /* AppConfig.swift */; };
 		AB0008000000000000000000 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB0007000000000000000000 /* Config.plist */; };
+		AB005F000000000000000000 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB005E000000000000000000 /* Secrets.plist */; };
 		AB000A000000000000000000 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0009000000000000000000 /* SupabaseService.swift */; };
 		AB000C000000000000000000 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000B000000000000000000 /* APIClient.swift */; };
 		AB000E000000000000000000 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000D000000000000000000 /* KeychainService.swift */; };
@@ -40,17 +48,33 @@
 		AB003E000000000000000000 /* FieldCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB003D000000000000000000 /* FieldCardView.swift */; };
 		AB0040000000000000000000 /* FieldDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB003F000000000000000000 /* FieldDetailSheet.swift */; };
 		AB0042000000000000000000 /* GooglePlacesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0041000000000000000000 /* GooglePlacesService.swift */; };
+		AB0044000000000000000000 /* BiomechanicsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0043000000000000000000 /* BiomechanicsModels.swift */; };
+		AB0046000000000000000000 /* BiomechanicsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0045000000000000000000 /* BiomechanicsService.swift */; };
+		AB0048000000000000000000 /* ClaudeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0047000000000000000000 /* ClaudeAPIService.swift */; };
+		AB004A000000000000000000 /* AICoachViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0049000000000000000000 /* AICoachViewModel.swift */; };
+		AB004C000000000000000000 /* PitchCountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB004B000000000000000000 /* PitchCountCard.swift */; };
+		AB004E000000000000000000 /* ai_coach_reference_db.json in Resources */ = {isa = PBXBuildFile; fileRef = AB004D000000000000000000 /* ai_coach_reference_db.json */; };
 		AB0204000000000000000000 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AB0202000000000000000000 /* Supabase */; };
 		AB0206000000000000000000 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AB0203000000000000000000 /* GoogleSignIn */; };
-		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
-		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
+		B7696DFCE2F81CAAFA79F782 /* VideoReplayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77C2F324248EC9C10181C1E /* VideoReplayViewModel.swift */; };
+		D7559E720682011A72C9A959 /* VideoReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB3328F9E6B3C0BD4F9579E /* VideoReplayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0BB3328F9E6B3C0BD4F9579E /* VideoReplayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoReplayView.swift; sourceTree = "<group>"; };
+		0CB1A7ED985D884DFDD64BE0 /* PoseData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PoseData.swift; sourceTree = "<group>"; };
+		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		74536B3CB70F2FAC6446D1AF /* SkeletonOverlayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkeletonOverlayView.swift; sourceTree = "<group>"; };
+		98180CB00E150BF054FD2BF8 /* PoseDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PoseDetectionService.swift; sourceTree = "<group>"; };
+		9C447AD58077F63B1A27A882 /* VideoTimelineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
 		AB0001000000000000000000 /* AIHomeRunApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHomeRunApp.swift; sourceTree = "<group>"; };
 		AB0003000000000000000000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AB0005000000000000000000 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		AB0007000000000000000000 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
+		AB005E000000000000000000 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		AB0009000000000000000000 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		AB000B000000000000000000 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		AB000D000000000000000000 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
@@ -80,10 +104,14 @@
 		AB003D000000000000000000 /* FieldCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldCardView.swift; sourceTree = "<group>"; };
 		AB003F000000000000000000 /* FieldDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldDetailSheet.swift; sourceTree = "<group>"; };
 		AB0041000000000000000000 /* GooglePlacesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GooglePlacesService.swift; sourceTree = "<group>"; };
-		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB0043000000000000000000 /* BiomechanicsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiomechanicsModels.swift; sourceTree = "<group>"; };
+		AB0045000000000000000000 /* BiomechanicsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiomechanicsService.swift; sourceTree = "<group>"; };
+		AB0047000000000000000000 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
+		AB0049000000000000000000 /* AICoachViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachViewModel.swift; sourceTree = "<group>"; };
+		AB004B000000000000000000 /* PitchCountCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchCountCard.swift; sourceTree = "<group>"; };
+		AB004D000000000000000000 /* ai_coach_reference_db.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ai_coach_reference_db.json; sourceTree = "<group>"; };
+		B0C2648345BFE3D9065C74CA /* PoseOverlayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PoseOverlayViewModel.swift; sourceTree = "<group>"; };
+		E77C2F324248EC9C10181C1E /* VideoReplayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoReplayViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +127,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		15C32C64719C36570AC473F7 /* VideoReplay */ = {
+			isa = PBXGroup;
+			children = (
+				0BB3328F9E6B3C0BD4F9579E /* VideoReplayView.swift */,
+				9C447AD58077F63B1A27A882 /* VideoTimelineView.swift */,
+				74536B3CB70F2FAC6446D1AF /* SkeletonOverlayView.swift */,
+			);
+			name = VideoReplay;
+			path = VideoReplay;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
@@ -122,10 +161,12 @@
 				AB0003000000000000000000 /* ContentView.swift */,
 				AB0005000000000000000000 /* AppConfig.swift */,
 				AB0007000000000000000000 /* Config.plist */,
+				AB005E000000000000000000 /* Secrets.plist */,
 				AB0100000000000000000000 /* Services */,
 				AB0101000000000000000000 /* Models */,
 				AB0102000000000000000000 /* ViewModels */,
 				AB0103000000000000000000 /* Views */,
+				AB010C000000000000000000 /* Resources */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
@@ -141,6 +182,9 @@
 				AB000D000000000000000000 /* KeychainService.swift */,
 				AB0033000000000000000000 /* LocationManager.swift */,
 				AB0041000000000000000000 /* GooglePlacesService.swift */,
+				AB0045000000000000000000 /* BiomechanicsService.swift */,
+				AB0047000000000000000000 /* ClaudeAPIService.swift */,
+				98180CB00E150BF054FD2BF8 /* PoseDetectionService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -151,6 +195,8 @@
 				AB000F000000000000000000 /* AnalysisResult.swift */,
 				AB0011000000000000000000 /* ProfileModels.swift */,
 				AB0035000000000000000000 /* FieldModels.swift */,
+				AB0043000000000000000000 /* BiomechanicsModels.swift */,
+				0CB1A7ED985D884DFDD64BE0 /* PoseData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -162,6 +208,9 @@
 				AB0015000000000000000000 /* UploadViewModel.swift */,
 				AB0017000000000000000000 /* ProfileViewModel.swift */,
 				AB0037000000000000000000 /* FieldBookingViewModel.swift */,
+				AB0049000000000000000000 /* AICoachViewModel.swift */,
+				E77C2F324248EC9C10181C1E /* VideoReplayViewModel.swift */,
+				B0C2648345BFE3D9065C74CA /* PoseOverlayViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -176,7 +225,8 @@
 				AB0108000000000000000000 /* Rankings */,
 				AB0109000000000000000000 /* AICoach */,
 				AB010A000000000000000000 /* FieldBooking */,
-			AB010B000000000000000000 /* Shared */,
+				AB010B000000000000000000 /* Shared */,
+				15C32C64719C36570AC473F7 /* VideoReplay */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -230,6 +280,7 @@
 			isa = PBXGroup;
 			children = (
 				AB002D000000000000000000 /* AICoachView.swift */,
+				AB004B000000000000000000 /* PitchCountCard.swift */,
 			);
 			path = AICoach;
 			sourceTree = "<group>";
@@ -252,6 +303,14 @@
 				AB0031000000000000000000 /* BaseballBanners.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		AB010C000000000000000000 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AB004D000000000000000000 /* ai_coach_reference_db.json */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -324,6 +383,8 @@
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
 				AB0008000000000000000000 /* Config.plist in Resources */,
+				AB005F000000000000000000 /* Secrets.plist in Resources */,
+				AB004E000000000000000000 /* ai_coach_reference_db.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,7 +418,7 @@
 				AB002C000000000000000000 /* RankingsView.swift in Sources */,
 				AB002E000000000000000000 /* AICoachView.swift in Sources */,
 				AB0030000000000000000000 /* FieldBookingView.swift in Sources */,
-			AB0032000000000000000000 /* BaseballBanners.swift in Sources */,
+				AB0032000000000000000000 /* BaseballBanners.swift in Sources */,
 				AB0034000000000000000000 /* LocationManager.swift in Sources */,
 				AB0036000000000000000000 /* FieldModels.swift in Sources */,
 				AB0038000000000000000000 /* FieldBookingViewModel.swift in Sources */,
@@ -366,6 +427,18 @@
 				AB003E000000000000000000 /* FieldCardView.swift in Sources */,
 				AB0040000000000000000000 /* FieldDetailSheet.swift in Sources */,
 				AB0042000000000000000000 /* GooglePlacesService.swift in Sources */,
+				AB0044000000000000000000 /* BiomechanicsModels.swift in Sources */,
+				AB0046000000000000000000 /* BiomechanicsService.swift in Sources */,
+				AB0048000000000000000000 /* ClaudeAPIService.swift in Sources */,
+				AB004A000000000000000000 /* AICoachViewModel.swift in Sources */,
+				AB004C000000000000000000 /* PitchCountCard.swift in Sources */,
+				B7696DFCE2F81CAAFA79F782 /* VideoReplayViewModel.swift in Sources */,
+				D7559E720682011A72C9A959 /* VideoReplayView.swift in Sources */,
+				1B18462274C217FBE06013D3 /* VideoTimelineView.swift in Sources */,
+				3AE2FBA9DAB91A9AD98034D4 /* PoseData.swift in Sources */,
+				A9340B74362B0E69F93BF735 /* PoseDetectionService.swift in Sources */,
+				84BA60F20AF61E0F6D227060 /* PoseOverlayViewModel.swift in Sources */,
+				A8A812259FAFEEE2E9D74B08 /* SkeletonOverlayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -493,7 +566,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -516,7 +589,7 @@
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 14;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -562,7 +635,7 @@
 			repositoryURL = "https://github.com/supabase/supabase-swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = "2.0.0";
+				minimumVersion = 2.0.0;
 			};
 		};
 		AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
@@ -570,7 +643,7 @@
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = "8.0.0";
+				minimumVersion = 8.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

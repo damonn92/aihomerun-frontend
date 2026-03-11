@@ -1,0 +1,472 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-03-09",
+  "description": "AIHomeRun AI Coach Reference Database — Youth (7-16) + Adult biomechanics standards",
+  "sources": [
+    {
+      "name": "OpenBiomechanics Project",
+      "provider": "Driveline Baseball",
+      "url": "https://github.com/drivelineresearch/openbiomechanics",
+      "coverage": "Ages 17-31, High School / College / Independent / MiLB",
+      "sample_size": {"hitting": 677, "pitching": 411}
+    },
+    {
+      "name": "ASMI Position Statement",
+      "provider": "American Sports Medicine Institute",
+      "url": "https://asmi.org/position-statement-for-adolescent-baseball-pitchers/",
+      "coverage": "Youth pitching guidelines and injury prevention"
+    },
+    {
+      "name": "Pitch Smart Guidelines",
+      "provider": "MLB / USA Baseball / ASMI",
+      "url": "https://www.mlb.com/pitch-smart/pitching-guidelines",
+      "coverage": "Ages 7-18 pitch count limits"
+    },
+    {
+      "name": "Youth Pitching Biomechanics Systematic Review",
+      "provider": "Thompson et al. (2018)",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5857730/",
+      "coverage": "Ages 10-15, joint kinematics and kinetics"
+    },
+    {
+      "name": "ASMI 7-Year Longitudinal Study",
+      "provider": "Fleisig et al. (2018)",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/28968146/",
+      "coverage": "51 youth pitchers tracked annually for 6 years"
+    },
+    {
+      "name": "Youth Elbow Valgus Torque Study",
+      "provider": "Sabick et al. (2004)",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/15111908/",
+      "coverage": "14 elite youth pitchers, mean age 12.1"
+    }
+  ],
+
+  "age_groups": {
+    "7-8":   {"label": "Tee-Ball / Coach Pitch", "ltad_stage": "FUNdamentals", "focus": "fun, basic movement, physical literacy"},
+    "9-10":  {"label": "Youth Baseball", "ltad_stage": "FUNdamentals → Learn to Train", "focus": "athleticism, basic technique, coordination"},
+    "11-12": {"label": "Pre-Adolescent", "ltad_stage": "Learn to Train", "focus": "general baseball skills, ≤60 innings/year"},
+    "13-14": {"label": "Adolescent", "ltad_stage": "Train to Train", "focus": "sport-specific skill development, injury prevention"},
+    "15-16": {"label": "High School JV/Varsity", "ltad_stage": "Train to Train → Train to Compete", "focus": "advanced mechanics, strength training"},
+    "17-18": {"label": "High School Varsity / Travel", "ltad_stage": "Train to Compete", "focus": "full biomechanical optimization"},
+    "19-22": {"label": "College", "ltad_stage": "Train to Compete", "focus": "peak performance training"},
+    "23+":   {"label": "MiLB / Professional", "ltad_stage": "Train to Win", "focus": "elite performance optimization"}
+  },
+
+  "pitch_count_limits": {
+    "description": "Daily pitch count limits from Pitch Smart (MLB/USA Baseball/ASMI)",
+    "daily_max": {
+      "7-8": 50,
+      "9-10": 75,
+      "11-12": 85,
+      "13-14": 95,
+      "15-16": 95,
+      "17-18": 105
+    },
+    "weekly_max": {
+      "9-10": 75,
+      "11-12": 100,
+      "13-14": 125
+    },
+    "season_max": {
+      "9-10": 1000,
+      "11-12": 1000,
+      "13-14": 1000
+    },
+    "annual_max": {
+      "9-10": 2000,
+      "11-12": 3000,
+      "13-14": 3000
+    },
+    "rest_days": {
+      "14_and_under": {
+        "1-20": 0,
+        "21-35": 1,
+        "36-50": 2,
+        "51-65": 3,
+        "66+": 4
+      },
+      "15-16": {
+        "1-30": 0,
+        "31-45": 1,
+        "46-60": 2,
+        "61-75": 3,
+        "76+": 4
+      },
+      "17-18": {
+        "1-30": 0,
+        "31-45": 1,
+        "46-60": 2,
+        "61-80": 3,
+        "81+": 4
+      }
+    },
+    "universal_rules": [
+      "No pitcher may pitch on 3 consecutive days regardless of pitch count",
+      "Players who catch 4+ innings cannot pitch that same calendar day",
+      "Pitchers who throw 21+ pitches cannot return to catcher that day (14U); 31+ for 15-16",
+      "If a pitcher reaches the limit mid-batter, pitcher may finish that at-bat"
+    ]
+  },
+
+  "pitch_type_age_guidelines": {
+    "fastball": {"min_age": 8, "priority": 1, "note": "Learn first, master before adding others"},
+    "changeup": {"min_age": 10, "priority": 2, "note": "Learn second, best off-speed for young arms"},
+    "curveball": {"min_age": 14, "priority": 3, "note": "Only with proper mechanics and physical maturity; Little League recommends 14+"},
+    "slider": {"min_age": 16, "priority": 4, "note": "Strong correlation between slider usage and elbow pain at ages 13-14"},
+    "splitter": {"min_age": 16, "priority": 5, "note": "Requires adequate hand size"},
+    "cutter": {"min_age": 16, "priority": 5, "note": "Advanced pitch, requires consistent fastball command"}
+  },
+
+  "injury_prevention": {
+    "asmi_key_rules": [
+      "No competitive pitching for at least 4 months per year",
+      "No overhead throwing of any kind for at least 2-3 continuous months per year",
+      "Do not pitch more than 100 innings in games per calendar year",
+      "A pitcher should not also be a catcher for the same team",
+      "Avoid playing on multiple teams with overlapping seasons",
+      "Multi-sport participation strongly recommended through at least age 14-15"
+    ],
+    "fatigue_warning_signs": [
+      "Decreased ball velocity",
+      "Decreased accuracy / control",
+      "Upright trunk during pitching (loss of forward lean)",
+      "Dropped elbow during arm cocking phase",
+      "Increased time between pitches",
+      "Complaints of arm tiredness or soreness"
+    ],
+    "risk_multipliers": {
+      "pitching_while_fatigued": {"multiplier": 36, "outcome": "likelihood of surgery", "source": "ASMI/AREI"},
+      "playing_8plus_months_per_year": {"multiplier": 5, "outcome": "likelihood of injury", "source": "ASMI"},
+      "adhering_to_pitch_counts": {"reduction": 0.50, "outcome": "shoulder injury risk reduction", "source": "ASMI"}
+    },
+    "elbow_torque_thresholds_by_age": {
+      "description": "Peak elbow varus torque (N·m) — primary UCL stress indicator",
+      "10-12": {"mean": 18, "std": 4, "unit": "Nm", "source": "Sabick et al. 2004"},
+      "13-14": {"mean": 32.5, "std": 5, "unit": "Nm", "source": "literature range 30-35 Nm"},
+      "15-16": {"mean": 54, "std": 8, "unit": "Nm", "source": "literature range 48-60 Nm"},
+      "17-18": {"mean": 98.3, "std": 13.7, "unit": "Nm", "source": "OpenBiomechanics HS"},
+      "college": {"mean": 109.3, "std": 17.6, "unit": "Nm", "source": "OpenBiomechanics"},
+      "milb": {"mean": 135.9, "std": 29.1, "unit": "Nm", "source": "OpenBiomechanics"},
+      "professional": {"mean": 95, "std": 10, "unit": "Nm", "source": "literature ~90-100 Nm"}
+    },
+    "ball_weight_effect": {
+      "description": "Each 1-oz increase in ball weight increases medial elbow torque",
+      "torque_increase_per_oz": 0.92,
+      "unit": "Nm",
+      "age_range": "9-14",
+      "source": "lightweight ball study"
+    }
+  },
+
+  "pitching": {
+    "youth_biomechanics": {
+      "description": "Youth pitching biomechanics data from systematic reviews and studies (ages 10-15)",
+      "source": "Thompson et al. 2018 systematic review + Sabick et al. 2004 + Fleisig longitudinal",
+
+      "ball_velocity_by_age": {
+        "unit": "mph",
+        "9-10":  {"average_low": 40, "average_high": 50, "elite": 55},
+        "11-12": {"average_low": 50, "average_high": 60, "elite": 70},
+        "13-14": {"average_low": 55, "average_high": 75, "elite": 80},
+        "15-16": {"average_low": 70, "average_high": 80, "elite": 90},
+        "velocity_growth_per_year": {"value": 1.5, "std": 0.1, "unit": "mph/year", "note": "accounts for 66% of velocity variance in youth"}
+      },
+
+      "joint_kinematics": {
+        "shoulder_abduction_at_foot_contact": {"range": [78, 95], "unit": "deg", "ages": "10-15"},
+        "shoulder_external_rotation_max": {"range": [166, 178], "unit": "deg", "ages": "10-15"},
+        "shoulder_external_rotation_at_foot_contact": {"range": [60, 80], "unit": "deg", "ages": "10-15"},
+        "elbow_flexion_at_foot_contact": {"range": [74, 85], "unit": "deg", "ages": "10-15"},
+        "elbow_flexion_max_cocking": {"range": [95, 101], "unit": "deg", "ages": "10-15"},
+        "elbow_flexion_at_ball_release": {"range": [24, 39], "unit": "deg", "ages": "10-15"},
+        "trunk_forward_tilt": {"range": [30, 33.4], "unit": "deg", "ages": "10-15"},
+        "trunk_lateral_tilt": {"range": [21, 29.5], "unit": "deg", "ages": "10-15"},
+        "stride_length_pct_height": {"range": [66, 85], "unit": "%", "ages": "10-15"},
+        "knee_flexion_at_foot_contact": {"range": [40, 49], "unit": "deg", "ages": "10-15"},
+        "knee_flexion_at_ball_release": {"range": [31, 41], "unit": "deg", "ages": "10-15"}
+      },
+
+      "joint_kinetics": {
+        "elbow_varus_torque_youth_12yr": {"mean": 18, "std": 4, "unit": "Nm", "source": "Sabick 2004"},
+        "shoulder_internal_rotation_torque_youth": {"mean": 17.7, "std": 3.5, "unit": "Nm"},
+        "shoulder_proximal_force": {"range": [214.7, 480], "unit": "N", "note": "max during deceleration"},
+        "shoulder_horizontal_adduction_torque": {"mean": 39.1, "unit": "Nm"},
+        "shoulder_horizontal_abduction_torque": {"mean": 40, "unit": "Nm"},
+        "elbow_flexion_torque": {"range": [16.4, 28], "unit": "Nm"},
+        "elbow_varus_torque_fastball": {"mean": 34.8, "std": 15.4, "unit": "Nm", "note": "varies with age/size"},
+        "elbow_varus_torque_curveball": {"mean": 31.6, "std": 15.3, "unit": "Nm", "note": "lower than fastball"}
+      },
+
+      "angular_velocities": {
+        "shoulder_internal_rotation": {"range": [3396, 9000], "unit": "deg/s", "ages": "10-15"},
+        "elbow_extension": {"range": [1742, 2272], "unit": "deg/s", "ages": "10-15"},
+        "pelvis_rotation": {"range": [602, 1202], "unit": "deg/s", "ages": "10-15"}
+      },
+
+      "fatigue_effects_youth_9_10": {
+        "description": "Cal Poly study: 75-pitch simulated game for 9-10 year olds",
+        "shoulder_horizontal_adduction_torque": "increases significantly from pitch 34-38 to 71-75 (p=0.031)",
+        "shoulder_external_rotation_torque": "increases (p=0.023)",
+        "shoulder_internal_rotation_torque": "increases (p=0.021)",
+        "shoulder_compression_force": "increases from pitch 1-5 to 71-75 (p=0.011)",
+        "bmi_torque_correlation": {"shoulder_ir_torque_r2": 0.93, "elbow_varus_torque_r2": 0.57}
+      },
+
+      "longitudinal_development": {
+        "description": "Fleisig et al. 7-year ASMI longitudinal study (51 youth pitchers)",
+        "key_kinematic_changes_ages": "9-13 (stride length, lead foot placement, trunk separation)",
+        "key_kinetic_changes_ages": "13-15 (normalized joint forces/torques increase significantly)",
+        "shoulder_er_foot_contact": "decreases with age",
+        "shoulder_er_max": "increases with age",
+        "critical_injury_window": "After age 13 — elbow and shoulder kinetics increase sharply"
+      },
+
+      "coaching_priorities_by_age": {
+        "7-9": [
+          "Fun and enjoyment first",
+          "Basic throwing mechanics — grip, arm path, follow-through",
+          "Athletic movement — running, jumping, catching",
+          "No emphasis on velocity or results",
+          "Max 50 pitches per game day"
+        ],
+        "10-12": [
+          "Consistent landing position (foot plant)",
+          "Proper stride length (target 70-80% of height)",
+          "Forward trunk lean at release (30-33°)",
+          "Arm slot consistency",
+          "Change-up introduction (after fastball mastery)",
+          "Start teaching pitch count awareness"
+        ],
+        "13-14": [
+          "Hip-shoulder separation development",
+          "Trunk rotation timing in kinematic chain",
+          "Lead leg blocking / knee extension",
+          "Curveball introduction only with proper mechanics",
+          "Monitor elbow/shoulder stress — critical growth period",
+          "Strength training introduction (body weight + light resistance)"
+        ],
+        "15-16": [
+          "Full kinematic chain optimization",
+          "Velocity development through mechanics + strength",
+          "Advanced pitch repertoire (slider consideration)",
+          "Video analysis and self-correction skills",
+          "Structured arm care and recovery programs",
+          "Workload management across season"
+        ]
+      }
+    },
+
+    "adult_biomechanics": {
+      "description": "Adult pitching standards from OpenBiomechanics Project (ages 17-31)",
+      "source": "Driveline Baseball OpenBiomechanics Project",
+      "sample_size": 411,
+      "metrics": {
+        "pitch_speed_mph": {
+          "label": "Pitch Speed (mph)",
+          "High School": {"mean": 79.52, "std": 3.85, "p25": 76.25, "p50": 79.35, "p75": 81.6, "p90": 84.39},
+          "College": {"mean": 84.73, "std": 4.38, "p25": 81.82, "p50": 85.1, "p75": 87.7, "p90": 90.57},
+          "MiLB": {"mean": 89.25, "std": 1.64, "p25": 87.85, "p50": 89.4, "p75": 90.7, "p90": 91.04}
+        },
+        "max_shoulder_external_rotation": {
+          "label": "Max Shoulder External Rotation (°)",
+          "High School": {"mean": 174.72, "std": 10.68, "p25": 169.86, "p50": 176.42, "p75": 184.02},
+          "College": {"mean": 169.19, "std": 9.82, "p25": 163.34, "p50": 169.33, "p75": 176.31},
+          "MiLB": {"mean": 165.28, "std": 8.6, "p25": 161.69, "p50": 165.03, "p75": 171.47}
+        },
+        "max_shoulder_internal_rotational_velo": {
+          "label": "Max Shoulder Internal Rotation Velocity (°/s)",
+          "High School": {"mean": 4393.07, "std": 290.17, "p50": 4419.15},
+          "College": {"mean": 4563.49, "std": 328.14, "p50": 4571.4},
+          "MiLB": {"mean": 4457.33, "std": 260.57, "p50": 4388.44}
+        },
+        "max_elbow_extension_velo": {
+          "label": "Max Elbow Extension Velocity (°/s)",
+          "High School": {"mean": 2354.75, "std": 214.29, "p50": 2349.67},
+          "College": {"mean": 2478.93, "std": 237.92, "p50": 2464.17},
+          "MiLB": {"mean": 2397.49, "std": 203.16, "p50": 2328.81}
+        },
+        "max_torso_rotational_velo": {
+          "label": "Max Torso Rotational Velocity (°/s)",
+          "High School": {"mean": 1012.16, "std": 63.58, "p50": 1031.55},
+          "College": {"mean": 1056.22, "std": 92.1, "p50": 1050.69},
+          "MiLB": {"mean": 1114.49, "std": 76.44, "p50": 1120.44}
+        },
+        "max_rotation_hip_shoulder_separation": {
+          "label": "Max Hip-Shoulder Separation (°)",
+          "High School": {"mean": 33.18, "std": 7.71, "p50": 34.66},
+          "College": {"mean": 32.05, "std": 6.45, "p50": 32.15},
+          "MiLB": {"mean": 38.91, "std": 4.51, "p50": 39.26}
+        },
+        "elbow_varus_moment": {
+          "label": "Elbow Varus Moment (Nm) ⚠️ Injury Risk",
+          "High School": {"mean": 98.27, "std": 13.68, "p50": 94.32},
+          "College": {"mean": 109.28, "std": 17.57, "p50": 109.78},
+          "MiLB": {"mean": 135.92, "std": 29.14, "p50": 133.54}
+        },
+        "shoulder_internal_rotation_moment": {
+          "label": "Shoulder Internal Rotation Moment (Nm) ⚠️ Injury Risk",
+          "High School": {"mean": 91.59, "std": 11.77, "p50": 89.36},
+          "College": {"mean": 104.25, "std": 16.75, "p50": 107.02},
+          "MiLB": {"mean": 131.02, "std": 24.2, "p50": 127.13}
+        },
+        "torso_rotation_fp": {
+          "label": "Torso Rotation at Foot Plant (°)",
+          "High School": {"mean": -0.16, "std": 16.78, "p50": 0.18},
+          "College": {"mean": 6.09, "std": 12.38, "p50": 6.1},
+          "MiLB": {"mean": -3.71, "std": 12.81, "p50": -4.22}
+        },
+        "lead_knee_extension_angular_velo_max": {
+          "label": "Max Lead Knee Extension Velocity (°/s)",
+          "High School": {"mean": 392.23, "std": 140.28, "p50": 400.57},
+          "College": {"mean": 370.58, "std": 149.53, "p50": 346.02},
+          "MiLB": {"mean": 386.43, "std": 136.96, "p50": 413.68}
+        }
+      }
+    }
+  },
+
+  "hitting": {
+    "youth_guidelines": {
+      "description": "Youth hitting development guidelines (limited biomechanics data available for <17)",
+      "note": "No large-scale motion capture data exists for youth hitters <17. Guidelines derived from coaching science and adult pattern scaling.",
+
+      "coaching_priorities_by_age": {
+        "7-9": [
+          "Hand-eye coordination drills",
+          "Level swing path — hitting off tee and soft toss",
+          "Balance and athletic stance",
+          "Two-hand finish through the ball",
+          "Fun and confidence building"
+        ],
+        "10-12": [
+          "Load and stride timing",
+          "Hip rotation initiation — 'hips before hands'",
+          "Bat path through the zone — minimize uppercut",
+          "Consistent contact point",
+          "Opposite field hitting introduction"
+        ],
+        "13-14": [
+          "Kinematic chain: pelvis → torso → hands → bat",
+          "X-factor (hip-shoulder separation) development",
+          "Attack angle awareness (target 3-8°)",
+          "Bat speed development through mechanics + strength",
+          "Pitch recognition and timing"
+        ],
+        "15-16": [
+          "Full swing optimization",
+          "Exit velocity as primary metric",
+          "Launch angle + attack angle fine-tuning",
+          "Barrel accuracy and zone management",
+          "Video analysis and self-correction"
+        ]
+      }
+    },
+
+    "adult_biomechanics": {
+      "description": "Adult hitting standards from OpenBiomechanics Project (ages 17-31)",
+      "source": "Driveline Baseball OpenBiomechanics Project",
+      "sample_size": 677,
+      "metrics": {
+        "bat_speed_mph_max": {
+          "label": "Max Bat Speed (mph)",
+          "High School": {"mean": 65.34, "std": 4.32, "p25": 62.71, "p50": 65.81, "p75": 68.46, "p90": 70.5},
+          "College": {"mean": 66.93, "std": 5.04, "p25": 63.95, "p50": 67.33, "p75": 70.34, "p90": 73.33},
+          "MiLB": {"mean": 69.47, "std": 2.69, "p25": 67.5, "p50": 69.4, "p75": 71.5, "p90": 73.04}
+        },
+        "exit_velo_mph": {
+          "label": "Exit Velocity (mph)",
+          "High School": {"mean": 87.82, "std": 5.63, "p25": 83.7, "p50": 87.9, "p75": 92.2, "p90": 94.66},
+          "College": {"mean": 89.67, "std": 7.98, "p25": 85.7, "p50": 90.7, "p75": 95.0, "p90": 98.6},
+          "MiLB": {"mean": 94.26, "std": 4.19, "p25": 92.38, "p50": 94.45, "p75": 97.07, "p90": 98.65}
+        },
+        "attack_angle_contact": {
+          "label": "Attack Angle at Contact (°)",
+          "High School": {"mean": 3.53, "std": 6.77, "p25": -0.42, "p50": 4.22, "p75": 8.71},
+          "College": {"mean": 3.9, "std": 5.77, "p25": 0.09, "p50": 4.29, "p75": 8.08},
+          "MiLB": {"mean": 5.06, "std": 4.47, "p25": 2.31, "p50": 5.41, "p75": 8.39}
+        },
+        "pelvis_rotation_at_foot_plant": {
+          "label": "Pelvis Rotation at Foot Plant (°)",
+          "High School": {"mean": 19.29, "std": 6.24, "p50": 21.3},
+          "College": {"mean": 21.53, "std": 7.22, "p50": 22.45},
+          "MiLB": {"mean": 23.99, "std": 5.32, "p50": 23.99}
+        },
+        "torso_rotation_at_foot_plant": {
+          "label": "Torso Rotation at Foot Plant (°)",
+          "High School": {"mean": 25.47, "std": 5.86, "p50": 26.68},
+          "College": {"mean": 25.47, "std": 8.44, "p50": 27.29},
+          "MiLB": {"mean": 26.75, "std": 3.21, "p50": 26.73}
+        },
+        "x_factor_at_foot_plant": {
+          "label": "X-Factor / Hip-Shoulder Separation at Foot Plant (°)",
+          "High School": {"mean": -4.71, "std": 6.53, "p50": -5.6},
+          "College": {"mean": -3.28, "std": 7.36, "p50": -3.36},
+          "MiLB": {"mean": -1.73, "std": 5.91, "p50": -1.52}
+        },
+        "bat_torso_connection": {
+          "label": "Bat-Torso Connection Angle (°)",
+          "High School": {"mean": 114.27, "std": 12.67, "p50": 111.37},
+          "College": {"mean": 107.86, "std": 14.15, "p50": 106.33},
+          "MiLB": {"mean": 111.58, "std": 13.4, "p50": 111.42}
+        }
+      },
+      "bat_speed_exit_velo_correlation": {
+        "r": 0.708,
+        "note": "Strong positive correlation — bat speed is the primary driver of exit velocity"
+      }
+    }
+  },
+
+  "ai_coach_logic": {
+    "description": "Decision logic for AI Coach feedback by age group",
+
+    "assessment_framework": {
+      "7-9": {
+        "primary_focus": "encouragement_and_fun",
+        "feedback_style": "positive_reinforcement",
+        "metrics_to_show": ["basic form checklist"],
+        "metrics_to_hide": ["velocities", "angles", "torques"],
+        "language_level": "simple",
+        "comparison_target": "self_improvement_only",
+        "injury_priority": "pitch_count_and_rest"
+      },
+      "10-12": {
+        "primary_focus": "fundamental_mechanics",
+        "feedback_style": "instructional_with_encouragement",
+        "metrics_to_show": ["stride_length", "trunk_lean", "arm_slot", "ball_velocity"],
+        "metrics_to_hide": ["joint_torques", "angular_velocities"],
+        "language_level": "moderate",
+        "comparison_target": "age_appropriate_ranges",
+        "injury_priority": "pitch_count_fatigue_signs"
+      },
+      "13-14": {
+        "primary_focus": "skill_development_with_safety",
+        "feedback_style": "detailed_technical",
+        "metrics_to_show": ["velocity", "hip_shoulder_separation", "stride_length", "trunk_rotation", "ball_velocity"],
+        "metrics_to_hide": ["raw_joint_torques"],
+        "language_level": "technical",
+        "comparison_target": "youth_norms_and_age_percentiles",
+        "injury_priority": "growth_plate_awareness_workload_management"
+      },
+      "15-16": {
+        "primary_focus": "performance_optimization",
+        "feedback_style": "comprehensive_analysis",
+        "metrics_to_show": ["all_kinematics", "velocity_metrics", "efficiency_ratios"],
+        "metrics_to_hide": [],
+        "language_level": "advanced",
+        "comparison_target": "high_school_percentiles",
+        "injury_priority": "workload_ratio_arm_care"
+      }
+    },
+
+    "safety_alerts": {
+      "pitch_count_warning_75pct": "You're at {count}/{limit} pitches. Consider wrapping up soon.",
+      "pitch_count_limit_reached": "Pitch limit reached ({limit} for age {age}). Time to rest!",
+      "rest_day_reminder": "Based on {count} pitches thrown, {rest_days} rest day(s) required before next pitching appearance.",
+      "fatigue_detected": "Signs of fatigue detected: {signs}. It's important to stop pitching to protect your arm.",
+      "elbow_stress_warning": "High elbow stress pattern detected. Focus on: {recommendations}",
+      "year_round_reminder": "Remember: ASMI recommends at least 4 months off from competitive pitching per year."
+    }
+  }
+}

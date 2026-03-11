@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ResultView: View {
     let result: AnalysisResult
+    var videoURL: URL? = nil
     let onReset: () -> Void
 
     @State private var parentMode = false
@@ -16,6 +17,15 @@ struct ResultView: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 14) {
+
+                        if let videoURL {
+                            VStack(alignment: .leading, spacing: 12) {
+                                sectionHeader("Video Replay", icon: "play.rectangle.fill", accent: Color.hrBlue)
+                                VideoReplayView(videoURL: videoURL)
+                            }
+                            .hrCard(padding: 12)
+                            .staggered(appeared, delay: 0.02)
+                        }
 
                         gradeHero
                             .staggered(appeared, delay: 0.05)

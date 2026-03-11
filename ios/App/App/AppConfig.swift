@@ -98,4 +98,20 @@ enum AppConfig {
     static var googlePlacesAPIKey: String {
         dict["GOOGLE_PLACES_API_KEY"] as? String ?? ""
     }
+
+    // MARK: - Secrets (from Secrets.plist, gitignored)
+
+    private static let secrets: [String: Any] = {
+        guard let url = Bundle.main.url(forResource: "Secrets", withExtension: "plist"),
+              let dict = NSDictionary(contentsOf: url) as? [String: Any]
+        else {
+            print("⚠️ Secrets.plist not found. Copy Secrets.plist.example → Secrets.plist and fill in values.")
+            return [:]
+        }
+        return dict
+    }()
+
+    static var claudeAPIKey: String {
+        secrets["CLAUDE_API_KEY"] as? String ?? ""
+    }
 }

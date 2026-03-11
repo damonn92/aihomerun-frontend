@@ -13,6 +13,9 @@ class LocationManager: NSObject, ObservableObject {
 
     private let clManager = CLLocationManager()
     private let geocoder = CLGeocoder()
+    private var geocodeRetryCount = 0
+    private var lastGeocodedLocation: CLLocation?
+    private var isGeocoding = false
 
     var hasPermission: Bool {
         authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways
@@ -44,10 +47,24 @@ class LocationManager: NSObject, ObservableObject {
     }
 
     private func reverseGeocode(_ location: CLLocation) {
+        // Skip if already geocoding
+        guard !isGeocoding else { return }
+
+        // Skip if location hasn't changed significantly (> 500m) from last successful geocode
+        if let last = lastGeocodedLocation,
+           location.distance(from: last) < 500,
+           locationName != "Locating...",
+           locationName != "Unknown Location" {
+            return
+        }
+
+        isGeocoding = true
         geocoder.cancelGeocode()
         geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                self.isGeocoding = false
+
                 if let placemark = placemarks?.first {
                     let city = placemark.locality ?? placemark.subAdministrativeArea ?? ""
                     let state = placemark.administrativeArea ?? ""
@@ -57,6 +74,20 @@ class LocationManager: NSObject, ObservableObject {
                         self.locationName = city
                     } else {
                         self.locationName = placemark.name ?? "Unknown Location"
+                    }
+                    self.lastGeocodedLocation = location
+                    self.geocodeRetryCount = 0
+                } else if error != nil {
+                    // Retry up to 3 times with increasing delay
+                    if self.geocodeRetryCount < 3 {
+                        self.geocodeRetryCount += 1
+                        let delay = Double(self.geocodeRetryCount) * 2.0
+                        Task {
+                            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                            self.reverseGeocode(location)
+                        }
+                    } else {
+                        self.locationName = "Unknown Location"
                     }
                 } else {
                     self.locationName = "Unknown Location"
@@ -71,14 +102,16 @@ class LocationManager: NSObject, ObservableObject {
 extension LocationManager: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        // Filter out stale or inaccurate locations
+        let age = -location.timestamp.timeIntervalSinceNow
+        guard age < 15, location.horizontalAccuracy >= 0, location.horizontalAccuracy < 1000 else { return }
+
         Task { @MainActor [weak self] in
             guard let self else { return }
-            let isFirstLocation = self.userLocation == nil
             self.userLocation = location.coordinate
             self.errorMessage = nil
-            if isFirstLocation {
-                self.reverseGeocode(location)
-            }
+            // Geocode on every significant location update (reverseGeocode has dedup logic)
+            self.reverseGeocode(location)
         }
     }
 

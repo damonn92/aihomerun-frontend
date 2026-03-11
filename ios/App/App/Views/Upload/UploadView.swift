@@ -35,7 +35,7 @@ struct UploadView: View {
                 if vm.isLoading {
                     LoadingView(step: vm.loadStep, progress: vm.uploadProgress)
                 } else if let result = vm.result {
-                    ResultView(result: result) {
+                    ResultView(result: result, videoURL: vm.videoURL) {
                         feed.saveLastResult(result)
                         vm.reset()
                     }
@@ -98,6 +98,7 @@ struct UploadView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 4)
                 .padding(.bottom, 40)
+                .frame(width: UIScreen.main.bounds.width)
             }
         }
     }

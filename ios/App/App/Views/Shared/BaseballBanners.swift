@@ -420,6 +420,7 @@ struct StadiumNightBanner: View {
 
 struct CoachHeroBanner: View {
     let sessionCount: Int
+    var isDemoMode: Bool = true
     @State private var pulse = false
     @State private var dataFlow = false
 
@@ -496,7 +497,9 @@ struct CoachHeroBanner: View {
                             .foregroundStyle(Color.hrGreen.opacity(0.85))
                     }
 
-                    Text("Demo Mode · Responses are pre-written")
+                    Text(isDemoMode
+                         ? "Demo Mode · Responses are pre-written"
+                         : "AI Coach · Powered by Claude")
                         .font(.system(size: 11))
                         .foregroundStyle(.white.opacity(0.40))
 
