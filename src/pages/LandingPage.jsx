@@ -253,10 +253,10 @@ function FeaturesShowcase() {
   const fadeIn = useFadeIn()
 
   const screenshots = [
-    { src: '/screenshots/home.png',      label: 'AI Analysis',  desc: 'Upload any swing or pitch video and get instant AI-powered scores across 4 performance dimensions.' },
-    { src: '/screenshots/ai-coach.png',  label: 'AI Coach',     desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
-    { src: '/screenshots/rankings.png',  label: 'Rankings',     desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
-    { src: '/screenshots/fields.png',    label: 'Find Fields',  desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
+    { src: '/screenshots/home.jpg',      label: 'AI Analysis',  desc: 'Upload any swing or pitch video and get instant AI-powered scores across 4 performance dimensions.' },
+    { src: '/screenshots/ai-coach.jpg',  label: 'AI Coach',     desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
+    { src: '/screenshots/rankings.jpg',  label: 'Rankings',     desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
+    { src: '/screenshots/fields.jpg',    label: 'Find Fields',  desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
   ]
 
   // For the 3-phone display: previous, active, next indices
@@ -681,7 +681,7 @@ export default function LandingPage() {
             animation: 'float-phone 7s ease-in-out infinite, fade-up 0.85s ease 0.15s both',
             filter: 'drop-shadow(0 40px 80px rgba(255,69,58,0.18))',
           }}>
-            <ScreenshotPhone src="/screenshots/home.png" alt="AIHomeRun analyze screen" />
+            <ScreenshotPhone src="/screenshots/home.jpg" alt="AIHomeRun analyze screen" />
           </div>
         </div>
       </section>
