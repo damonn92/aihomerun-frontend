@@ -1,5 +1,5 @@
 export default function PrivacyPage() {
-  const updated = 'March 7, 2026'
+  const updated = 'March 11, 2026'
 
   return (
     <div style={{
@@ -107,9 +107,40 @@ export default function PrivacyPage() {
         </ul>
       </Section>
 
-      <Section title="6. Third-Party Services">
+      <Section title="6. AI Coaching & Third-Party AI Data Sharing">
+        Our AI Coach feature uses a third-party artificial intelligence service to provide personalized
+        baseball coaching feedback. <b>Before using the AI Coach, you will be asked to review and consent
+        to the data sharing described below.</b>
+        <br /><br />
+        <b>What Data Is Shared</b>
+        <ul>
+          <li>Your conversation messages with the AI Coach</li>
+          <li>Player age and position (to provide age-appropriate coaching)</li>
+          <li>Biomechanics reference data derived from swing analysis (angles, scores)</li>
+        </ul>
+        <b>No video or image data is sent to the AI service.</b>
+        <br /><br />
+        <b>Who Receives the Data</b>
+        <ul>
+          <li><b>Anthropic, PBC</b> — the provider of the Claude AI model that powers our AI Coach</li>
+          <li>Data is transmitted to <code>api.anthropic.com</code> via encrypted HTTPS connection</li>
+          <li>Anthropic's privacy policy: <a href="https://www.anthropic.com/privacy" style={{ color: '#007aff' }}>anthropic.com/privacy</a></li>
+        </ul>
+        <b>How Data Is Used and Protected</b>
+        <ul>
+          <li>Data is used solely to generate coaching responses within your conversation</li>
+          <li>Conversations are not stored by Anthropic after processing</li>
+          <li>Anthropic does not use your data to train their AI models</li>
+          <li>All transmissions are encrypted using TLS/HTTPS</li>
+        </ul>
+        You may withdraw your consent at any time by clearing the app's data or contacting us.
+        If you do not consent, you may still use all other features of AIHomeRun.
+      </Section>
+
+      <Section title="7. Third-Party Services">
         We use the following third-party services:
         <ul>
+          <li><b>Anthropic (Claude AI)</b> — AI coaching conversations (<a href="https://www.anthropic.com/privacy" style={{ color: '#007aff' }}>Privacy Policy</a>)</li>
           <li><b>Supabase</b> — database, authentication, and file storage (<a href="https://supabase.com/privacy" style={{ color: '#007aff' }}>Privacy Policy</a>)</li>
           <li><b>Railway</b> — AI analysis backend hosting</li>
           <li><b>Google Sign In</b> — optional OAuth login (<a href="https://policies.google.com/privacy" style={{ color: '#007aff' }}>Privacy Policy</a>)</li>
@@ -118,7 +149,7 @@ export default function PrivacyPage() {
         </ul>
       </Section>
 
-      <Section title="7. Your Rights">
+      <Section title="8. Your Rights">
         You have the right to:
         <ul>
           <li><b>Access</b> — view all data we hold about you (available in your Profile page)</li>
@@ -130,19 +161,32 @@ export default function PrivacyPage() {
         <a href="mailto:privacy@aihomerun.app" style={{ color: '#007aff' }}>privacy@aihomerun.app</a>.
       </Section>
 
-      <Section title="8. Data Retention">
+      <Section title="9. Account Deletion">
+        You can delete your account directly within the AIHomeRun app by navigating to{' '}
+        <b>Profile → Delete Account</b>. When you delete your account:
+        <ul>
+          <li>Your account and login credentials are permanently removed</li>
+          <li>All associated personal data (profile, children's information, analysis history) is deleted</li>
+          <li>Data deletion is completed within 30 days</li>
+          <li>This action cannot be undone</li>
+        </ul>
+        You may also request account deletion by emailing{' '}
+        <a href="mailto:privacy@aihomerun.app" style={{ color: '#007aff' }}>privacy@aihomerun.app</a>.
+      </Section>
+
+      <Section title="10. Data Retention">
         We retain your account data for as long as your account is active. If you delete your account,
         we will delete your personal data within 30 days, except where required by law to retain it longer.
         Uploaded videos are processed in real time and not retained after analysis is complete.
       </Section>
 
-      <Section title="9. Changes to This Policy">
+      <Section title="11. Changes to This Policy">
         We may update this Privacy Policy from time to time. We will notify you of significant changes
         by email or via an in-app notice. Continued use of AIHomeRun after changes constitutes acceptance
         of the updated policy.
       </Section>
 
-      <Section title="10. Contact Us">
+      <Section title="12. Contact Us">
         If you have questions about this Privacy Policy, please contact us:
         <br /><br />
         📧 <a href="mailto:privacy@aihomerun.app" style={{ color: '#007aff' }}>privacy@aihomerun.app</a>
