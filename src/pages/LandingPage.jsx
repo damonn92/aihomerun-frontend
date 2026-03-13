@@ -571,11 +571,11 @@ export default function LandingPage() {
             <a href="#showcase" className="nav-link-item">Preview</a>
             <a href="#features" className="nav-link-item">Features</a>
             <a href="#how-to-use" className="nav-link-item">How to Use</a>
-            <a href="#download" className="nav-link-item">Download</a>
+            <a href="https://apps.apple.com/app/aihomerun/id6760232096" target="_blank" rel="noopener noreferrer" className="nav-link-item">Download</a>
             <a href="mailto:info@aihomerun.app" className="nav-link-item" style={{ fontSize:14 }}>Contact</a>
           </div>
 
-          <a href="#download" className="nav-cta" style={{
+          <a href="https://apps.apple.com/app/aihomerun/id6760232096" target="_blank" rel="noopener noreferrer" className="nav-cta" style={{
             background: 'linear-gradient(135deg, #FF453A, #FF6B35)',
             color: '#fff', borderRadius: 20, padding: '8px 22px',
             fontSize: 14, fontWeight: 600, textDecoration: 'none',
@@ -1013,7 +1013,7 @@ export default function LandingPage() {
                 <a href="#showcase" className="footer-link">App Preview</a>
                 <a href="#features" className="footer-link">Features</a>
                 <a href="#how-to-use" className="footer-link">How to Use</a>
-                <a href="#download" className="footer-link">Download App</a>
+                <a href="https://apps.apple.com/app/aihomerun/id6760232096" target="_blank" rel="noopener noreferrer" className="footer-link">Download App</a>
               </div>
             </div>
             <div>
