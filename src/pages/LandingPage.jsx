@@ -518,13 +518,15 @@ export default function LandingPage() {
             min-height: 420px !important;
           }
           .showcase-tabs {
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            justify-content: flex-start !important;
-            padding: 0 4px !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            padding: 0 !important;
           }
-          .showcase-tabs::-webkit-scrollbar { display: none; }
+          .showcase-tabs button {
+            padding: 9px 16px !important;
+            font-size: 13px !important;
+          }
 
           /* Features grid: single column */
           .features-grid-top,
