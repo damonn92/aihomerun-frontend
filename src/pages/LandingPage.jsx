@@ -656,7 +656,7 @@ export default function LandingPage() {
             </p>
 
             <div id="download" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 36 }}>
-              <AppStoreBadge href="#" comingSoon={false} />
+              <AppStoreBadge href="https://apps.apple.com/app/aihomerun/id6760232096" comingSoon={false} />
               <GooglePlayBadge comingSoon={true} />
             </div>
 
@@ -970,7 +970,7 @@ export default function LandingPage() {
           </p>
 
           <div className="cta-badges" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
-            <AppStoreBadge href="#" comingSoon={false} />
+            <AppStoreBadge href="https://apps.apple.com/app/aihomerun/id6760232096" comingSoon={false} />
             <GooglePlayBadge comingSoon={true} />
           </div>
 
