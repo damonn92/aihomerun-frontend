@@ -184,7 +184,7 @@ struct HeatMapView: View {
 
                 Text(label)
                     .font(.system(size: 7, weight: .medium))
-                    .foregroundStyle(count > 0 ? .primary.opacity(0.5) : .primary.opacity(0.2))
+                    .foregroundColor(count > 0 ? Color.primary.opacity(0.5) : Color.primary.opacity(0.2))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
