@@ -53,7 +53,7 @@ struct SessionHistoryView: View {
             }
             .sheet(item: $selectedSession) { session in
                 SessionDetailSheet(session: session)
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.large])
             }
         }
     }
@@ -200,8 +200,14 @@ struct SessionHistoryView: View {
 struct SessionDetailSheet: View {
     let session: SessionSummary
     @Environment(\.dismiss) private var dismiss
+    @State private var showFullScreenVideo = false
 
     private var overallScore: Int { session.overallScore ?? 0 }
+
+    private var videoURL: URL? {
+        guard let videoId = session.videoId else { return nil }
+        return VideoURLStore.shared.url(for: videoId)
+    }
 
     private var gradeString: String {
         switch overallScore {
@@ -229,6 +235,9 @@ struct SessionDetailSheet: View {
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
+                        // Video replay
+                        videoSection
+
                         // Grade hero
                         gradeHero
 
@@ -253,6 +262,45 @@ struct SessionDetailSheet: View {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Video Section
+
+    @ViewBuilder
+    private var videoSection: some View {
+        if let url = videoURL {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 6) {
+                    Image(systemName: "play.rectangle.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.hrBlue)
+                    Text("Video Replay")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.primary)
+                    Spacer()
+                }
+
+                VideoReplayView(videoURL: url)
+            }
+            .hrCard(padding: 12)
+        } else if session.videoId != nil {
+            // Video ID exists but file not found locally
+            VStack(spacing: 12) {
+                Image(systemName: "film.slash")
+                    .font(.system(size: 28))
+                    .foregroundStyle(.primary.opacity(0.25))
+                Text("Video Not Available")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.primary.opacity(0.5))
+                Text("The original video file is no longer on this device.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.primary.opacity(0.35))
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 24)
+            .hrCard()
         }
     }
 
@@ -307,10 +355,6 @@ struct SessionDetailSheet: View {
                 label: "Type",
                 value: (session.actionType ?? "swing").capitalized
             )
-            if let vid = session.videoId {
-                Divider().background(Color.hrDivider)
-                infoRow(icon: "film", label: "Video ID", value: String(vid.prefix(12)) + "...")
-            }
         }
         .hrCard()
     }

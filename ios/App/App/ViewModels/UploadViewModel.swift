@@ -39,6 +39,28 @@ class UploadViewModel: ObservableObject {
 
     private let detectionService = ActionDetectionService()
 
+    /// Directory for persistently saved session videos
+    private static var savedVideosDir: URL {
+        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("SavedVideos", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }
+
+    /// Copy a video to permanent storage so Session History can replay it later
+    private func persistVideo(_ sourceURL: URL, videoId: String) -> URL {
+        let ext = sourceURL.pathExtension.isEmpty ? "mov" : sourceURL.pathExtension
+        let dest = Self.savedVideosDir.appendingPathComponent("\(videoId).\(ext)")
+        if FileManager.default.fileExists(atPath: dest.path) { return dest }
+        do {
+            try FileManager.default.copyItem(at: sourceURL, to: dest)
+            return dest
+        } catch {
+            // If copy fails, return original URL as fallback
+            return sourceURL
+        }
+    }
+
     func analyze(token: String?, forceRefresh: Bool = false) async {
         // Use trimmed video if available, otherwise original
         let effectiveURL = trimmedVideoURL ?? videoURL
@@ -59,9 +81,10 @@ class UploadViewModel: ObservableObject {
                 self.usedCache = true
                 self.uploadProgress = 1.0
                 self.isLoading = false
-                // Store video URL mapping for comparison lookups
+                // Persist video and store URL mapping for comparison/history lookups
                 if let videoId = cached.videoId {
-                    VideoURLStore.shared.store(videoId: videoId, url: videoURL)
+                    let persistedURL = persistVideo(videoURL, videoId: videoId)
+                    VideoURLStore.shared.store(videoId: videoId, url: persistedURL)
                 }
                 return
             }
@@ -110,9 +133,10 @@ class UploadViewModel: ObservableObject {
             // Cache the result for future lookups
             await AnalysisResultCache.shared.store(analysisResult, for: videoURL, actionType: actionType.rawValue, age: age)
 
-            // Store video URL mapping for future comparison lookups
+            // Persist video and store URL mapping for history/comparison
             if let videoId = analysisResult.videoId {
-                VideoURLStore.shared.store(videoId: videoId, url: videoURL)
+                let persistedURL = persistVideo(videoURL, videoId: videoId)
+                VideoURLStore.shared.store(videoId: videoId, url: persistedURL)
             }
         } catch APIError.qualityGateFailure(let qe) {
             simTask.cancel()
