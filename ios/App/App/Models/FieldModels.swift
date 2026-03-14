@@ -21,6 +21,7 @@ struct BaseballField: Identifiable, Equatable {
     var reviews: [GoogleReview] = []
     var isOpenNow: Bool?
     var isIndoor: Bool = false
+    var photoURLs: [URL] = []
 
     var distanceMiles: Double {
         guard let distance else { return 0 }
@@ -63,6 +64,7 @@ struct BaseballField: Identifiable, Equatable {
         field.reviews = data.reviews
         field.isOpenNow = data.isOpenNow
         field.isIndoor = data.isIndoor || self.isIndoor
+        field.photoURLs = data.photoURLs
         return field
     }
 

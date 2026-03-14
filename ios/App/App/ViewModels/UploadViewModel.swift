@@ -26,15 +26,46 @@ class UploadViewModel: ObservableObject {
     @Published var qualityError: QualityError?
     @Published var isPreparing = false
     @Published var prepareProgress: Double = 0
+    @Published var usedCache = false
 
-    func analyze(token: String?) async {
-        guard let videoURL else { return }
+    // MARK: - Auto-Detect State
+
+    @Published var isDetecting = false
+    @Published var detectProgress: Double = 0
+    @Published var detectionResult: ActionDetectionService.DetectionResult?
+    @Published var showTrimPreview = false
+    @Published var trimmedVideoURL: URL?
+    @Published var isTrimming = false
+
+    private let detectionService = ActionDetectionService()
+
+    func analyze(token: String?, forceRefresh: Bool = false) async {
+        // Use trimmed video if available, otherwise original
+        let effectiveURL = trimmedVideoURL ?? videoURL
+        guard let videoURL = effectiveURL else { return }
         isLoading = true
         loadStep = 0
         uploadProgress = 0
         error = nil
         qualityError = nil
         result = nil
+        usedCache = false
+
+        // Check cache first (unless force-refreshing)
+        if !forceRefresh {
+            let cache = AnalysisResultCache.shared
+            if let cached = await cache.cached(for: videoURL, actionType: actionType.rawValue, age: age) {
+                self.result = cached
+                self.usedCache = true
+                self.uploadProgress = 1.0
+                self.isLoading = false
+                // Store video URL mapping for comparison lookups
+                if let videoId = cached.videoId {
+                    VideoURLStore.shared.store(videoId: videoId, url: videoURL)
+                }
+                return
+            }
+        }
 
         // Simulated progress task: advances the bar during the AI processing phase
         // (after upload completes, the real callback stops at ~0.40)
@@ -75,6 +106,14 @@ class UploadViewModel: ObservableObject {
             simTask.cancel()
             uploadProgress = 1.0
             self.result = analysisResult
+
+            // Cache the result for future lookups
+            await AnalysisResultCache.shared.store(analysisResult, for: videoURL, actionType: actionType.rawValue, age: age)
+
+            // Store video URL mapping for future comparison lookups
+            if let videoId = analysisResult.videoId {
+                VideoURLStore.shared.store(videoId: videoId, url: videoURL)
+            }
         } catch APIError.qualityGateFailure(let qe) {
             simTask.cancel()
             qualityError = qe
@@ -86,11 +125,23 @@ class UploadViewModel: ObservableObject {
         isLoading = false
     }
 
-    /// Load the selected video file and animate a "preparing" progress bar.
+    /// Force re-analyze the current video, bypassing cache.
+    func reanalyze(token: String?) async {
+        let effectiveURL = trimmedVideoURL ?? videoURL
+        guard let url = effectiveURL else { return }
+        // Remove cached entry first
+        await AnalysisResultCache.shared.remove(for: url, actionType: actionType.rawValue, age: age)
+        await analyze(token: token, forceRefresh: true)
+    }
+
+    /// Load the selected video file, animate a "preparing" progress bar, then run auto-detect.
     func prepareVideo(from item: PhotosPickerItem) async {
         isPreparing = true
         prepareProgress = 0
         videoURL = nil
+        detectionResult = nil
+        showTrimPreview = false
+        trimmedVideoURL = nil
 
         // Animate progress while loading
         let simTask = Task { [weak self] in
@@ -114,6 +165,66 @@ class UploadViewModel: ObservableObject {
         // Brief pause at 100% so user sees completion
         try? await Task.sleep(nanoseconds: 400_000_000)
         isPreparing = false
+
+        // Auto-detect action after video is ready
+        if videoURL != nil {
+            await runAutoDetect()
+        }
+    }
+
+    // MARK: - Auto-Detect
+
+    /// Scan the video for the peak action moment.
+    func runAutoDetect() async {
+        guard let url = videoURL else { return }
+
+        isDetecting = true
+        detectProgress = 0
+        detectionResult = nil
+
+        do {
+            let result = try await detectionService.detectAction(videoURL: url) { [weak self] progress in
+                Task { @MainActor in
+                    self?.detectProgress = progress
+                }
+            }
+
+            detectionResult = result
+            if result != nil {
+                withAnimation(.spring(duration: 0.3)) {
+                    showTrimPreview = true
+                }
+            }
+        } catch {
+            print("[AIHomeRun] Auto-detect error: \(error.localizedDescription)")
+        }
+
+        isDetecting = false
+    }
+
+    /// Apply the user-confirmed trim range and export the trimmed video.
+    func applyTrim(range: ClosedRange<Double>) async {
+        guard let url = videoURL else { return }
+
+        isTrimming = true
+        do {
+            let trimmedURL = try await detectionService.trimVideo(sourceURL: url, range: range)
+            trimmedVideoURL = trimmedURL
+            withAnimation(.spring(duration: 0.25)) {
+                showTrimPreview = false
+            }
+        } catch {
+            print("[AIHomeRun] Trim error: \(error.localizedDescription)")
+        }
+        isTrimming = false
+    }
+
+    /// Skip trimming and use the full original video.
+    func skipTrim() {
+        trimmedVideoURL = nil
+        withAnimation(.spring(duration: 0.25)) {
+            showTrimPreview = false
+        }
     }
 
     func reset() {
@@ -125,6 +236,14 @@ class UploadViewModel: ObservableObject {
         uploadProgress = 0
         isPreparing = false
         prepareProgress = 0
+        usedCache = false
+        // Auto-detect state
+        isDetecting = false
+        detectProgress = 0
+        detectionResult = nil
+        showTrimPreview = false
+        trimmedVideoURL = nil
+        isTrimming = false
     }
 }
 

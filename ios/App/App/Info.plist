@@ -24,11 +24,12 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i</string>
+				<string>aihomerun</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>13</string>
+	<string>17</string>
 	<key>GIDClientID</key>
 	<string>993691962740-5s8p3buu1o64et8pdgjcr97cqcj09r5i.apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -48,6 +49,10 @@
 	<string>AIHomeRun may save analysis results to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>AIHomeRun needs access to your photo library so you can upload existing baseball videos for AI analysis.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>AIHomeRun reads your workout history, heart rate, and activity data to show training progress and health metrics during baseball practice.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>AIHomeRun saves your baseball practice sessions as workouts in Apple Health.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>AIHomeRun uses your location to find baseball and softball fields near you.</string>
 	<key>UILaunchStoryboardName</key>

@@ -42,7 +42,7 @@ struct FieldMapView: View {
                             .frame(width: 6, height: 6)
                         Text("\(fields.count) Fields")
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(.white.opacity(0.70))
+                            .foregroundStyle(.primary.opacity(0.70))
                     }
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)

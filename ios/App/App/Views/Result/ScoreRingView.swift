@@ -54,7 +54,7 @@ struct ScoreRingView: View {
                 // Score number
                 Text("\(animatedScore)")
                     .font(.system(size: size * 0.30, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                     .contentTransition(.numericText())
                     .animation(.spring(duration: 1.1), value: animatedScore)
             }
@@ -62,7 +62,7 @@ struct ScoreRingView: View {
 
             Text(label)
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.42))
+                .foregroundStyle(.primary.opacity(0.55))
                 .textCase(.uppercase)
                 .tracking(0.5)
                 .lineLimit(1)

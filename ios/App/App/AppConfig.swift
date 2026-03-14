@@ -1,14 +1,45 @@
 import Foundation
 import SwiftUI
 
+// MARK: - App Theme
+
+enum AppTheme: String, CaseIterable {
+    case system = "System"
+    case light  = "Light"
+    case dark   = "Dark"
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light:  return .light
+        case .dark:   return .dark
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .system: return "circle.lefthalf.filled"
+        case .light:  return "sun.max.fill"
+        case .dark:   return "moon.fill"
+        }
+    }
+}
+
 // MARK: - Brand Color System
 
 extension Color {
-    /// Deep navy background
-    static let hrBg     = Color(red: 0.031, green: 0.059, blue: 0.118)
-    /// Card surface
-    static let hrCard   = Color(red: 0.067, green: 0.102, blue: 0.165)
-    /// Electric blue — primary accent
+    /// Adaptive background (light: #F4F5F8, dark: deep navy)
+    static let hrBg      = Color("hrBg")
+    /// Adaptive card surface (light: white, dark: dark navy)
+    static let hrCard    = Color("hrCard")
+    /// Adaptive card border stroke
+    static let hrStroke  = Color("hrStroke")
+    /// Subtle surface tint for inputs / secondary backgrounds
+    static let hrSurface = Color("hrSurface")
+    /// Divider / separator color
+    static let hrDivider = Color("hrDivider")
+
+    /// Electric blue — primary accent (same in both modes)
     static let hrBlue   = Color(red: 0.078, green: 0.494, blue: 1.000)
     /// Gold — grade / highlight accent
     static let hrGold   = Color(red: 0.961, green: 0.651, blue: 0.137)
@@ -18,8 +49,6 @@ extension Color {
     static let hrRed    = Color(red: 1.000, green: 0.271, blue: 0.227)
     /// Drills / tips
     static let hrOrange = Color(red: 1.000, green: 0.624, blue: 0.039)
-    /// Card border stroke
-    static let hrStroke = Color.white.opacity(0.09)
 }
 
 // MARK: - Shared card modifier
@@ -52,19 +81,19 @@ struct HRInputContainer<Content: View>: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 15, weight: .medium))
-                .foregroundStyle(.white.opacity(0.4))
+                .foregroundStyle(.primary.opacity(0.55))
                 .frame(width: 20)
             content
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .tint(.hrBlue)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
-        .background(Color.white.opacity(0.07))
+        .background(Color.hrSurface)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.white.opacity(0.10), lineWidth: 1)
+                .stroke(Color.hrStroke, lineWidth: 1)
         )
     }
 }

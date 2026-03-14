@@ -36,6 +36,8 @@ struct VideoReplayView: View {
     @StateObject private var poseVM = PoseOverlayViewModel()
     @State private var showControls = true
     @State private var hideTask: Task<Void, Never>?
+    @State private var show3D = false
+    @State private var _skeleton3DVM: AnyObject?  // Actually Skeleton3DViewModel (iOS 17+), stored as Any to avoid availability error
 
     var body: some View {
         VStack(spacing: 0) {
@@ -115,15 +117,61 @@ struct VideoReplayView: View {
 
     private var zoomablePlayer: some View {
         ZStack {
-            PlayerLayerView(player: vm.player)
-            SkeletonOverlayView(poseVM: poseVM, currentTime: vm.currentTime)
+            if show3D, #available(iOS 17, *), let skel3D = _skeleton3DVM as? Skeleton3DViewModel {
+                Skeleton3DView(vm: skel3D, currentTime: vm.currentTime)
+            } else {
+                PlayerLayerView(player: vm.player)
+                SkeletonOverlayView(poseVM: poseVM, currentTime: vm.currentTime)
+            }
+
+            // 2D/3D toggle button (top-right corner, only on iOS 17+)
+            if #available(iOS 17, *) {
+                VStack {
+                    HStack {
+                        Spacer()
+                        toggle3DButton
+                    }
+                    Spacer()
+                }
+                .padding(6)
+            }
         }
-        .scaleEffect(vm.zoomScale)
-        .offset(vm.panOffset)
+        .scaleEffect(show3D ? 1.0 : vm.zoomScale)
+        .offset(show3D ? .zero : vm.panOffset)
         .clipped()
-        .gesture(poseVM.isDrawingMode ? nil : magnificationGesture)
-        .gesture(poseVM.isDrawingMode ? nil : panGesture)
-        .gesture(poseVM.isDrawingMode ? nil : doubleTapGesture)
+        .gesture(poseVM.isDrawingMode || show3D ? nil : magnificationGesture)
+        .gesture(poseVM.isDrawingMode || show3D ? nil : panGesture)
+        .gesture(poseVM.isDrawingMode || show3D ? nil : doubleTapGesture)
+    }
+
+    @available(iOS 17, *)
+    private var toggle3DButton: some View {
+        Button {
+            withAnimation(.spring(duration: 0.3)) {
+                show3D.toggle()
+            }
+            // Lazy-init 3D VM and start analysis
+            if show3D && _skeleton3DVM == nil {
+                let skel = Skeleton3DViewModel()
+                _skeleton3DVM = skel
+                Task {
+                    await skel.runAnalysis3D(videoURL: videoURL)
+                }
+            }
+        } label: {
+            HStack(spacing: 3) {
+                Image(systemName: show3D ? "square.2.layers.3d.top.filled" : "cube.transparent")
+                    .font(.system(size: 10, weight: .semibold))
+                Text(show3D ? "3D" : "2D")
+                    .font(.system(size: 10, weight: .bold))
+            }
+            .foregroundStyle(show3D ? Color.hrBlue : .white.opacity(0.7))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(show3D ? Color.hrBlue.opacity(0.2) : Color.black.opacity(0.4))
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 
     private var magnificationGesture: some Gesture {

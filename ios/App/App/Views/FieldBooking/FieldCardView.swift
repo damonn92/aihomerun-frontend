@@ -1,4 +1,5 @@
 import SwiftUI
+import MapKit
 
 // MARK: - Field Card
 
@@ -14,16 +15,24 @@ struct FieldCardView: View {
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 0) {
-                // Card header with gradient
+                // Map snapshot header with overlay info
                 ZStack(alignment: .bottomLeading) {
-                    LinearGradient(
-                        colors: isHighlighted
-                        ? [Color.hrGold.opacity(0.30), Color.hrCard]
-                        : [Color.hrBlue.opacity(0.18), Color.hrCard],
-                        startPoint: .topLeading, endPoint: .bottomTrailing
+                    MapSnapshotView(
+                        coordinate: field.coordinate,
+                        height: 120,
+                        span: 0.006
                     )
-                    .frame(height: 80)
+                    .frame(height: 120)
 
+                    // Bottom gradient overlay for text readability
+                    LinearGradient(
+                        colors: [.clear, Color.black.opacity(0.75)],
+                        startPoint: .top, endPoint: .bottom
+                    )
+                    .frame(height: 70)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+
+                    // Field info overlay
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
@@ -31,6 +40,7 @@ struct FieldCardView: View {
                                     .font(.headline.weight(.bold))
                                     .foregroundStyle(.white)
                                     .lineLimit(1)
+                                    .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
 
                                 if isHighlighted {
                                     Text(field.category == .battingCage ? "CAGE" : "COMPLEX")
@@ -38,7 +48,7 @@ struct FieldCardView: View {
                                         .foregroundStyle(Color.hrGold)
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
-                                        .background(Color.hrGold.opacity(0.15))
+                                        .background(Color.hrGold.opacity(0.25))
                                         .clipShape(Capsule())
                                 }
 
@@ -48,7 +58,7 @@ struct FieldCardView: View {
                                         .foregroundStyle(Color.hrOrange)
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 2)
-                                        .background(Color.hrOrange.opacity(0.15))
+                                        .background(Color.hrOrange.opacity(0.25))
                                         .clipShape(Capsule())
                                 }
                             }
@@ -56,7 +66,7 @@ struct FieldCardView: View {
                             HStack(spacing: 8) {
                                 Text(field.category.rawValue)
                                     .font(.caption)
-                                    .foregroundStyle(.white.opacity(0.45))
+                                    .foregroundStyle(.white.opacity(0.65))
 
                                 if field.hasReviews {
                                     HStack(spacing: 3) {
@@ -66,15 +76,12 @@ struct FieldCardView: View {
                                             .foregroundStyle(Color.hrGold)
                                         Text("(\(field.reviewCount))")
                                             .font(.system(size: 10))
-                                            .foregroundStyle(.white.opacity(0.35))
+                                            .foregroundStyle(.white.opacity(0.50))
                                     }
                                 }
                             }
                         }
                         Spacer()
-                        Image(systemName: field.category.icon)
-                            .font(.system(size: 28, weight: .light))
-                            .foregroundStyle(.white.opacity(0.10))
                     }
                     .padding(.horizontal, 16)
                     .padding(.bottom, 12)
@@ -85,7 +92,7 @@ struct FieldCardView: View {
                     infoItem(icon: "mappin", value: field.distanceDisplay, label: "away")
                     Divider()
                         .frame(height: 30)
-                        .background(Color.white.opacity(0.08))
+                        .background(Color.hrDivider)
                     if field.hasReviews {
                         infoItem(icon: "star.fill", value: field.ratingDisplay ?? "-", label: "\(field.reviewCount) reviews", color: .hrGold)
                     } else {
@@ -93,7 +100,7 @@ struct FieldCardView: View {
                     }
                     Divider()
                         .frame(height: 30)
-                        .background(Color.white.opacity(0.08))
+                        .background(Color.hrDivider)
                     if let isOpen = field.isOpenNow {
                         infoItem(
                             icon: isOpen ? "checkmark.circle.fill" : "clock",
@@ -117,7 +124,7 @@ struct FieldCardView: View {
                         .foregroundStyle(Color.hrBlue)
                     Text(field.address)
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.55))
+                        .foregroundStyle(.primary.opacity(0.55))
                         .lineLimit(1)
                     Spacer()
                 }
@@ -142,7 +149,7 @@ struct FieldCardView: View {
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
                     .stroke(isHighlighted
                             ? Color.hrGold.opacity(0.30)
-                            : Color.white.opacity(0.09),
+                            : Color.hrStroke,
                             lineWidth: 1)
             )
         }
@@ -156,11 +163,11 @@ struct FieldCardView: View {
                 .foregroundStyle(color)
             Text(value)
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .lineLimit(1)
             Text(label)
                 .font(.system(size: 9, weight: .medium))
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(.primary.opacity(0.50))
                 .textCase(.uppercase)
                 .tracking(0.4)
         }

@@ -8,45 +8,62 @@ struct RankingsView: View {
     @StateObject private var vm = RankingsViewModel()
     @State private var appeared = false
 
+    private var userId: String? {
+        authVM.user?.id.uuidString
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.hrBg.ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        // Demo notice
-                        HStack(spacing: 8) {
-                            Image(systemName: "info.circle.fill")
-                                .font(.system(size: 13))
-                                .foregroundStyle(Color.hrOrange)
-                            Text("Demo Data — Rankings will use real scores once you have analysis sessions.")
-                                .font(.caption)
-                                .foregroundStyle(.white.opacity(0.55))
-                        }
-                        .padding(12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.hrOrange.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(Color.hrOrange.opacity(0.20), lineWidth: 1)
-                        )
-
-                        // Stadium night banner
-                        StadiumNightBanner()
-                        myRankHeroCard
-                        ageGroupSelector
-                        podiumSection
-                        fullLeaderboard
-                        weeklyInsightCard
-                        Spacer(minLength: 40)
+                if vm.isLoading && vm.leaders.isEmpty {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .tint(.primary)
+                            .scaleEffect(1.2)
+                        Text("Loading rankings…")
+                            .font(.caption)
+                            .foregroundStyle(.primary.opacity(0.55))
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 8)
-                    .opacity(appeared ? 1 : 0)
-                    .offset(y: appeared ? 0 : 16)
-                    .animation(.spring(duration: 0.55, bounce: 0.15).delay(0.05), value: appeared)
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 20) {
+                            // Demo notice — only show when user has no real data
+                            if !vm.hasRealData {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "info.circle.fill")
+                                        .font(.system(size: 13))
+                                        .foregroundStyle(Color.hrOrange)
+                                    Text("Complete an analysis session to see your ranking among other players!")
+                                        .font(.caption)
+                                        .foregroundStyle(.primary.opacity(0.55))
+                                }
+                                .padding(12)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.hrOrange.opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                        .stroke(Color.hrOrange.opacity(0.20), lineWidth: 1)
+                                )
+                            }
+
+                            // Stadium night banner
+                            StadiumNightBanner()
+                            myRankHeroCard
+                            ageGroupSelector
+                            podiumSection
+                            fullLeaderboard
+                            weeklyInsightCard
+                            Spacer(minLength: 40)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 8)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 16)
+                        .animation(.spring(duration: 0.55, bounce: 0.15).delay(0.05), value: appeared)
+                    }
                 }
             }
             .navigationTitle("Rankings")
@@ -55,7 +72,7 @@ struct RankingsView: View {
         }
         .onAppear {
             appeared = true
-            vm.loadData()
+            Task { await vm.loadData(userId: userId) }
         }
     }
 
@@ -93,18 +110,18 @@ struct RankingsView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Your Standing")
                             .font(.caption)
-                            .foregroundStyle(.white.opacity(0.45))
+                            .foregroundStyle(.primary.opacity(0.55))
                         HStack(alignment: .firstTextBaseline, spacing: 4) {
                             Text("Top")
                                 .font(.subheadline)
-                                .foregroundStyle(.white.opacity(0.55))
+                                .foregroundStyle(.primary.opacity(0.55))
                             Text("\(vm.myPercentile)%")
                                 .font(.system(size: 26, weight: .black, design: .rounded))
                                 .foregroundStyle(Color.hrGold)
                         }
                         Text("Age \(vm.selectedAgeRange) group · \(vm.totalPlayers) players")
                             .font(.caption)
-                            .foregroundStyle(.white.opacity(0.38))
+                            .foregroundStyle(.primary.opacity(0.50))
                     }
 
                     Spacer()
@@ -123,10 +140,10 @@ struct RankingsView: View {
                         VStack(spacing: 0) {
                             Text("\(vm.myScore)")
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
                             Text("pts")
                                 .font(.system(size: 9))
-                                .foregroundStyle(.white.opacity(0.40))
+                                .foregroundStyle(.primary.opacity(0.55))
                         }
                     }
                 }
@@ -137,7 +154,7 @@ struct RankingsView: View {
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         RoundedRectangle(cornerRadius: 3)
-                            .fill(Color.white.opacity(0.07))
+                            .fill(Color.hrSurface)
                             .frame(height: 5)
                         RoundedRectangle(cornerRadius: 3)
                             .fill(LinearGradient(
@@ -171,18 +188,18 @@ struct RankingsView: View {
                     Button {
                         withAnimation(.spring(duration: 0.3)) {
                             vm.selectedAgeRange = group
-                            vm.loadData()
                         }
+                        Task { await vm.loadData(userId: userId) }
                     } label: {
                         Text("Age \(group)")
                             .font(.caption.weight(.semibold))
-                            .foregroundStyle(vm.selectedAgeRange == group ? .white : .white.opacity(0.40))
+                            .foregroundStyle(vm.selectedAgeRange == group ? Color.white : Color.primary.opacity(0.55))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
                             .background(
                                 vm.selectedAgeRange == group
                                 ? Color.hrBlue
-                                : Color.white.opacity(0.07)
+                                : Color.hrSurface
                             )
                             .clipShape(Capsule())
                     }
@@ -228,12 +245,12 @@ struct RankingsView: View {
 
             Text(entry?.displayName ?? "—")
                 .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(.white.opacity(0.70))
+                .foregroundStyle(.primary.opacity(0.70))
                 .lineLimit(1)
 
             Text("\(entry?.score ?? 0)")
                 .font(.system(size: 15, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
 
             // Pillar
             ZStack(alignment: .top) {
@@ -258,13 +275,17 @@ struct RankingsView: View {
     // MARK: - Full Leaderboard
 
     private var fullLeaderboard: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        let displayLimit = 20
+        let displayLeaders = Array(vm.leaders.prefix(displayLimit))
+        let myRankInTop = vm.myRank <= displayLimit && vm.myRank > 0
+
+        return VStack(alignment: .leading, spacing: 14) {
             HStack {
                 sectionLabel(icon: "list.number", title: "Full Rankings", color: .hrBlue)
                 Spacer()
                 Text("\(vm.totalPlayers) players")
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.30))
+                    .foregroundStyle(.primary.opacity(0.45))
             }
 
             VStack(spacing: 6) {
@@ -276,28 +297,29 @@ struct RankingsView: View {
                     Text("GRADE").frame(width: 44, alignment: .trailing)
                 }
                 .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(.white.opacity(0.28))
+                .foregroundStyle(.primary.opacity(0.40))
                 .tracking(0.8)
                 .padding(.horizontal, 2)
 
                 Divider()
-                    .background(Color.white.opacity(0.07))
+                    .background(Color.hrSurface)
 
-                ForEach(Array(vm.leaders.enumerated()), id: \.element.id) { idx, entry in
+                ForEach(Array(displayLeaders.enumerated()), id: \.element.id) { idx, entry in
                     leaderRow(entry: entry, rank: idx + 1)
-                    if idx < vm.leaders.count - 1 {
-                        Divider().background(Color.white.opacity(0.06))
+                    if idx < displayLeaders.count - 1 {
+                        Divider().background(Color.hrSurface)
                     }
                 }
 
-                if vm.myRank > vm.leaders.count {
-                    Divider().background(Color.white.opacity(0.10))
-                    Text("··· \(vm.myRank - vm.leaders.count) players between ···")
+                // Show user's position if they're ranked below the top N
+                if vm.hasRealData && !myRankInTop {
+                    Divider().background(Color.hrStroke)
+                    Text("···")
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.22))
+                        .foregroundStyle(.primary.opacity(0.35))
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 4)
-                    Divider().background(Color.white.opacity(0.10))
+                    Divider().background(Color.hrStroke)
                     leaderRow(entry: vm.myEntry, rank: vm.myRank)
                 }
             }
@@ -306,7 +328,7 @@ struct RankingsView: View {
     }
 
     private func leaderRow(entry: RankingsViewModel.LeaderEntry, rank: Int) -> some View {
-        let rankColor: Color = rank == 1 ? .hrGold : rank == 2 ? Color(white: 0.65) : rank == 3 ? Color(red: 0.8, green: 0.52, blue: 0.25) : .white.opacity(0.50)
+        let rankColor: Color = rank == 1 ? .hrGold : rank == 2 ? Color(white: 0.65) : rank == 3 ? Color(red: 0.8, green: 0.52, blue: 0.25) : .primary.opacity(0.60)
 
         return HStack(spacing: 0) {
             // Rank
@@ -325,15 +347,15 @@ struct RankingsView: View {
             HStack(spacing: 8) {
                 ZStack {
                     Circle()
-                        .fill(entry.isMe ? Color.hrBlue.opacity(0.22) : Color.white.opacity(0.07))
+                        .fill(entry.isMe ? Color.hrBlue.opacity(0.22) : Color.hrSurface)
                         .frame(width: 30, height: 30)
                     Text(entry.initials)
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(entry.isMe ? Color.hrBlue : .white.opacity(0.60))
+                        .foregroundStyle(entry.isMe ? Color.hrBlue : .primary.opacity(0.60))
                 }
                 Text(entry.displayName)
                     .font(.subheadline.weight(entry.isMe ? .semibold : .regular))
-                    .foregroundStyle(entry.isMe ? Color.hrBlue : .white)
+                    .foregroundStyle(entry.isMe ? Color.hrBlue : .primary)
                 if entry.isMe {
                     Text("YOU")
                         .font(.system(size: 8, weight: .black))
@@ -349,7 +371,7 @@ struct RankingsView: View {
             // Score
             Text("\(entry.score)")
                 .font(.system(size: 14, weight: .bold, design: .rounded).monospacedDigit())
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .frame(width: 50, alignment: .trailing)
 
             // Grade
@@ -368,52 +390,66 @@ struct RankingsView: View {
 
     private var weeklyInsightCard: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionLabel(icon: "chart.line.uptrend.xyaxis", title: "Score Trend This Month", color: .hrGreen)
+            sectionLabel(icon: "chart.line.uptrend.xyaxis", title: "Score Trend", color: .hrGreen)
 
-            Chart(vm.trendData, id: \.week) { item in
-                AreaMark(x: .value("Week", item.week), y: .value("Score", item.score))
-                    .foregroundStyle(LinearGradient(
-                        colors: [Color.hrBlue.opacity(0.28), .clear],
-                        startPoint: .top, endPoint: .bottom
-                    ))
-                    .interpolationMethod(.catmullRom)
-                LineMark(x: .value("Week", item.week), y: .value("Score", item.score))
-                    .foregroundStyle(Color.hrBlue)
-                    .lineStyle(StrokeStyle(lineWidth: 2.5))
-                    .interpolationMethod(.catmullRom)
-                PointMark(x: .value("Week", item.week), y: .value("Score", item.score))
-                    .foregroundStyle(.white)
-                    .symbolSize(25)
-            }
-            .chartYScale(domain: 0...100)
-            .chartXAxis {
-                AxisMarks { v in
-                    AxisValueLabel {
-                        if let i = v.as(Int.self) {
-                            Text("Wk \(i)")
-                                .font(.system(size: 9))
-                                .foregroundStyle(.white.opacity(0.30))
+            if vm.trendData.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.system(size: 28))
+                        .foregroundStyle(.primary.opacity(0.35))
+                    Text("Complete analysis sessions to see your score trend")
+                        .font(.caption)
+                        .foregroundStyle(.primary.opacity(0.50))
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 110)
+            } else {
+                Chart(vm.trendData, id: \.session) { item in
+                    AreaMark(x: .value("Session", item.session), y: .value("Score", item.score))
+                        .foregroundStyle(LinearGradient(
+                            colors: [Color.hrBlue.opacity(0.28), .clear],
+                            startPoint: .top, endPoint: .bottom
+                        ))
+                        .interpolationMethod(.catmullRom)
+                    LineMark(x: .value("Session", item.session), y: .value("Score", item.score))
+                        .foregroundStyle(Color.hrBlue)
+                        .lineStyle(StrokeStyle(lineWidth: 2.5))
+                        .interpolationMethod(.catmullRom)
+                    PointMark(x: .value("Session", item.session), y: .value("Score", item.score))
+                        .foregroundStyle(.primary)
+                        .symbolSize(25)
+                }
+                .chartYScale(domain: 0...100)
+                .chartXAxis {
+                    AxisMarks { v in
+                        AxisValueLabel {
+                            if let i = v.as(Int.self) {
+                                Text("#\(i)")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(.primary.opacity(0.45))
+                            }
                         }
                     }
                 }
-            }
-            .chartYAxis {
-                AxisMarks(values: [0, 50, 100]) { v in
-                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                        .foregroundStyle(Color.white.opacity(0.07))
-                    AxisValueLabel {
-                        Text("\(v.as(Int.self) ?? 0)")
-                            .font(.system(size: 9))
-                            .foregroundStyle(.white.opacity(0.25))
+                .chartYAxis {
+                    AxisMarks(values: [0, 50, 100]) { v in
+                        AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                            .foregroundStyle(Color.hrSurface)
+                        AxisValueLabel {
+                            Text("\(v.as(Int.self) ?? 0)")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.primary.opacity(0.40))
+                        }
                     }
                 }
-            }
-            .frame(height: 110)
+                .frame(height: 110)
 
-            HStack(spacing: 20) {
-                statPill(label: "Best", value: "\(vm.trendData.map(\.score).max() ?? 0)", color: .hrGreen)
-                statPill(label: "Avg", value: "\(vm.trendData.map(\.score).reduce(0,+) / max(1, vm.trendData.count))", color: .hrBlue)
-                statPill(label: "Change", value: vm.trendChange, color: vm.trendChange.hasPrefix("+") ? .hrGreen : .hrRed)
+                HStack(spacing: 20) {
+                    statPill(label: "Best", value: "\(vm.trendData.map(\.score).max() ?? 0)", color: .hrGreen)
+                    statPill(label: "Avg", value: "\(vm.trendData.map(\.score).reduce(0,+) / max(1, vm.trendData.count))", color: .hrBlue)
+                    statPill(label: "Change", value: vm.trendChange, color: vm.trendChange.hasPrefix("+") ? .hrGreen : .hrRed)
+                }
             }
         }
         .hrCard()
@@ -447,7 +483,7 @@ struct RankingsView: View {
                 .foregroundStyle(color)
             Text(label)
                 .font(.system(size: 9, weight: .medium))
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(.primary.opacity(0.50))
                 .textCase(.uppercase)
                 .tracking(0.5)
         }
@@ -470,7 +506,7 @@ class RankingsViewModel: ObservableObject {
     static let ageGroups = ["8-10", "11-13", "14-16", "17-18"]
 
     struct LeaderEntry: Identifiable {
-        let id = UUID()
+        let id: String
         let initials: String
         let displayName: String
         let score: Int
@@ -479,57 +515,106 @@ class RankingsViewModel: ObservableObject {
     }
 
     struct TrendPoint {
-        let week: Int
+        let session: Int
         let score: Int
     }
 
     @Published var selectedAgeRange = "11-13"
     @Published var leaders: [LeaderEntry] = []
-    @Published var myRank = 7
-    @Published var myPercentile = 43
-    @Published var myScore = 72
-    @Published var totalPlayers = 284
+    @Published var myRank = 0
+    @Published var myPercentile = 0
+    @Published var myScore = 0
+    @Published var totalPlayers = 0
     @Published var trendData: [TrendPoint] = []
-    @Published var trendChange = "+6"
+    @Published var trendChange = "—"
+    @Published var isLoading = false
+    @Published var hasRealData = false
+    @Published var error: String?
 
     var myEntry: LeaderEntry {
-        LeaderEntry(initials: "ME", displayName: "You", score: myScore, grade: "B", isMe: true)
+        LeaderEntry(id: "me", initials: "ME", displayName: "You",
+                   score: myScore, grade: gradeFor(score: myScore), isMe: true)
     }
 
     var selectedAgeDisplay: String { selectedAgeRange }
 
-    func loadData() {
-        // Simulated leaderboard based on selected age group
-        let allNames: [(String, String)] = [
-            ("JL", "Jordan L."), ("MC", "Marcus C."), ("TR", "Tyler R."),
-            ("DS", "Derek S."), ("AM", "Alex M."), ("RB", "Ryan B."),
-            ("CW", "Chris W."), ("BH", "Blake H."), ("NJ", "Noah J."),
-            ("KP", "Kyle P.")
-        ]
-        let scores = [96, 91, 87, 84, 80, 77, 74, 71, 68, 65]
-        let grades = ["A+", "A", "A", "B", "B", "B", "B", "B", "C", "C"]
+    func loadData(userId: String?) async {
+        isLoading = true
+        error = nil
 
-        leaders = zip(allNames, zip(scores, grades)).map { name, sg in
-            LeaderEntry(initials: name.0, displayName: name.1,
-                       score: sg.0, grade: sg.1, isMe: false)
+        do {
+            // Fetch leaderboard from Supabase RPC
+            let rows = try await SupabaseService.shared.fetchLeaderboard(
+                ageGroup: selectedAgeRange,
+                userId: userId
+            )
+
+            // Convert to LeaderEntry
+            leaders = rows.map { row in
+                LeaderEntry(
+                    id: row.entryId,
+                    initials: row.isMe ? "ME" : row.initials,
+                    displayName: row.isMe ? "You" : row.displayName,
+                    score: row.score,
+                    grade: gradeFor(score: row.score),
+                    isMe: row.isMe
+                )
+            }
+
+            totalPlayers = leaders.count
+
+            // Find current user's rank
+            if let meIndex = leaders.firstIndex(where: { $0.isMe }) {
+                myRank = meIndex + 1
+                myScore = leaders[meIndex].score
+                myPercentile = totalPlayers > 0 ? max(1, (myRank * 100) / totalPlayers) : 0
+                hasRealData = true
+            } else {
+                // User has no score — place them last
+                myRank = totalPlayers + 1
+                myScore = 0
+                myPercentile = 100
+                hasRealData = false
+            }
+
+            // Fetch trend data if user is logged in
+            if let uid = userId {
+                let trendRows = try await SupabaseService.shared.fetchMyTrend(userId: uid)
+                // Sort by session_number ascending for chart
+                let sorted = trendRows.sorted { $0.sessionNumber < $1.sessionNumber }
+                trendData = sorted.map { row in
+                    TrendPoint(session: Int(row.sessionNumber), score: row.overallScore)
+                }
+
+                // Calculate change
+                if trendData.count >= 2 {
+                    let latest = trendData.last!.score
+                    let previous = trendData[trendData.count - 2].score
+                    let diff = latest - previous
+                    trendChange = diff >= 0 ? "+\(diff)" : "\(diff)"
+                } else {
+                    trendChange = "—"
+                }
+            } else {
+                trendData = []
+                trendChange = "—"
+            }
+
+        } catch {
+            self.error = error.localizedDescription
+            print("Rankings load error: \(error)")
         }
 
-        trendData = [
-            TrendPoint(week: 1, score: 54),
-            TrendPoint(week: 2, score: 61),
-            TrendPoint(week: 3, score: 68),
-            TrendPoint(week: 4, score: 72),
-        ]
+        isLoading = false
+    }
 
-        switch selectedAgeRange {
-        case "8-10":
-            myRank = 4; myPercentile = 24; myScore = 68; totalPlayers = 142
-        case "14-16":
-            myRank = 12; myPercentile = 58; myScore = 75; totalPlayers = 391
-        case "17-18":
-            myRank = 18; myPercentile = 72; myScore = 71; totalPlayers = 210
-        default:
-            myRank = 7; myPercentile = 43; myScore = 72; totalPlayers = 284
+    private func gradeFor(score: Int) -> String {
+        switch score {
+        case 90...100: return "A+"
+        case 80..<90:  return "A"
+        case 70..<80:  return "B"
+        case 60..<70:  return "C"
+        default:       return "D"
         }
     }
 }

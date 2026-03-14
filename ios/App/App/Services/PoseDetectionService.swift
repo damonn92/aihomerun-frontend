@@ -33,6 +33,16 @@ actor PoseDetectionService {
         progress: @escaping @Sendable (Double) -> Void
     ) async throws -> VideoPoseData {
         poseDebugLog("[PoseService] analyzeVideo ENTERED for: \(url.lastPathComponent)")
+
+        // Check disk cache first
+        if let cached = await PoseDataCache.shared.cached(for: url) {
+            poseDebugLog("[PoseService] Cache HIT — returning cached pose data (\(cached.totalFrames) frames)")
+            usedMockData = false
+            progress(1.0)
+            return cached
+        }
+        poseDebugLog("[PoseService] Cache MISS — analyzing from scratch")
+
         let asset = AVAsset(url: url)
 
         guard let track = try await asset.loadTracks(withMediaType: .video).first else {
@@ -73,13 +83,17 @@ actor PoseDetectionService {
         return result
         #else
         usedMockData = false
-        return try await analyzeVideoWithVision(
+        let visionResult = try await analyzeVideoWithVision(
             asset: asset,
             totalFrames: totalFrames,
             effectiveRate: effectiveRate,
             naturalSize: naturalSize,
             progress: progress
         )
+        // Store in disk cache for future use
+        await PoseDataCache.shared.store(visionResult, for: url)
+        poseDebugLog("[PoseService] Cached analysis result for: \(url.lastPathComponent)")
+        return visionResult
         #endif
     }
 

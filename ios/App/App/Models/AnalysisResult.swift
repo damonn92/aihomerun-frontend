@@ -30,6 +30,8 @@ struct Metrics: Codable {
     let followThrough: Bool?
     let jointAngles: JointAngles?
     let framesAnalyzed: Int?
+    let planeEfficiency: Double?      // Estimated bat path on-plane percentage (0–100%)
+    let batPathConsistency: Double?   // Consistency of bat path across frames (0–100%)
 
     enum CodingKeys: String, CodingKey {
         case peakWristSpeed = "peak_wrist_speed"
@@ -38,6 +40,8 @@ struct Metrics: Codable {
         case followThrough = "follow_through"
         case jointAngles = "joint_angles"
         case framesAnalyzed = "frames_analyzed"
+        case planeEfficiency = "plane_efficiency"
+        case batPathConsistency = "bat_path_consistency"
     }
 }
 
@@ -131,7 +135,7 @@ struct Quality: Codable {
 }
 
 struct SessionSummary: Codable, Identifiable {
-    var id: String { videoId ?? UUID().uuidString }
+    let id: String
     let videoId: String?
     let actionType: String?
     let overallScore: Int?
@@ -148,6 +152,29 @@ struct SessionSummary: Codable, Identifiable {
         case powerScore = "power_score"
         case balanceScore = "balance_score"
         case createdAt = "created_at"
+    }
+
+    init(videoId: String?, actionType: String?, overallScore: Int?, techniqueScore: Int?, powerScore: Int?, balanceScore: Int?, createdAt: String?) {
+        self.videoId = videoId
+        self.actionType = actionType
+        self.overallScore = overallScore
+        self.techniqueScore = techniqueScore
+        self.powerScore = powerScore
+        self.balanceScore = balanceScore
+        self.createdAt = createdAt
+        self.id = videoId ?? UUID().uuidString
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        videoId = try container.decodeIfPresent(String.self, forKey: .videoId)
+        actionType = try container.decodeIfPresent(String.self, forKey: .actionType)
+        overallScore = try container.decodeIfPresent(Int.self, forKey: .overallScore)
+        techniqueScore = try container.decodeIfPresent(Int.self, forKey: .techniqueScore)
+        powerScore = try container.decodeIfPresent(Int.self, forKey: .powerScore)
+        balanceScore = try container.decodeIfPresent(Int.self, forKey: .balanceScore)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        id = videoId ?? UUID().uuidString
     }
 }
 

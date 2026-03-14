@@ -98,7 +98,7 @@ actor GooglePlacesService {
     // MARK: - Private: Place Details
 
     private func fetchPlaceDetails(placeId: String) async -> PlaceReviewData? {
-        let fieldMask = "id,rating,userRatingCount,reviews,currentOpeningHours,types"
+        let fieldMask = "id,rating,userRatingCount,reviews,currentOpeningHours,types,photos"
         let urlString = "\(baseURL)/places/\(placeId)?languageCode=en"
         guard let url = URL(string: urlString) else { return nil }
 
@@ -127,13 +127,20 @@ actor GooglePlacesService {
 
             let isIndoor = checkIfIndoor(types: detail.types)
 
+            // Build photo URLs from photo references (up to 5)
+            let photoURLs: [URL] = (detail.photos ?? []).prefix(5).compactMap { photo in
+                guard let name = photo.name else { return nil }
+                return URL(string: "\(baseURL)/\(name)/media?maxWidthPx=800&maxHeightPx=600&key=\(apiKey)")
+            }
+
             return PlaceReviewData(
                 placeId: placeId,
                 rating: detail.rating,
                 reviewCount: detail.userRatingCount ?? 0,
                 reviews: reviews,
                 isOpenNow: detail.currentOpeningHours?.openNow,
-                isIndoor: isIndoor
+                isIndoor: isIndoor,
+                photoURLs: photoURLs
             )
         } catch {
             return nil
@@ -175,6 +182,13 @@ private struct PlaceDetailResponse: Decodable {
     let reviews: [GooglePlaceReview]?
     let currentOpeningHours: OpeningHours?
     let types: [String]?
+    let photos: [PlacePhoto]?
+}
+
+private struct PlacePhoto: Decodable {
+    let name: String?
+    let widthPx: Int?
+    let heightPx: Int?
 }
 
 private struct GooglePlaceReview: Decodable {
@@ -208,6 +222,7 @@ struct PlaceReviewData {
     let reviews: [GoogleReview]
     let isOpenNow: Bool?
     let isIndoor: Bool
+    let photoURLs: [URL]
 }
 
 struct GoogleReview: Identifiable {

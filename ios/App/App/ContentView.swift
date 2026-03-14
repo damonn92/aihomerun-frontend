@@ -2,6 +2,11 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var authVM: AuthViewModel
+    @AppStorage("appTheme") private var appTheme: String = AppTheme.dark.rawValue
+
+    private var resolvedScheme: ColorScheme? {
+        AppTheme(rawValue: appTheme)?.colorScheme
+    }
 
     var body: some View {
         Group {
@@ -13,7 +18,7 @@ struct ContentView: View {
                 MainTabView()
             }
         }
-        .preferredColorScheme(.dark)
+        .preferredColorScheme(resolvedScheme)
         .animation(.easeInOut(duration: 0.4), value: authVM.isLoading)
         .animation(.easeInOut(duration: 0.4), value: authVM.user == nil)
     }
@@ -62,14 +67,14 @@ struct SplashView: View {
                 VStack(spacing: 6) {
                     Text("AIHomeRun")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 12)
                         .animation(.spring(duration: 0.5).delay(0.15), value: appeared)
 
                     Text("AI Baseball Coaching")
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.45))
+                        .foregroundStyle(.primary.opacity(0.55))
                         .opacity(appeared ? 1 : 0)
                         .animation(.easeOut(duration: 0.4).delay(0.3), value: appeared)
                 }
@@ -95,26 +100,21 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
+            TrainingView()
+                .tabItem {
+                    Label("Training", systemImage: "heart.fill")
+                }
+                .tag(1)
+
             RankingsView()
                 .tabItem {
                     Label("Rankings", systemImage: "trophy.fill")
                 }
-                .tag(1)
+                .tag(2)
 
             AICoachView()
                 .tabItem {
-                    Label {
-                        Text("AI Coach")
-                    } icon: {
-                        Image("AICoachIcon")
-                            .renderingMode(.template)
-                    }
-                }
-                .tag(2)
-
-            FieldBookingView()
-                .tabItem {
-                    Label("Fields", systemImage: "mappin.and.ellipse")
+                    Label("AI Coach", systemImage: "sparkles")
                 }
                 .tag(3)
 

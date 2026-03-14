@@ -207,9 +207,22 @@ class PoseOverlayViewModel: ObservableObject {
         return frames[lo]
     }
 
+    // MARK: - Load Cached Pose Data
+
+    /// Inject pre-computed pose data directly (from PoseDataCache or previous analysis).
+    /// Used by ComparisonViewModel to skip re-analysis.
+    func loadCachedPoseData(_ data: VideoPoseData) {
+        self.poseData = data
+        self.isAnalyzing = false
+        self.analysisError = nil
+        self.usedMockData = false
+        poseDebugLog("[PoseOverlay] Loaded cached pose data: \(data.totalFrames) frames")
+    }
+
     // MARK: - Angle Computation
 
-    private func computeAngles(from frame: FramePose) -> [ComputedAngle] {
+    /// Compute angles from a frame — accessible for ComparisonViewModel to use.
+    func computeAngles(from frame: FramePose) -> [ComputedAngle] {
         var angles: [ComputedAngle] = []
 
         // Right elbow: shoulder → elbow → wrist

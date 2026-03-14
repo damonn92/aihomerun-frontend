@@ -31,7 +31,7 @@ struct ChildEditorView: View {
                     Picker("Gender", selection: $gender) {
                         Text("Not specified").tag("")
                         ForEach(Child.genders, id: \.self) { g in
-                            Text(g).tag(g)
+                            Text(Child.genderLabel(g)).tag(g)
                         }
                     }
 

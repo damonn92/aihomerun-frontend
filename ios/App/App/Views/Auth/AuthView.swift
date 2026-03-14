@@ -10,6 +10,7 @@ struct AuthView: View {
     @State private var showForgot = false
     @State private var isSubmitting = false
     @State private var cardAppeared = false
+    @Environment(\.colorScheme) private var colorScheme
 
     enum AuthMode { case signIn, signUp }
 
@@ -46,11 +47,11 @@ struct AuthView: View {
 
                         Text("AIHomeRun")
                             .font(.system(size: 30, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
 
                         Text("AI-Powered Baseball Coaching")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.45))
+                            .foregroundStyle(.primary.opacity(0.55))
                     }
                     .padding(.top, 56)
                     .padding(.bottom, 36)
@@ -66,7 +67,7 @@ struct AuthView: View {
                                 } label: {
                                     Text(m == .signIn ? "Sign In" : "Sign Up")
                                         .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(mode == m ? .white : .white.opacity(0.38))
+                                        .foregroundStyle(mode == m ? Color.white : Color.primary.opacity(0.50))
                                         .frame(maxWidth: .infinity)
                                         .padding(.vertical, 10)
                                         .background(
@@ -79,7 +80,7 @@ struct AuthView: View {
                             }
                         }
                         .padding(4)
-                        .background(Color.white.opacity(0.08))
+                        .background(Color.hrDivider)
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
                         // Text fields
@@ -141,7 +142,7 @@ struct AuthView: View {
                                         endPoint: .bottomTrailing
                                       )
                                     : LinearGradient(
-                                        colors: [Color.white.opacity(0.12), Color.white.opacity(0.08)],
+                                        colors: [Color.hrStroke, Color.hrDivider],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                       )
@@ -154,17 +155,17 @@ struct AuthView: View {
                         if mode == .signIn {
                             Button("Forgot password?") { showForgot = true }
                                 .font(.footnote)
-                                .foregroundStyle(.white.opacity(0.38))
+                                .foregroundStyle(.primary.opacity(0.50))
                         }
 
                         // Divider
                         HStack(spacing: 12) {
-                            Rectangle().frame(height: 0.5).foregroundStyle(.white.opacity(0.12))
+                            Rectangle().frame(height: 0.5).foregroundStyle(Color.hrStroke)
                             Text("OR")
                                 .font(.caption2.weight(.bold))
-                                .foregroundStyle(.white.opacity(0.28))
+                                .foregroundStyle(.primary.opacity(0.40))
                                 .tracking(1)
-                            Rectangle().frame(height: 0.5).foregroundStyle(.white.opacity(0.12))
+                            Rectangle().frame(height: 0.5).foregroundStyle(Color.hrStroke)
                         }
 
                         // Social auth
@@ -177,7 +178,7 @@ struct AuthView: View {
                             } onCompletion: { result in
                                 authVM.handleAppleSignInCompletion(result)
                             }
-                            .signInWithAppleButtonStyle(.white)
+                            .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
                             .frame(height: 52)
                             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
@@ -193,30 +194,30 @@ struct AuthView: View {
                                     Text("Continue with Google")
                                         .font(.subheadline.weight(.semibold))
                                 }
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 52)
-                                .background(Color.white.opacity(0.07))
+                                .background(Color.hrSurface)
                                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                                        .stroke(Color.hrStroke, lineWidth: 1)
                                 )
                             }
                         }
 
                         Text("By continuing, you agree to our Terms of Service and Privacy Policy.")
                             .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.22))
+                            .foregroundStyle(.primary.opacity(0.35))
                             .multilineTextAlignment(.center)
                     }
                     .padding(22)
                     .background(.ultraThinMaterial.opacity(0.25))
-                    .background(Color.white.opacity(0.04))
+                    .background(Color.hrSurface)
                     .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 28, style: .continuous)
-                            .stroke(Color.white.opacity(0.10), lineWidth: 1)
+                            .stroke(Color.hrStroke, lineWidth: 1)
                     )
                     .padding(.horizontal, 20)
                     .padding(.bottom, 48)
@@ -274,10 +275,10 @@ struct ForgotPasswordView: View {
                         VStack(spacing: 14) {
                             Text("Check your inbox")
                                 .font(.title2.bold())
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
                             Text("We sent a reset link to \(email)")
                                 .font(.subheadline)
-                                .foregroundStyle(.white.opacity(0.5))
+                                .foregroundStyle(.primary.opacity(0.60))
                                 .multilineTextAlignment(.center)
                             Button("Done") { dismiss() }
                                 .font(.headline)
@@ -292,10 +293,10 @@ struct ForgotPasswordView: View {
                             VStack(spacing: 6) {
                                 Text("Reset Password")
                                     .font(.title2.bold())
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.primary)
                                 Text("Enter your email to receive a reset link")
                                     .font(.subheadline)
-                                    .foregroundStyle(.white.opacity(0.45))
+                                    .foregroundStyle(.primary.opacity(0.55))
                             }
 
                             HRInputContainer(icon: "envelope.fill") {
@@ -316,16 +317,16 @@ struct ForgotPasswordView: View {
                             } label: {
                                 ZStack {
                                     if isSending {
-                                        ProgressView().tint(.white)
+                                        ProgressView().tint(email.isEmpty ? Color.primary : Color.white)
                                     } else {
                                         Text("Send Reset Email")
                                             .font(.headline)
-                                            .foregroundStyle(.white)
+                                            .foregroundStyle(email.isEmpty ? Color.primary.opacity(0.40) : Color.white)
                                     }
                                 }
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 52)
-                                .background(email.isEmpty ? Color.white.opacity(0.12) : Color.hrBlue)
+                                .background(email.isEmpty ? Color.hrSurface : Color.hrBlue)
                                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                             }
                             .disabled(email.isEmpty || isSending)
@@ -340,11 +341,10 @@ struct ForgotPasswordView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(.primary.opacity(0.6))
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 

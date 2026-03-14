@@ -67,12 +67,12 @@ struct LoadingView: View {
                 VStack(spacing: 6) {
                     Text(current.label)
                         .font(.title3.bold())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                         .id("lbl-\(step)")
                         .transition(.opacity)
                     Text(current.sub)
                         .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.42))
+                        .foregroundStyle(.primary.opacity(0.55))
                         .id("sub-\(step)")
                         .transition(.opacity)
                 }
@@ -88,7 +88,7 @@ struct LoadingView: View {
                                     .fill(
                                         idx < step  ? Color.hrGreen.opacity(0.18) :
                                         idx == step ? Color.hrBlue.opacity(0.18) :
-                                                      Color.white.opacity(0.06)
+                                                      Color.hrSurface
                                     )
                                     .frame(width: 32, height: 32)
 
@@ -114,8 +114,8 @@ struct LoadingView: View {
                                 .font(.subheadline.weight(idx <= step ? .semibold : .regular))
                                 .foregroundStyle(
                                     idx < step  ? Color.hrGreen :
-                                    idx == step ? .white :
-                                                  .white.opacity(0.26)
+                                    idx == step ? .primary :
+                                                  .primary.opacity(0.40)
                                 )
                             Spacer()
                         }
@@ -129,7 +129,7 @@ struct LoadingView: View {
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 6)
-                                .fill(Color.white.opacity(0.08))
+                                .fill(Color.hrDivider)
                                 .frame(height: 6)
                             RoundedRectangle(cornerRadius: 6)
                                 .fill(
@@ -147,7 +147,7 @@ struct LoadingView: View {
 
                     Text("This takes 30–60 seconds")
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.28))
+                        .foregroundStyle(.primary.opacity(0.40))
                 }
                 .padding(.horizontal, 44)
 

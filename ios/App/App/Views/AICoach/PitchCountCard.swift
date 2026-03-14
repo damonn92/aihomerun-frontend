@@ -38,12 +38,12 @@ struct PitchCountCard: View {
                     .foregroundStyle(Color.hrOrange)
                 Text("PITCH COUNT")
                     .font(.system(size: 10, weight: .black))
-                    .foregroundStyle(.white.opacity(0.42))
+                    .foregroundStyle(.primary.opacity(0.55))
                     .tracking(1.2)
                 Spacer()
                 Text("Age \(vm.playerAge) · Limit \(limit)")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.35))
+                    .foregroundStyle(.primary.opacity(0.50))
             }
 
             HStack(spacing: 20) {
@@ -51,7 +51,7 @@ struct PitchCountCard: View {
                 ZStack {
                     // Background ring
                     Circle()
-                        .stroke(Color.white.opacity(0.08), lineWidth: 8)
+                        .stroke(Color.hrDivider, lineWidth: 8)
                         .frame(width: 72, height: 72)
 
                     // Progress arc
@@ -69,11 +69,11 @@ struct PitchCountCard: View {
                     VStack(spacing: 0) {
                         Text("\(vm.todayPitchCount)")
                             .font(.system(size: 22, weight: .black, design: .rounded))
-                            .foregroundStyle(isAtLimit ? Color.hrRed : .white)
+                            .foregroundStyle(isAtLimit ? Color.hrRed : .primary)
                             .contentTransition(.numericText())
                         Text("/ \(limit)")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.35))
+                            .foregroundStyle(.primary.opacity(0.50))
                     }
                 }
 
@@ -86,7 +86,7 @@ struct PitchCountCard: View {
                     } else {
                         Text("\(remaining) pitches remaining")
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.60))
+                            .foregroundStyle(.primary.opacity(0.60))
                     }
 
                     // Quick add buttons
@@ -105,9 +105,9 @@ struct PitchCountCard: View {
                         } label: {
                             Image(systemName: "arrow.counterclockwise")
                                 .font(.system(size: 11, weight: .medium))
-                                .foregroundStyle(.white.opacity(0.35))
+                                .foregroundStyle(.primary.opacity(0.50))
                                 .padding(8)
-                                .background(Color.white.opacity(0.06))
+                                .background(Color.hrSurface)
                                 .clipShape(Circle())
                         }
                     }
@@ -120,7 +120,7 @@ struct PitchCountCard: View {
                         )
                         Text("Required rest: \(rest) day\(rest == 1 ? "" : "s")")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.30))
+                            .foregroundStyle(.primary.opacity(0.45))
                     }
                 }
             }
@@ -136,17 +136,17 @@ struct PitchCountCard: View {
         } label: {
             Text(label)
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(isAtLimit ? .white.opacity(0.25) : .white)
+                .foregroundStyle(Color.primary.opacity(isAtLimit ? 0.40 : 1.0))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 7)
                 .background(isAtLimit
-                            ? Color.white.opacity(0.04)
+                            ? Color.hrSurface
                             : Color.hrOrange.opacity(0.22))
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()
                         .stroke(isAtLimit
-                                ? Color.white.opacity(0.06)
+                                ? Color.hrSurface
                                 : Color.hrOrange.opacity(0.35),
                                 lineWidth: 1)
                 )

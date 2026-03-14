@@ -23,11 +23,19 @@ struct MovieTransferable: Transferable {
 
 // MARK: - UploadView (Training Dashboard Home)
 
+// MARK: - Stats Sheet Type
+private enum StatsSheet: String, Identifiable {
+    case sessions, bestScore, avgScore
+    var id: String { rawValue }
+}
+
 struct UploadView: View {
     @EnvironmentObject var authVM: AuthViewModel
+    @EnvironmentObject var deepLink: DeepLinkRouter
     @StateObject private var vm   = UploadViewModel()
     @StateObject private var feed = HomeFeedViewModel()
     @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var activeStatsSheet: StatsSheet?
 
     var body: some View {
         NavigationStack {
@@ -35,7 +43,12 @@ struct UploadView: View {
                 if vm.isLoading {
                     LoadingView(step: vm.loadStep, progress: vm.uploadProgress)
                 } else if let result = vm.result {
-                    ResultView(result: result, videoURL: vm.videoURL) {
+                    ResultView(result: result, videoURL: vm.videoURL, usedCache: vm.usedCache, onReanalyze: {
+                        Task {
+                            let token = await authVM.accessToken()
+                            await vm.reanalyze(token: token)
+                        }
+                    }) {
                         feed.saveLastResult(result)
                         vm.reset()
                     }
@@ -45,13 +58,29 @@ struct UploadView: View {
             }
             .navigationTitle("AIHomeRun")
             .navigationBarTitleDisplayMode(.large)
-            .alert("Analysis Error", isPresented: .constant(vm.error != nil)) {
+            .alert("Analysis Error", isPresented: Binding(
+                get: { vm.error != nil },
+                set: { if !$0 { vm.error = nil } }
+            )) {
                 Button("OK") { vm.error = nil }
             } message: { Text(vm.error ?? "") }
-            .sheet(isPresented: .constant(vm.qualityError != nil)) {
+            .sheet(isPresented: Binding(
+                get: { vm.qualityError != nil },
+                set: { if !$0 { vm.qualityError = nil } }
+            )) {
                 if let qe = vm.qualityError {
                     QualityErrorSheet(qualityError: qe) { vm.qualityError = nil }
                         .presentationDetents([.medium])
+                }
+            }
+            .fullScreenCover(item: $activeStatsSheet) { sheet in
+                switch sheet {
+                case .sessions:
+                    SessionHistoryView(sessions: feed.sessionHistory)
+                case .bestScore:
+                    BestScoreView(sessions: feed.sessionHistory)
+                case .avgScore:
+                    ProgressStatsView(sessions: feed.sessionHistory)
                 }
             }
         }
@@ -65,6 +94,13 @@ struct UploadView: View {
                 await vm.prepareVideo(from: item)
             }
         }
+        .onReceive(deepLink.$statsRoute) { route in
+            guard let route else { return }
+            DispatchQueue.main.async {
+                deepLink.statsRoute = nil
+                activeStatsSheet = StatsSheet(rawValue: route == "best" ? "bestScore" : route == "avg" ? "avgScore" : route)
+            }
+        }
     }
 
     // MARK: - Dashboard
@@ -73,26 +109,59 @@ struct UploadView: View {
         ZStack {
             Color.hrBg.ignoresSafeArea()
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 16) {
-                    // Hero baseball banner
-                    BaseballHeroBanner(greeting: greeting, subtitle: dateString)
-
-                    // Quick stats summary
-                    quickStatsSummary
-
-                    quickRecordCard
-                    if vm.videoURL != nil && !vm.isPreparing { startAnalysisButton }
-                    if let cached = feed.lastResult {
-                        lastAnalysisCard(cached)
-                    } else {
-                        emptyLastAnalysisCard
+                VStack(spacing: 14) {
+                    // Hero banner with stats overlapping at the bottom
+                    ZStack(alignment: .bottom) {
+                        BaseballHeroBanner(greeting: greeting, subtitle: dateString)
+                            .padding(.bottom, 22)
+                            .allowsHitTesting(false)
+                        quickStatsSummary
+                            .padding(.horizontal, 12)
+                            .shadow(color: Color.black.opacity(0.08), radius: 8, y: 4)
+                            .zIndex(1)
                     }
-                    todaysDrillCard
+
+                    // Primary CTA
+                    quickRecordCard
+
+                    // Auto-detect / trim flow
+                    if vm.isDetecting {
+                        autoDetectCard
+                    }
+                    if vm.showTrimPreview, let detection = vm.detectionResult {
+                        TrimPreviewView(
+                            videoURL: vm.videoURL!,
+                            detection: detection,
+                            onConfirmTrim: { range in
+                                Task { await vm.applyTrim(range: range) }
+                            },
+                            onUseFullVideo: {
+                                vm.skipTrim()
+                            }
+                        )
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
+                    if vm.isTrimming { trimmingCard }
+                    if vm.trimmedVideoURL != nil { trimResultBadge }
+                    if vm.videoURL != nil && !vm.isPreparing && !vm.isDetecting && !vm.showTrimPreview && !vm.isTrimming { startAnalysisButton }
+
+                    // 2-column compact grid
+                    let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+                    LazyVGrid(columns: columns, spacing: 12) {
+                        if let cached = feed.lastResult {
+                            compactAnalysisCard(cached)
+                        } else {
+                            compactEmptyCard
+                        }
+                        compactDrillCard
+                    }
+
+                    // Progress chart (visual, not text-heavy)
                     if feed.sessionHistory.count >= 2 { progressTrendCard }
-                    ageRankingCard
-                    // Rotating pro tips
-                    BaseballTipsCard()
+
+                    // Filming guide (collapsed)
                     filmingGuideCard
+
                     Spacer(minLength: 32)
                 }
                 .padding(.horizontal, 20)
@@ -112,7 +181,10 @@ struct UploadView: View {
         return QuickStatsBar(
             sessions:  feed.sessionHistory.count,
             bestScore: best,
-            avgScore:  avg
+            avgScore:  avg,
+            onTapSessions:  { activeStatsSheet = .sessions },
+            onTapBestScore: { activeStatsSheet = .bestScore },
+            onTapAvgScore:  { activeStatsSheet = .avgScore }
         )
     }
 
@@ -124,13 +196,13 @@ struct UploadView: View {
             PhotosPicker(selection: $selectedItems, matching: .videos) {
                 ZStack(alignment: .bottom) {
                     LinearGradient(
-                        colors: [Color.hrBlue.opacity(0.28), Color.hrCard],
+                        colors: [Color.hrBlue, Color(red: 0.04, green: 0.36, blue: 0.82)],
                         startPoint: .topLeading, endPoint: .bottomTrailing
                     )
                     HStack(spacing: 18) {
                         ZStack {
-                            Circle().fill(Color.hrBlue.opacity(0.20)).frame(width: 64, height: 64)
-                            Circle().fill(Color.hrBlue.opacity(0.28)).frame(width: 52, height: 52)
+                            Circle().fill(Color.white.opacity(0.18)).frame(width: 64, height: 64)
+                            Circle().fill(Color.white.opacity(0.22)).frame(width: 52, height: 52)
                             if vm.isPreparing {
                                 ProgressView()
                                     .progressViewStyle(.circular)
@@ -150,7 +222,7 @@ struct UploadView: View {
                                  : vm.videoURL == nil
                                  ? "Choose a video to get your AI coaching report"
                                  : "Tap here to change video")
-                                .font(.footnote).foregroundStyle(.white.opacity(0.52))
+                                .font(.footnote).foregroundStyle(.white.opacity(0.75))
                                 .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                             if vm.videoURL != nil && !vm.isPreparing {
                                 Label("Selected ✓", systemImage: "checkmark.circle.fill")
@@ -163,7 +235,7 @@ struct UploadView: View {
                         if !vm.isPreparing {
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.bold))
-                                .foregroundStyle(.white.opacity(0.28))
+                                .foregroundStyle(.white.opacity(0.55))
                         }
                     }
                     .padding(20)
@@ -175,10 +247,10 @@ struct UploadView: View {
                                 Spacer()
                                 ZStack(alignment: .leading) {
                                     RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.white.opacity(0.10))
+                                        .fill(Color.white.opacity(0.25))
                                         .frame(height: 4)
                                     RoundedRectangle(cornerRadius: 2)
-                                        .fill(Color.hrBlue)
+                                        .fill(Color.white)
                                         .frame(width: geo.size.width * vm.prepareProgress, height: 4)
                                         .animation(.easeOut(duration: 0.15), value: vm.prepareProgress)
                                 }
@@ -209,7 +281,7 @@ struct UploadView: View {
                                 Image(systemName: type.icon).font(.system(size: 12))
                                 Text(type.label).font(.caption.weight(.semibold))
                             }
-                            .foregroundStyle(vm.actionType == type ? .white : .white.opacity(0.35))
+                            .foregroundStyle(vm.actionType == type ? Color.white : Color.primary.opacity(0.50))
                             .padding(.horizontal, 12).padding(.vertical, 8)
                             .background(vm.actionType == type ? Color.hrBlue : Color.clear)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -218,7 +290,7 @@ struct UploadView: View {
                     }
                 }
                 .padding(3)
-                .background(Color.white.opacity(0.07))
+                .background(Color.hrSurface)
                 .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
 
                 Spacer()
@@ -230,12 +302,12 @@ struct UploadView: View {
                     } label: {
                         Image(systemName: "minus")
                             .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(vm.age > 6 ? .white : .white.opacity(0.20))
+                            .foregroundStyle(Color.primary.opacity(vm.age > 6 ? 1.0 : 0.35))
                             .frame(width: 36, height: 36)
                     }
                     Text("Age \(vm.age)")
                         .font(.caption.weight(.semibold).monospacedDigit())
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                         .frame(width: 54)
                         .contentTransition(.numericText())
                     Button {
@@ -243,11 +315,11 @@ struct UploadView: View {
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(vm.age < 18 ? .white : .white.opacity(0.20))
+                            .foregroundStyle(Color.primary.opacity(vm.age < 18 ? 1.0 : 0.35))
                             .frame(width: 36, height: 36)
                     }
                 }
-                .background(Color.white.opacity(0.07))
+                .background(Color.hrSurface)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
         }
@@ -273,14 +345,14 @@ struct UploadView: View {
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     Text(cached.result.actionType.capitalized)
-                        .font(.caption).foregroundStyle(.white.opacity(0.35))
+                        .font(.caption).foregroundStyle(.primary.opacity(0.60))
                     HStack(spacing: 6) {
                         scorePill("Tech", fb.techniqueScore, .hrBlue)
                         scorePill("Pwr",  fb.powerScore,     .hrOrange)
                         scorePill("Bal",  fb.balanceScore,   .hrGreen)
                     }
                     Text(fb.plainSummary)
-                        .font(.footnote).foregroundStyle(.white.opacity(0.55))
+                        .font(.footnote).foregroundStyle(.primary.opacity(0.55))
                         .lineLimit(2)
                 }
             }
@@ -292,20 +364,111 @@ struct UploadView: View {
         HStack(spacing: 14) {
             Image(systemName: "chart.bar.doc.horizontal")
                 .font(.system(size: 28))
-                .foregroundStyle(.white.opacity(0.18))
+                .foregroundStyle(.primary.opacity(0.30))
             VStack(alignment: .leading, spacing: 4) {
                 Text("No analysis yet")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.42))
+                    .foregroundStyle(.primary.opacity(0.55))
                 Text("Record your first video to see your AI coaching report")
-                    .font(.caption).foregroundStyle(.white.opacity(0.26))
+                    .font(.caption).foregroundStyle(.primary.opacity(0.40))
             }
             Spacer()
         }
         .hrCard()
     }
 
-    // MARK: - 4. Today's Drill
+    // MARK: - Compact Grid Cards
+
+    private func compactAnalysisCard(_ cached: HomeFeedViewModel.CachedResult) -> some View {
+        let fb = cached.result.feedback
+        let gradeClr = gradeColor(fb.grade)
+        return VStack(spacing: 12) {
+            // Large grade circle
+            ZStack {
+                Circle().fill(gradeClr.opacity(0.14)).frame(width: 56, height: 56)
+                Circle().stroke(gradeClr.opacity(0.35), lineWidth: 1.5).frame(width: 56, height: 56)
+                Text(fb.grade)
+                    .font(.system(size: 22, weight: .black, design: .rounded))
+                    .foregroundStyle(gradeClr)
+            }
+            Text("Last Score")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.primary.opacity(0.45))
+                .textCase(.uppercase).tracking(0.5)
+            HStack(spacing: 4) {
+                scorePill("T", fb.techniqueScore, .hrBlue)
+                scorePill("P", fb.powerScore, .hrOrange)
+                scorePill("B", fb.balanceScore, .hrGreen)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+        .background(Color.hrCard)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.hrStroke, lineWidth: 1))
+    }
+
+    private var compactEmptyCard: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "chart.bar.doc.horizontal")
+                .font(.system(size: 30, weight: .light))
+                .foregroundStyle(.primary.opacity(0.20))
+            Text("No Analysis")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.primary.opacity(0.40))
+                .textCase(.uppercase).tracking(0.5)
+            Text("Record a video\nto get started")
+                .font(.caption)
+                .foregroundStyle(.primary.opacity(0.35))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+        .background(Color.hrCard)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.hrStroke, lineWidth: 1))
+    }
+
+    private var compactDrillCard: some View {
+        let drill = feed.todaysDrill
+        return VStack(spacing: 12) {
+            ZStack {
+                Circle().fill(Color.hrOrange.opacity(0.14)).frame(width: 56, height: 56)
+                Image(systemName: "figure.baseball")
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundStyle(Color.hrOrange)
+            }
+            Text("Today's Drill")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.primary.opacity(0.45))
+                .textCase(.uppercase).tracking(0.5)
+            Text(drill.name)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+            if let reps = drill.reps {
+                Text(reps)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(Color.hrOrange)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .background(Color.hrOrange.opacity(0.12))
+                    .clipShape(Capsule())
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+        .background(
+            LinearGradient(
+                colors: [Color.hrOrange.opacity(0.08), Color.hrCard],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.hrOrange.opacity(0.18), lineWidth: 1))
+    }
+
+    // MARK: - 4. Today's Drill (full-width — kept for reference but replaced by compactDrillCard)
 
     private var todaysDrillCard: some View {
         let drill = feed.todaysDrill
@@ -314,9 +477,9 @@ struct UploadView: View {
                               subtitle: dayOfWeekString)
             VStack(alignment: .leading, spacing: 8) {
                 Text(drill.name)
-                    .font(.headline).foregroundStyle(.white)
+                    .font(.headline).foregroundStyle(.primary)
                 Text(drill.description)
-                    .font(.subheadline).foregroundStyle(.white.opacity(0.60))
+                    .font(.subheadline).foregroundStyle(.primary.opacity(0.60))
                     .fixedSize(horizontal: false, vertical: true)
                 if let reps = drill.reps {
                     Label(reps, systemImage: "repeat")
@@ -377,17 +540,17 @@ struct UploadView: View {
                     .lineStyle(StrokeStyle(lineWidth: 2.5))
                     .interpolationMethod(.catmullRom)
                 PointMark(x: .value("S", item.i), y: .value("Score", item.s))
-                    .foregroundStyle(.white).symbolSize(22)
+                    .foregroundStyle(.primary).symbolSize(22)
             }
             .chartYScale(domain: 0...100)
             .chartXAxis(.hidden)
             .chartYAxis {
                 AxisMarks(values: [0, 50, 100]) { v in
                     AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
-                        .foregroundStyle(Color.white.opacity(0.07))
+                        .foregroundStyle(Color.hrSurface)
                     AxisValueLabel {
                         Text("\(v.as(Int.self) ?? 0)")
-                            .font(.system(size: 9)).foregroundStyle(.white.opacity(0.25))
+                            .font(.system(size: 9)).foregroundStyle(.primary.opacity(0.40))
                     }
                 }
             }
@@ -406,17 +569,17 @@ struct UploadView: View {
             if let p = pct {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text("Top").font(.subheadline).foregroundStyle(.white.opacity(0.50))
+                        Text("Top").font(.subheadline).foregroundStyle(.primary.opacity(0.60))
                         Text("\(p)%")
                             .font(.system(size: 32, weight: .black, design: .rounded))
                             .foregroundStyle(Color.hrGold)
                         Text("in your age group")
-                            .font(.subheadline).foregroundStyle(.white.opacity(0.42))
+                            .font(.subheadline).foregroundStyle(.primary.opacity(0.55))
                     }
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.white.opacity(0.07)).frame(height: 8)
+                                .fill(Color.hrSurface).frame(height: 8)
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(LinearGradient(
                                     colors: [Color.hrGold, Color.hrOrange],
@@ -427,11 +590,11 @@ struct UploadView: View {
                     }
                     .frame(height: 8)
                     Text("Based on AI benchmark estimates · Peer comparison coming soon")
-                        .font(.system(size: 10)).foregroundStyle(.white.opacity(0.22))
+                        .font(.system(size: 10)).foregroundStyle(.primary.opacity(0.35))
                 }
             } else {
                 Text("Analyze a video to see how you rank against players your age")
-                    .font(.subheadline).foregroundStyle(.white.opacity(0.36))
+                    .font(.subheadline).foregroundStyle(.primary.opacity(0.50))
             }
         }
         .hrCard()
@@ -446,22 +609,26 @@ struct UploadView: View {
             Button {
                 withAnimation(.spring(duration: 0.35)) { showFullGuide.toggle() }
             } label: {
-                HStack {
-                    feedSectionHeader(icon: "camera.viewfinder", title: "Filming Guide",
-                                      subtitle: "How to position the camera")
+                HStack(spacing: 8) {
+                    Image(systemName: "camera.viewfinder")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color.hrBlue)
+                    Text("Filming Guide")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.primary)
                     Spacer()
                     Image(systemName: showFullGuide ? "chevron.up" : "chevron.down")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.30))
+                        .foregroundStyle(.primary.opacity(0.40))
                 }
             }
             .buttonStyle(.plain)
 
-            FilmingDiagramView(actionType: vm.actionType)
-
             if showFullGuide {
+                FilmingDiagramView(actionType: vm.actionType)
+
                 VStack(alignment: .leading, spacing: 14) {
-                    Divider().background(Color.white.opacity(0.08))
+                    Divider().background(Color.hrDivider)
                     filmingTip(icon: "camera.fill", color: .hrBlue, title: "Camera Position",
                                items: vm.actionType == .swing
                                ? ["Side view — level with batter's waist",
@@ -492,12 +659,133 @@ struct UploadView: View {
                 .font(.footnote.weight(.semibold)).foregroundStyle(color)
             ForEach(items, id: \.self) { item in
                 HStack(alignment: .top, spacing: 8) {
-                    Circle().fill(Color.white.opacity(0.20))
+                    Circle().fill(Color.hrDivider)
                         .frame(width: 4, height: 4).padding(.top, 6)
-                    Text(item).font(.footnote).foregroundStyle(.white.opacity(0.52))
+                    Text(item).font(.footnote).foregroundStyle(.primary.opacity(0.60))
                 }
             }
         }
+    }
+
+    // MARK: - Auto-Detect Card
+
+    private var autoDetectCard: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
+                ZStack {
+                    Circle()
+                        .stroke(Color.hrBlue.opacity(0.3), lineWidth: 2)
+                        .frame(width: 36, height: 36)
+                    Circle()
+                        .trim(from: 0, to: vm.detectProgress)
+                        .stroke(Color.hrBlue, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                        .frame(width: 36, height: 36)
+                        .rotationEffect(.degrees(-90))
+                        .animation(.easeOut(duration: 0.15), value: vm.detectProgress)
+                    Image(systemName: "wand.and.stars")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(Color.hrBlue)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Detecting Action...")
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(.primary)
+                    Text("Scanning for swing/pitch moments")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.primary.opacity(0.55))
+                }
+
+                Spacer()
+
+                Text("\(Int(vm.detectProgress * 100))%")
+                    .font(.system(size: 12, weight: .bold).monospacedDigit())
+                    .foregroundStyle(Color.hrBlue)
+            }
+
+            // Progress bar
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.hrDivider)
+                        .frame(height: 3)
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.hrBlue)
+                        .frame(width: geo.size.width * vm.detectProgress, height: 3)
+                        .animation(.easeOut(duration: 0.15), value: vm.detectProgress)
+                }
+            }
+            .frame(height: 3)
+        }
+        .padding(16)
+        .background(Color.hrCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.hrBlue.opacity(0.2), lineWidth: 1)
+        )
+        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+    }
+
+    // MARK: - Trimming Card
+
+    private var trimmingCard: some View {
+        HStack(spacing: 10) {
+            ProgressView()
+                .progressViewStyle(.circular)
+                .tint(Color.hrBlue)
+                .scaleEffect(0.8)
+            Text("Trimming video...")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.primary.opacity(0.7))
+            Spacer()
+        }
+        .padding(16)
+        .background(Color.hrCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .transition(.opacity)
+    }
+
+    // MARK: - Trim Result Badge
+
+    private var trimResultBadge: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 16))
+                .foregroundStyle(Color.hrGreen)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Video Trimmed")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(.primary)
+                if let detection = vm.detectionResult {
+                    Text("Action clip: \(String(format: "%.1fs", detection.trimRange.upperBound - detection.trimRange.lowerBound)) of \(String(format: "%.1fs", detection.videoDuration))")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.primary.opacity(0.55))
+                }
+            }
+            Spacer()
+            Button {
+                vm.trimmedVideoURL = nil
+                vm.showTrimPreview = true
+            } label: {
+                Text("Undo")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(Color.hrBlue)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Color.hrBlue.opacity(0.14))
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(14)
+        .background(Color.hrGreen.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.hrGreen.opacity(0.2), lineWidth: 1)
+        )
+        .transition(.opacity.combined(with: .move(edge: .top)))
     }
 
     // MARK: - 8. Start Analysis Button
@@ -536,11 +824,11 @@ struct UploadView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(title)
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.white.opacity(0.52))
+                    .foregroundStyle(.primary.opacity(0.60))
                     .textCase(.uppercase).tracking(0.6)
                 Text(subtitle)
                     .font(.system(size: 10))
-                    .foregroundStyle(.white.opacity(0.26))
+                    .foregroundStyle(.primary.opacity(0.40))
             }
         }
     }
@@ -548,7 +836,7 @@ struct UploadView: View {
     private func scorePill(_ label: String, _ value: Int, _ color: Color) -> some View {
         HStack(spacing: 3) {
             Text(label).font(.system(size: 9, weight: .bold)).foregroundStyle(color.opacity(0.80))
-            Text("\(value)").font(.system(size: 11, weight: .bold).monospacedDigit()).foregroundStyle(.white)
+            Text("\(value)").font(.system(size: 11, weight: .bold).monospacedDigit()).foregroundStyle(.primary)
         }
         .padding(.horizontal, 7).padding(.vertical, 3)
         .background(color.opacity(0.14)).clipShape(Capsule())
@@ -595,7 +883,7 @@ struct FilmingDiagramView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.white.opacity(0.03))
+                .fill(Color.hrSurface)
 
             HStack(spacing: 0) {
                 // Camera
@@ -617,7 +905,7 @@ struct FilmingDiagramView: View {
                     }
                     Text("CAMERA")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.26)).tracking(1.2)
+                        .foregroundStyle(.primary.opacity(0.40)).tracking(1.2)
                 }
                 .frame(width: 80)
 
@@ -636,7 +924,7 @@ struct FilmingDiagramView: View {
                         Spacer()
                         Text("Side view · 3–5 m · Waist height")
                             .font(.system(size: 8, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.25)).tracking(0.3)
+                            .foregroundStyle(.primary.opacity(0.40)).tracking(0.3)
                     }
                     .padding(.bottom, 4)
                 }
@@ -645,14 +933,14 @@ struct FilmingDiagramView: View {
                 // Player
                 VStack(spacing: 8) {
                     ZStack {
-                        Circle().fill(Color.white.opacity(0.07)).frame(width: 44, height: 44)
+                        Circle().fill(Color.hrSurface).frame(width: 44, height: 44)
                         Image(systemName: actionType.icon)
                             .font(.system(size: 20))
-                            .foregroundStyle(.white.opacity(0.65))
+                            .foregroundStyle(.primary.opacity(0.65))
                     }
                     Text("PLAYER")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.white.opacity(0.26)).tracking(1.2)
+                        .foregroundStyle(.primary.opacity(0.40)).tracking(1.2)
                 }
                 .frame(width: 80)
             }
@@ -696,7 +984,7 @@ struct QualityErrorSheet: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(Color.hrOrange).font(.title3)
                             Text("Video quality check failed. Please re-record and try again.")
-                                .font(.subheadline).foregroundStyle(.white.opacity(0.75))
+                                .font(.subheadline).foregroundStyle(.primary.opacity(0.75))
                         }
                         .listRowBackground(Color.hrCard)
                     }
@@ -714,7 +1002,7 @@ struct QualityErrorSheet: View {
                     if let rate = qualityError.visibilityRate {
                         Section("Visibility Rate") {
                             Text("\(Int(rate * 100))% of frames had detectable pose")
-                                .font(.subheadline).foregroundStyle(.white.opacity(0.5))
+                                .font(.subheadline).foregroundStyle(.primary.opacity(0.60))
                                 .listRowBackground(Color.hrCard)
                         }
                     }
@@ -728,7 +1016,6 @@ struct QualityErrorSheet: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }
 

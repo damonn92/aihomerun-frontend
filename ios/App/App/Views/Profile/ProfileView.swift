@@ -7,8 +7,11 @@ struct ProfileView: View {
     @State private var showChildEditor = false
     @State private var editingChild: Child?
     @State private var showSignOutConfirm = false
+    @State private var showDeleteAccountConfirm = false
+    @State private var isDeletingAccount = false
     @State private var editingName = false
     @State private var newName = ""
+    @AppStorage("appTheme") private var appTheme: String = AppTheme.dark.rawValue
 
     var body: some View {
         NavigationStack {
@@ -18,10 +21,10 @@ struct ProfileView: View {
                 if vm.isLoading && vm.profile == nil {
                     VStack(spacing: 16) {
                         ProgressView()
-                            .tint(.white)
+                            .tint(.primary)
                         Text("Loading profile...")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.45))
+                            .foregroundStyle(.primary.opacity(0.55))
                     }
                 } else {
                     ScrollView(showsIndicators: false) {
@@ -33,7 +36,7 @@ struct ProfileView: View {
                                         .foregroundStyle(Color.hrOrange)
                                     Text(error)
                                         .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.70))
+                                        .foregroundStyle(.primary.opacity(0.70))
                                     Spacer()
                                     Button("Retry") {
                                         if let uid = authVM.user?.id.uuidString {
@@ -57,11 +60,20 @@ struct ProfileView: View {
                             // ── Account ────────────────────────────────────────
                             accountSection
 
+                            // ── Appearance ────────────────────────────────────
+                            appearanceSection
+
+                            // ── Storage ──────────────────────────────────────
+                            storageSection
+
                             // ── Players ────────────────────────────────────────
                             playersSection
 
                             // ── Sign out ───────────────────────────────────────
                             signOutButton
+
+                            // ── Delete account ───────────────────────────────
+                            deleteAccountButton
 
                             Spacer(minLength: 40)
                         }
@@ -100,8 +112,22 @@ struct ProfileView: View {
                     Task { await authVM.signOut() }
                 }
             }
+            .confirmationDialog(
+                "Delete your account?",
+                isPresented: $showDeleteAccountConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Delete Account", role: .destructive) {
+                    Task {
+                        isDeletingAccount = true
+                        await authVM.deleteAccount()
+                        isDeletingAccount = false
+                    }
+                }
+            } message: {
+                Text("This will permanently delete your account and all associated data. This action cannot be undone.")
+            }
         }
-        .preferredColorScheme(.dark)
     }
 
     // MARK: - Profile header
@@ -129,11 +155,11 @@ struct ProfileView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(vm.profile?.fullName ?? "Player")
                     .font(.title3.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
 
                 Text(authVM.user?.email ?? "")
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.primary.opacity(0.55))
                     .lineLimit(1)
             }
 
@@ -157,10 +183,10 @@ struct ProfileView: View {
                     HStack(spacing: 12) {
                         Button("Cancel") { editingName = false }
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.45))
+                            .foregroundStyle(.primary.opacity(0.55))
                             .frame(maxWidth: .infinity)
                             .frame(height: 42)
-                            .background(Color.white.opacity(0.07))
+                            .background(Color.hrSurface)
                             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                         Button("Save") {
@@ -212,7 +238,7 @@ struct ProfileView: View {
                 }
                 .buttonStyle(.plain)
 
-                Divider().background(Color.white.opacity(0.07)).padding(.leading, 52)
+                Divider().background(Color.hrSurface).padding(.leading, 52)
 
                 NavigationLink {
                     ChangePasswordView { pass in
@@ -229,6 +255,123 @@ struct ProfileView: View {
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
                     .stroke(Color.hrStroke, lineWidth: 1)
             )
+        }
+    }
+
+    // MARK: - Appearance section
+
+    private var appearanceSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("Appearance")
+
+            HStack(spacing: 0) {
+                ForEach(AppTheme.allCases, id: \.self) { theme in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            appTheme = theme.rawValue
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: theme.icon)
+                                .font(.system(size: 12, weight: .semibold))
+                            Text(theme.rawValue)
+                                .font(.subheadline.weight(.semibold))
+                        }
+                        .foregroundStyle(appTheme == theme.rawValue ? Color.white : Color.primary.opacity(0.60))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            appTheme == theme.rawValue
+                            ? Color.hrBlue
+                            : Color.hrSurface
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(Color.hrStroke, lineWidth: 1)
+            )
+        }
+    }
+
+    // MARK: - Storage section
+
+    @State private var analysisCacheSize: String = "—"
+    @State private var analysisCacheCount: Int = 0
+    @State private var clearingCache = false
+
+    private var storageSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            sectionLabel("Storage")
+
+            VStack(spacing: 0) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(Color.hrBlue.opacity(0.15))
+                            .frame(width: 32, height: 32)
+                        Image(systemName: "internaldrive.fill")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Color.hrBlue)
+                    }
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Analysis Cache")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.primary)
+                        Text("\(analysisCacheCount) results \u{00B7} \(analysisCacheSize)")
+                            .font(.caption)
+                            .foregroundStyle(.primary.opacity(0.55))
+                    }
+
+                    Spacer()
+
+                    Button {
+                        Task {
+                            clearingCache = true
+                            await AnalysisResultCache.shared.clearAll()
+                            await refreshCacheStats()
+                            clearingCache = false
+                        }
+                    } label: {
+                        if clearingCache {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Text("Clear")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(analysisCacheCount > 0 ? Color.hrRed : .primary.opacity(0.30))
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(analysisCacheCount == 0 || clearingCache)
+                }
+                .padding(14)
+            }
+            .background(Color.hrCard)
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(Color.hrStroke, lineWidth: 1)
+            )
+        }
+        .onAppear { Task { await refreshCacheStats() } }
+    }
+
+    private func refreshCacheStats() async {
+        let cache = AnalysisResultCache.shared
+        let bytes = await cache.cacheSize()
+        let count = await cache.cacheCount()
+        analysisCacheCount = count
+        if bytes < 1024 {
+            analysisCacheSize = "\(bytes) B"
+        } else if bytes < 1024 * 1024 {
+            analysisCacheSize = String(format: "%.1f KB", Double(bytes) / 1024.0)
+        } else {
+            analysisCacheSize = String(format: "%.1f MB", Double(bytes) / (1024.0 * 1024.0))
         }
     }
 
@@ -257,11 +400,11 @@ struct ProfileView: View {
                             VStack(alignment: .leading, spacing: 3) {
                                 Text(child.fullName)
                                     .font(.subheadline.weight(.semibold))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.primary)
                                 if let pos = child.position {
                                     Text(pos)
                                         .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.40))
+                                        .foregroundStyle(.primary.opacity(0.55))
                                 }
                             }
 
@@ -269,7 +412,7 @@ struct ProfileView: View {
 
                             Image(systemName: "chevron.right")
                                 .font(.caption.weight(.semibold))
-                                .foregroundStyle(.white.opacity(0.25))
+                                .foregroundStyle(.primary.opacity(0.40))
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
@@ -284,13 +427,13 @@ struct ProfileView: View {
                     }
 
                     if child.id != vm.children.last?.id {
-                        Divider().background(Color.white.opacity(0.07)).padding(.leading, 68)
+                        Divider().background(Color.hrSurface).padding(.leading, 68)
                     }
                 }
 
                 // Add player row
                 if !vm.children.isEmpty {
-                    Divider().background(Color.white.opacity(0.07)).padding(.leading, 16)
+                    Divider().background(Color.hrSurface).padding(.leading, 16)
                 }
 
                 Button {
@@ -325,7 +468,7 @@ struct ProfileView: View {
 
             Text("Add your players to track their progress across sessions.")
                 .font(.caption)
-                .foregroundStyle(.white.opacity(0.28))
+                .foregroundStyle(.primary.opacity(0.40))
                 .padding(.horizontal, 4)
                 .padding(.top, 6)
         }
@@ -355,12 +498,38 @@ struct ProfileView: View {
         }
     }
 
+    // MARK: - Delete account button
+
+    private var deleteAccountButton: some View {
+        Button {
+            showDeleteAccountConfirm = true
+        } label: {
+            HStack(spacing: 10) {
+                if isDeletingAccount {
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(.primary.opacity(0.40))
+                } else {
+                    Image(systemName: "trash.fill")
+                        .font(.system(size: 14))
+                }
+                Text("Delete Account")
+                    .font(.subheadline.weight(.medium))
+            }
+            .foregroundStyle(.primary.opacity(0.40))
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
+        }
+        .buttonStyle(.plain)
+        .disabled(isDeletingAccount)
+    }
+
     // MARK: - Helpers
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
             .font(.caption.weight(.bold))
-            .foregroundStyle(.white.opacity(0.35))
+            .foregroundStyle(.primary.opacity(0.50))
             .textCase(.uppercase)
             .tracking(0.7)
             .padding(.horizontal, 4)
@@ -380,15 +549,15 @@ struct ProfileView: View {
                 }
                 Text(label)
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.70))
+                    .foregroundStyle(.primary.opacity(0.70))
                 Spacer()
                 Text(value)
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.40))
+                    .foregroundStyle(.primary.opacity(0.55))
                     .lineLimit(1)
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.22))
+                    .foregroundStyle(.primary.opacity(0.35))
             }
             .padding(16)
         }
@@ -413,15 +582,15 @@ struct ProfileView: View {
             }
             Text(title)
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.70))
+                .foregroundStyle(.primary.opacity(0.70))
             Spacer()
             Text(value)
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(.primary.opacity(0.50))
                 .lineLimit(1)
             Image(systemName: "chevron.right")
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.22))
+                .foregroundStyle(.primary.opacity(0.35))
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
@@ -461,10 +630,10 @@ struct ChangeEmailView: View {
                             .foregroundStyle(Color.hrBlue)
                         Text("Change Email")
                             .font(.title2.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                         Text("Current: \(currentEmail)")
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.40))
+                            .foregroundStyle(.primary.opacity(0.55))
                     }
                     .padding(.top, 24)
 
@@ -504,7 +673,7 @@ struct ChangeEmailView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
-                        .background(newEmail.isEmpty ? Color.white.opacity(0.10) : Color.hrBlue)
+                        .background(newEmail.isEmpty ? Color.hrStroke : Color.hrBlue)
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
                     .disabled(newEmail.isEmpty || isSaving)
@@ -514,7 +683,6 @@ struct ChangeEmailView: View {
         }
         .navigationTitle("Change Email")
         .navigationBarTitleDisplayMode(.inline)
-        .preferredColorScheme(.dark)
     }
 }
 
@@ -543,7 +711,7 @@ struct ChangePasswordView: View {
                             .foregroundStyle(Color.hrBlue)
                         Text("Change Password")
                             .font(.title2.bold())
-                            .foregroundStyle(.white)
+                            .foregroundStyle(.primary)
                     }
                     .padding(.top, 24)
 
@@ -589,7 +757,7 @@ struct ChangePasswordView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
-                        .background(valid ? Color.hrBlue : Color.white.opacity(0.10))
+                        .background(valid ? Color.hrBlue : Color.hrStroke)
                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                     }
                     .disabled(!valid || isSaving)
@@ -599,6 +767,5 @@ struct ChangePasswordView: View {
         }
         .navigationTitle("Change Password")
         .navigationBarTitleDisplayMode(.inline)
-        .preferredColorScheme(.dark)
     }
 }

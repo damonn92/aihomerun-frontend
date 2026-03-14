@@ -17,31 +17,51 @@ struct FieldDetailSheet: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 24) {
 
-                        // Hero section
-                        ZStack {
-                            LinearGradient(
-                                colors: isHighlighted
-                                ? [Color.hrGold.opacity(0.28), Color.hrCard]
-                                : [Color.hrBlue.opacity(0.25), Color.hrCard],
-                                startPoint: .topLeading, endPoint: .bottomTrailing
-                            )
-                            .frame(height: 160)
-                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                        // Hero section with photos
+                        VStack(spacing: 0) {
+                            if !field.photoURLs.isEmpty {
+                                // Photo carousel
+                                TabView {
+                                    ForEach(field.photoURLs, id: \.absoluteString) { photoURL in
+                                        AsyncImage(url: photoURL) { phase in
+                                            switch phase {
+                                            case .success(let image):
+                                                image
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(height: 220)
+                                                    .clipped()
+                                            case .failure:
+                                                fieldGradientFallback
+                                            default:
+                                                ZStack {
+                                                    Color.hrCard
+                                                    ProgressView()
+                                                        .tint(.hrBlue)
+                                                }
+                                                .frame(height: 220)
+                                            }
+                                        }
+                                    }
+                                }
+                                .tabViewStyle(.page(indexDisplayMode: field.photoURLs.count > 1 ? .automatic : .never))
+                                .frame(height: 220)
+                                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            } else {
+                                fieldGradientFallback
+                                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            }
 
-                            VStack(spacing: 8) {
-                                Image(systemName: field.category.icon)
-                                    .font(.system(size: 48, weight: .light))
-                                    .foregroundStyle(.white.opacity(0.15))
+                            // Name + badges below photo
+                            VStack(spacing: 6) {
                                 Text(field.name)
-                                    .font(.title2.bold())
-                                    .foregroundStyle(.white)
+                                    .font(.title3.bold())
+                                    .foregroundStyle(.primary)
                                     .multilineTextAlignment(.center)
                                 Text(field.address)
                                     .font(.subheadline)
-                                    .foregroundStyle(.white.opacity(0.45))
+                                    .foregroundStyle(.primary.opacity(0.55))
                                     .multilineTextAlignment(.center)
-
-                                // Badges row
                                 HStack(spacing: 8) {
                                     if field.isIndoor {
                                         badgePill(text: "INDOOR", color: .hrOrange)
@@ -54,7 +74,7 @@ struct FieldDetailSheet: View {
                                     }
                                 }
                             }
-                            .padding(.horizontal, 16)
+                            .padding(.top, 12)
                         }
                         .padding(.horizontal, 20)
 
@@ -197,14 +217,14 @@ struct FieldDetailSheet: View {
                                             Text("Website")
                                                 .font(.subheadline.weight(.semibold))
                                         }
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(.primary)
                                         .frame(maxWidth: .infinity)
                                         .frame(height: 48)
-                                        .background(Color.white.opacity(0.10))
+                                        .background(Color.hrStroke)
                                         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                                .stroke(Color.hrStroke, lineWidth: 1)
                                         )
                                     }
                                 }
@@ -219,14 +239,14 @@ struct FieldDetailSheet: View {
                                         Text("Maps")
                                             .font(.subheadline.weight(.semibold))
                                     }
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(.primary)
                                     .frame(maxWidth: .infinity)
                                     .frame(height: 48)
-                                    .background(Color.white.opacity(0.10))
+                                    .background(Color.hrStroke)
                                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                                            .stroke(Color.hrStroke, lineWidth: 1)
                                     )
                                 }
                             }
@@ -242,7 +262,7 @@ struct FieldDetailSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
-                        .foregroundStyle(.white.opacity(0.55))
+                        .foregroundStyle(.primary.opacity(0.55))
                 }
             }
         }
@@ -256,11 +276,11 @@ struct FieldDetailSheet: View {
             VStack(spacing: 4) {
                 Text(field.ratingDisplay ?? "-")
                     .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                 StarRatingView(rating: field.rating ?? 0, size: 14)
                 Text("\(field.reviewCount) reviews")
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.4))
+                    .foregroundStyle(.primary.opacity(0.55))
             }
             .frame(width: 100)
 
@@ -272,12 +292,12 @@ struct FieldDetailSheet: View {
                     HStack(spacing: 6) {
                         Text("\(star)")
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.4))
+                            .foregroundStyle(.primary.opacity(0.55))
                             .frame(width: 12)
                         GeometryReader { geo in
                             ZStack(alignment: .leading) {
                                 RoundedRectangle(cornerRadius: 2)
-                                    .fill(Color.white.opacity(0.08))
+                                    .fill(Color.hrDivider)
                                     .frame(height: 6)
                                 RoundedRectangle(cornerRadius: 2)
                                     .fill(Color.hrGold)
@@ -305,7 +325,7 @@ struct FieldDetailSheet: View {
                 Spacer()
                 Text("\(field.reviews.count) of \(field.reviewCount)")
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.3))
+                    .foregroundStyle(.primary.opacity(0.45))
             }
 
             ForEach(field.reviews) { review in
@@ -331,13 +351,13 @@ struct FieldDetailSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(review.authorName)
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                         .lineLimit(1)
                     HStack(spacing: 4) {
                         StarRatingView(rating: Double(review.rating), size: 10)
                         Text(review.relativeTime)
                             .font(.caption2)
-                            .foregroundStyle(.white.opacity(0.3))
+                            .foregroundStyle(.primary.opacity(0.45))
                     }
                 }
 
@@ -347,13 +367,31 @@ struct FieldDetailSheet: View {
             if !review.text.isEmpty {
                 Text(review.text)
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.65))
+                    .foregroundStyle(.primary.opacity(0.65))
                     .lineLimit(4)
             }
         }
         .padding(12)
-        .background(Color.white.opacity(0.04))
+        .background(Color.hrSurface)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    // MARK: - Gradient Fallback (no photos)
+
+    private var fieldGradientFallback: some View {
+        ZStack {
+            LinearGradient(
+                colors: isHighlighted
+                ? [Color.hrGold, Color(red: 0.72, green: 0.45, blue: 0.05)]
+                : [Color.hrBlue, Color(red: 0.04, green: 0.36, blue: 0.82)],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
+            .frame(height: 220)
+
+            Image(systemName: field.category.icon)
+                .font(.system(size: 56, weight: .light))
+                .foregroundStyle(.white.opacity(0.20))
+        }
     }
 
     // MARK: - Badge Pill
@@ -377,12 +415,12 @@ struct FieldDetailSheet: View {
                 .foregroundStyle(color)
             Text(value)
                 .font(.subheadline.weight(.bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
             Text(label)
                 .font(.caption2)
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(.primary.opacity(0.50))
                 .textCase(.uppercase)
                 .tracking(0.5)
         }
@@ -392,7 +430,7 @@ struct FieldDetailSheet: View {
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(Color.white.opacity(0.07), lineWidth: 1)
+                .stroke(Color.hrSurface, lineWidth: 1)
         )
     }
 }

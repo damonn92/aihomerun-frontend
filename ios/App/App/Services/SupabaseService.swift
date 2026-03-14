@@ -57,6 +57,31 @@ class SupabaseService: ObservableObject {
         )
     }
 
+    /// Delete the current user's account via Supabase Edge Function.
+    /// The Edge Function should handle data cleanup and call admin.deleteUser().
+    func deleteAccount() async throws {
+        guard let accessToken = try? await client.auth.session.accessToken else {
+            throw NSError(domain: "SupabaseService", code: 401,
+                          userInfo: [NSLocalizedDescriptionKey: "Not authenticated"])
+        }
+        // Call a Supabase Edge Function that deletes the user on the server side
+        let url = URL(string: AppConfig.supabaseURL + "/functions/v1/delete-account")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue(AppConfig.supabaseAnonKey, forHTTPHeaderField: "apikey")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw NSError(domain: "SupabaseService", code: 500,
+                          userInfo: [NSLocalizedDescriptionKey: "Failed to delete account. Please try again later."])
+        }
+        // Sign out locally after server-side deletion
+        try await client.auth.signOut()
+    }
+
     // MARK: - Profile
 
     func fetchProfile(userId: String) async throws -> UserProfile? {
@@ -100,5 +125,81 @@ class SupabaseService: ObservableObject {
 
     func deleteChild(id: String) async throws {
         try await client.from("children").delete().eq("id", value: id).execute()
+    }
+
+    // MARK: - Leaderboard
+
+    struct LeaderboardRow: Codable, Identifiable {
+        let entryId: String
+        let initials: String
+        let displayName: String
+        let score: Int
+        let isMe: Bool
+        let isRealUser: Bool
+
+        var id: String { entryId }
+
+        enum CodingKeys: String, CodingKey {
+            case entryId = "entry_id"
+            case initials
+            case displayName = "display_name"
+            case score
+            case isMe = "is_me"
+            case isRealUser = "is_real_user"
+        }
+    }
+
+    struct TrendRow: Codable {
+        let sessionNumber: Int
+        let overallScore: Int
+        let createdAt: String
+
+        enum CodingKeys: String, CodingKey {
+            case sessionNumber = "session_number"
+            case overallScore = "overall_score"
+            case createdAt = "created_at"
+        }
+    }
+
+    func fetchLeaderboard(ageGroup: String, userId: String?) async throws -> [LeaderboardRow] {
+        let params: [String: AnyJSON] = [
+            "p_age_group": .string(ageGroup),
+            "p_user_id": userId.map { .string($0) } ?? .null
+        ]
+        let response: [LeaderboardRow] = try await client
+            .rpc("get_leaderboard", params: params)
+            .execute()
+            .value
+        return response
+    }
+
+    func fetchMyTrend(userId: String, limit: Int = 8) async throws -> [TrendRow] {
+        let params: [String: AnyJSON] = [
+            "p_user_id": .string(userId),
+            "p_limit": .integer(limit)
+        ]
+        let response: [TrendRow] = try await client
+            .rpc("get_my_trend", params: params)
+            .execute()
+            .value
+        return response
+    }
+
+    func fetchMyBestScore(userId: String) async throws -> Int? {
+        struct ScoreRow: Codable {
+            let overallScore: Int?
+            enum CodingKeys: String, CodingKey {
+                case overallScore = "overall_score"
+            }
+        }
+        let response: [ScoreRow] = try await client
+            .from("analyses")
+            .select("overall_score")
+            .eq("user_id", value: userId)
+            .order("overall_score", ascending: false)
+            .limit(1)
+            .execute()
+            .value
+        return response.first?.overallScore
     }
 }

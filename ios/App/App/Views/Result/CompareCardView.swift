@@ -31,7 +31,7 @@ struct CompareCardView: View {
             HStack {
                 Label("vs. Last Session", systemImage: "arrow.left.arrow.right")
                     .font(.caption.weight(.bold))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.primary.opacity(0.55))
                     .textCase(.uppercase)
                     .tracking(0.7)
                 Spacer()
@@ -63,7 +63,7 @@ struct CompareCardView: View {
 
                         Text(metric.label)
                             .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.65))
+                            .foregroundStyle(.primary.opacity(0.65))
 
                         Spacer()
 
@@ -71,15 +71,15 @@ struct CompareCardView: View {
                         HStack(spacing: 6) {
                             Text("\(metric.prev)")
                                 .font(.subheadline.monospacedDigit())
-                                .foregroundStyle(.white.opacity(0.35))
+                                .foregroundStyle(.primary.opacity(0.50))
 
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 10))
-                                .foregroundStyle(.white.opacity(0.22))
+                                .foregroundStyle(.primary.opacity(0.35))
 
                             Text("\(metric.curr)")
                                 .font(.subheadline.monospacedDigit().weight(.semibold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(.primary)
                         }
 
                         DeltaBadge(delta: metric.delta)
@@ -87,7 +87,7 @@ struct CompareCardView: View {
                     .padding(.vertical, 10)
 
                     if metric.label != metrics.last?.label {
-                        Divider().background(Color.white.opacity(0.07))
+                        Divider().background(Color.hrSurface)
                     }
                 }
             }
@@ -104,7 +104,7 @@ struct DeltaBadge: View {
             if delta == 0 {
                 Text("—")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.28))
+                    .foregroundStyle(.primary.opacity(0.40))
                     .frame(width: 34)
             } else {
                 Text("\(delta > 0 ? "+" : "")\(delta)")

@@ -29,7 +29,7 @@ struct FieldSearchBar: View {
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 16))
-                            .foregroundStyle(.white.opacity(0.3))
+                            .foregroundStyle(.primary.opacity(0.45))
                     }
                 }
             }
@@ -51,12 +51,12 @@ struct FieldSearchBar: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(completion.title)
                                         .font(.subheadline.weight(.medium))
-                                        .foregroundStyle(.white)
+                                        .foregroundStyle(.primary)
                                         .lineLimit(1)
                                     if !completion.subtitle.isEmpty {
                                         Text(completion.subtitle)
                                             .font(.caption)
-                                            .foregroundStyle(.white.opacity(0.4))
+                                            .foregroundStyle(.primary.opacity(0.55))
                                             .lineLimit(1)
                                     }
                                 }
@@ -70,7 +70,7 @@ struct FieldSearchBar: View {
 
                         if completion != completions.last {
                             Divider()
-                                .background(Color.white.opacity(0.06))
+                                .background(Color.hrSurface)
                                 .padding(.leading, 48)
                         }
                     }
@@ -79,7 +79,7 @@ struct FieldSearchBar: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                        .stroke(Color.hrDivider, lineWidth: 1)
                 )
                 .padding(.top, 4)
             }

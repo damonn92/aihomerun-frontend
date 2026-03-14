@@ -32,5 +32,10 @@ struct Child: Codable, Identifiable {
     }
 
     static let positions = ["Pitcher", "Catcher", "1B", "2B", "3B", "SS", "LF", "CF", "RF"]
-    static let genders = ["Male", "Female", "Other", "Prefer not to say"]
+    static let genders = ["male", "female", "other", "prefer not to say"]
+
+    /// Display-friendly label for the stored gender value.
+    static func genderLabel(_ raw: String) -> String {
+        raw.capitalized
+    }
 }

@@ -7,18 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01631D7BF500C20728FC3867 /* SwingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13F3F487D5C29C32347F6DF /* SwingSession.swift */; };
 		1B18462274C217FBE06013D3 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C447AD58077F63B1A27A882 /* VideoTimelineView.swift */; };
+		1C1C1149DE2DD43A8AD5F25B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4B47D665609EC05541B6E95 /* Foundation.framework */; };
+		343267542A65951850213B73 /* SessionCompleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D39C98470B27553FCE4D9813 /* SessionCompleteView.swift */; };
+		345327299940EE02CFA28BF8 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42047E3133546CAA15D05899 /* WatchConnectivity.framework */; };
 		3AE2FBA9DAB91A9AD98034D4 /* PoseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CB1A7ED985D884DFDD64BE0 /* PoseData.swift */; };
+		3CD54958DEA3C3304D40794D /* SessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 580D320A2F8E0CB361370AE2 /* SessionViewModel.swift */; };
+		41D9E3DD4B291BA459655D84 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF580A892BB5A36D9D2ECDDB /* WatchConnectivity.framework */; };
+		4C81DC6F5D79CB537C6CA2FF /* AIHomeRunWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7167316E51071D6B31AD6AC /* AIHomeRunWatchApp.swift */; };
+		4D9D6FF97A1B2D343B56E93B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C4E62EBEE58B34710440A8E4 /* Assets.xcassets */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
+		5152E4894491D7D81342F3E1 /* MotionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672144214BF3A1A9438E70B3 /* MotionService.swift */; };
+		5605F7A5BF7B9A437D00CD9E /* WatchConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A6776C07C2EC4DB5F0AFC3 /* WatchConnectivityService.swift */; };
+		63848380EA1E73BBEDDCBF17 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C81E60ED7770A8221E617DBA /* HealthKit.framework */; };
+		69DC8848FBF36CA0E114F3D7 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8FFB1DEA8C5A638CA80F49 /* StartView.swift */; };
+		6C0D959EB0EEA6403FD6E798 /* BuildFile in Sources */ = {isa = PBXBuildFile; };
 		84BA60F20AF61E0F6D227060 /* PoseOverlayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C2648345BFE3D9065C74CA /* PoseOverlayViewModel.swift */; };
+		A13664FEAF79FA0594150801 /* SwingDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9AD319C3AFC2CE54EE1431 /* SwingDetector.swift */; };
+		A46FCF1A74FE04F34E9154D6 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82E20FEA27F7DB1DFB02DEC2 /* HealthKit.framework */; };
 		A8A812259FAFEEE2E9D74B08 /* SkeletonOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74536B3CB70F2FAC6446D1AF /* SkeletonOverlayView.swift */; };
 		A9340B74362B0E69F93BF735 /* PoseDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98180CB00E150BF054FD2BF8 /* PoseDetectionService.swift */; };
+		AA0002000000000000000100 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001000000000000000100 /* WatchSessionManager.swift */; };
+		AA0004000000000000000100 /* WatchSessionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0003000000000000000100 /* WatchSessionsView.swift */; };
+		AAA17E312283BBD9FDF704D4 /* LiveSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C5D26D29A7C96614254563E /* LiveSessionView.swift */; };
 		AB0002000000000000000000 /* AIHomeRunApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0001000000000000000000 /* AIHomeRunApp.swift */; };
 		AB0004000000000000000000 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0003000000000000000000 /* ContentView.swift */; };
 		AB0006000000000000000000 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0005000000000000000000 /* AppConfig.swift */; };
 		AB0008000000000000000000 /* Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB0007000000000000000000 /* Config.plist */; };
-		AB005F000000000000000000 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB005E000000000000000000 /* Secrets.plist */; };
 		AB000A000000000000000000 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0009000000000000000000 /* SupabaseService.swift */; };
 		AB000C000000000000000000 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000B000000000000000000 /* APIClient.swift */; };
 		AB000E000000000000000000 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000D000000000000000000 /* KeychainService.swift */; };
@@ -32,6 +49,19 @@
 		AB001E000000000000000000 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB001D000000000000000000 /* LoadingView.swift */; };
 		AB0020000000000000000000 /* ResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB001F000000000000000000 /* ResultView.swift */; };
 		AB0022000000000000000000 /* ScoreRingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0021000000000000000000 /* ScoreRingView.swift */; };
+		CH0001000000000000000000 /* RadarChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH0002000000000000000000 /* RadarChartView.swift */; };
+		CH0003000000000000000000 /* MetricGaugeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH0004000000000000000000 /* MetricGaugeView.swift */; };
+		CH0005000000000000000000 /* SwingMetricsDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH0006000000000000000000 /* SwingMetricsDashboard.swift */; };
+		FU0001000000000000000000 /* FusionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FU0002000000000000000000 /* FusionModels.swift */; };
+		FU0003000000000000000000 /* FusionAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FU0004000000000000000000 /* FusionAnalysisService.swift */; };
+		FU0005000000000000000000 /* MetricTrendMiniChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = FU0006000000000000000000 /* MetricTrendMiniChart.swift */; };
+		FU0007000000000000000000 /* SpeedDistributionChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = FU0008000000000000000000 /* SpeedDistributionChart.swift */; };
+		FU0009000000000000000000 /* SwingTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FU0010000000000000000000 /* SwingTimelineView.swift */; };
+		FU0011000000000000000000 /* ProMetricsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FU0012000000000000000000 /* ProMetricsCard.swift */; };
+		NW0001000000000000000000 /* WatchMetricsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = NW0002000000000000000000 /* WatchMetricsCard.swift */; };
+		NW0003000000000000000000 /* SwingDetailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = NW0004000000000000000000 /* SwingDetailCard.swift */; };
+		NW0005000000000000000000 /* HeatMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NW0006000000000000000000 /* HeatMapView.swift */; };
+		NW0007000000000000000000 /* SessionSummaryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = NW0008000000000000000000 /* SessionSummaryCard.swift */; };
 		AB0024000000000000000000 /* GrowthChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0023000000000000000000 /* GrowthChartView.swift */; };
 		AB0026000000000000000000 /* CompareCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0025000000000000000000 /* CompareCardView.swift */; };
 		AB0028000000000000000000 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0027000000000000000000 /* ProfileView.swift */; };
@@ -54,27 +84,97 @@
 		AB004A000000000000000000 /* AICoachViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0049000000000000000000 /* AICoachViewModel.swift */; };
 		AB004C000000000000000000 /* PitchCountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB004B000000000000000000 /* PitchCountCard.swift */; };
 		AB004E000000000000000000 /* ai_coach_reference_db.json in Resources */ = {isa = PBXBuildFile; fileRef = AB004D000000000000000000 /* ai_coach_reference_db.json */; };
+		AB005F000000000000000000 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = AB005E000000000000000000 /* Secrets.plist */; };
+		AB0061000000000000000000 /* ComparisonModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0060000000000000000000 /* ComparisonModels.swift */; };
+		AB0063000000000000000000 /* PoseDataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0062000000000000000000 /* PoseDataCache.swift */; };
+		AB0065000000000000000000 /* ComparisonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0064000000000000000000 /* ComparisonViewModel.swift */; };
+		AB0067000000000000000000 /* ComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0066000000000000000000 /* ComparisonView.swift */; };
+		AB0069000000000000000000 /* SideBySideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0068000000000000000000 /* SideBySideView.swift */; };
+		AB006B000000000000000000 /* GhostOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB006A000000000000000000 /* GhostOverlayView.swift */; };
+		AB006D000000000000000000 /* ComparisonControlsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB006C000000000000000000 /* ComparisonControlsBar.swift */; };
+		AB006F000000000000000000 /* ComparisonMetricsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB006E000000000000000000 /* ComparisonMetricsPanel.swift */; };
+		AB0071000000000000000000 /* SessionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0070000000000000000000 /* SessionPickerView.swift */; };
+		AB0074000000000000000000 /* ActionDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0073000000000000000000 /* ActionDetectionService.swift */; };
+		AB0076000000000000000000 /* TrimTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0075000000000000000000 /* TrimTimelineView.swift */; };
+		AB0078000000000000000000 /* TrimPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0077000000000000000000 /* TrimPreviewView.swift */; };
+		AB007A000000000000000000 /* Pose3DData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0079000000000000000000 /* Pose3DData.swift */; };
+		AB007C000000000000000000 /* Pose3DDetectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB007B000000000000000000 /* Pose3DDetectionService.swift */; };
+		AB007E000000000000000000 /* Skeleton3DSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB007D000000000000000000 /* Skeleton3DSceneView.swift */; };
+		AB0080000000000000000000 /* Skeleton3DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB007F000000000000000000 /* Skeleton3DView.swift */; };
+		AB0082000000000000000000 /* Skeleton3DViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0081000000000000000000 /* Skeleton3DViewModel.swift */; };
+		AB0084000000000000000000 /* ReportExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0083000000000000000000 /* ReportExportService.swift */; };
+		AB0086000000000000000000 /* ReportShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0085000000000000000000 /* ReportShareSheet.swift */; };
+		AB0090000000000000000000 /* SessionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0089000000000000000000 /* SessionHistoryView.swift */; };
+		AB0092000000000000000000 /* BestScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0091000000000000000000 /* BestScoreView.swift */; };
+		AB0094000000000000000000 /* ProgressStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0093000000000000000000 /* ProgressStatsView.swift */; };
 		AB0204000000000000000000 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AB0202000000000000000000 /* Supabase */; };
 		AB0206000000000000000000 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AB0203000000000000000000 /* GoogleSignIn */; };
+		AC0002000000000000000001 /* AnalysisResultCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0001000000000000000001 /* AnalysisResultCache.swift */; };
+		AF7ACC77C72CAB2B2F3247BA /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885FD8776987D3A47F6AFF3F /* HealthKitService.swift */; };
 		B7696DFCE2F81CAAFA79F782 /* VideoReplayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77C2F324248EC9C10181C1E /* VideoReplayViewModel.swift */; };
+		CFAD95D05E5996980336889C /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB5FDC11009C92E8995FD508 /* CoreMotion.framework */; };
+		D157C1684445C992AC2B66DB /* WatchConnectivityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6EB64AB15B5914777E0EE6 /* WatchConnectivityService.swift */; };
 		D7559E720682011A72C9A959 /* VideoReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB3328F9E6B3C0BD4F9579E /* VideoReplayView.swift */; };
+		D8323CFD09546034D9BBE46D /* WorkoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594286E9B0BE207AEFF88056 /* WorkoutService.swift */; };
+		D97C8BD00A54FD8127AB69CA /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C1631E36F2A8C058F6E6DC /* TrainingView.swift */; };
+		DCFE81B405E476097C4612AE /* MapSnapshotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875C740E7435757BB539D800 /* MapSnapshotView.swift */; };
+		F85F1C21BCE2D5E508F96689 /* SwingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D13F3F487D5C29C32347F6DF /* SwingSession.swift */; };
+		WA0001000000000000000001 /* AIHomeRunWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 419F7E6C748ED9723EB6FCDE /* AIHomeRunWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		WA0002000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 079156EB505DA225560EACE3;
+			remoteInfo = AIHomeRunWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		WA0003000000000000000001 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				WA0001000000000000000001 /* AIHomeRunWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0BB3328F9E6B3C0BD4F9579E /* VideoReplayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoReplayView.swift; sourceTree = "<group>"; };
+		0C5D26D29A7C96614254563E /* LiveSessionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LiveSessionView.swift; sourceTree = "<group>"; };
 		0CB1A7ED985D884DFDD64BE0 /* PoseData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PoseData.swift; sourceTree = "<group>"; };
+		16C1631E36F2A8C058F6E6DC /* TrainingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrainingView.swift; path = App/Views/Training/TrainingView.swift; sourceTree = SOURCE_ROOT; };
+		2A6EB64AB15B5914777E0EE6 /* WatchConnectivityService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchConnectivityService.swift; path = AIHomeRunWatch/Services/WatchConnectivityService.swift; sourceTree = "<group>"; };
+		419F7E6C748ED9723EB6FCDE /* AIHomeRunWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIHomeRunWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		WA0004000000000000000001 /* AIHomeRunWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIHomeRunWatch.entitlements; sourceTree = "<group>"; };
+		42047E3133546CAA15D05899 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
+		4C9AD319C3AFC2CE54EE1431 /* SwingDetector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwingDetector.swift; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		580D320A2F8E0CB361370AE2 /* SessionViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionViewModel.swift; sourceTree = "<group>"; };
+		594286E9B0BE207AEFF88056 /* WorkoutService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorkoutService.swift; sourceTree = "<group>"; };
+		672144214BF3A1A9438E70B3 /* MotionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MotionService.swift; sourceTree = "<group>"; };
 		74536B3CB70F2FAC6446D1AF /* SkeletonOverlayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SkeletonOverlayView.swift; sourceTree = "<group>"; };
+		82E20FEA27F7DB1DFB02DEC2 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		875C740E7435757BB539D800 /* MapSnapshotView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MapSnapshotView.swift; path = MapSnapshotView.swift; sourceTree = "<group>"; };
+		885FD8776987D3A47F6AFF3F /* HealthKitService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HealthKitService.swift; path = App/Services/HealthKitService.swift; sourceTree = SOURCE_ROOT; };
 		98180CB00E150BF054FD2BF8 /* PoseDetectionService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PoseDetectionService.swift; sourceTree = "<group>"; };
 		9C447AD58077F63B1A27A882 /* VideoTimelineView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
+		AA0001000000000000000100 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WatchSessionManager.swift; path = App/Services/WatchSessionManager.swift; sourceTree = SOURCE_ROOT; };
+		AA0003000000000000000100 /* WatchSessionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WatchSessionsView.swift; path = App/Views/Watch/WatchSessionsView.swift; sourceTree = SOURCE_ROOT; };
 		AB0001000000000000000000 /* AIHomeRunApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIHomeRunApp.swift; sourceTree = "<group>"; };
 		AB0003000000000000000000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AB0005000000000000000000 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		AB0007000000000000000000 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
-		AB005E000000000000000000 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
 		AB0009000000000000000000 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		AB000B000000000000000000 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		AB000D000000000000000000 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
@@ -88,6 +188,19 @@
 		AB001D000000000000000000 /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		AB001F000000000000000000 /* ResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultView.swift; sourceTree = "<group>"; };
 		AB0021000000000000000000 /* ScoreRingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRingView.swift; sourceTree = "<group>"; };
+		CH0002000000000000000000 /* RadarChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarChartView.swift; sourceTree = "<group>"; };
+		CH0004000000000000000000 /* MetricGaugeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricGaugeView.swift; sourceTree = "<group>"; };
+		CH0006000000000000000000 /* SwingMetricsDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwingMetricsDashboard.swift; sourceTree = "<group>"; };
+		FU0002000000000000000000 /* FusionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionModels.swift; sourceTree = "<group>"; };
+		FU0004000000000000000000 /* FusionAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FusionAnalysisService.swift; sourceTree = "<group>"; };
+		FU0006000000000000000000 /* MetricTrendMiniChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricTrendMiniChart.swift; sourceTree = "<group>"; };
+		FU0008000000000000000000 /* SpeedDistributionChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedDistributionChart.swift; sourceTree = "<group>"; };
+		FU0010000000000000000000 /* SwingTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwingTimelineView.swift; sourceTree = "<group>"; };
+		FU0012000000000000000000 /* ProMetricsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProMetricsCard.swift; sourceTree = "<group>"; };
+		NW0002000000000000000000 /* WatchMetricsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMetricsCard.swift; sourceTree = "<group>"; };
+		NW0004000000000000000000 /* SwingDetailCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwingDetailCard.swift; sourceTree = "<group>"; };
+		NW0006000000000000000000 /* HeatMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeatMapView.swift; sourceTree = "<group>"; };
+		NW0008000000000000000000 /* SessionSummaryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionSummaryCard.swift; sourceTree = "<group>"; };
 		AB0023000000000000000000 /* GrowthChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowthChartView.swift; sourceTree = "<group>"; };
 		AB0025000000000000000000 /* CompareCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareCardView.swift; sourceTree = "<group>"; };
 		AB0027000000000000000000 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
@@ -110,8 +223,43 @@
 		AB0049000000000000000000 /* AICoachViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachViewModel.swift; sourceTree = "<group>"; };
 		AB004B000000000000000000 /* PitchCountCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchCountCard.swift; sourceTree = "<group>"; };
 		AB004D000000000000000000 /* ai_coach_reference_db.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ai_coach_reference_db.json; sourceTree = "<group>"; };
+		AB005E000000000000000000 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Secrets.plist; sourceTree = "<group>"; };
+		AB0060000000000000000000 /* ComparisonModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonModels.swift; sourceTree = "<group>"; };
+		AB0062000000000000000000 /* PoseDataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseDataCache.swift; sourceTree = "<group>"; };
+		AB0064000000000000000000 /* ComparisonViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonViewModel.swift; sourceTree = "<group>"; };
+		AB0066000000000000000000 /* ComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonView.swift; sourceTree = "<group>"; };
+		AB0068000000000000000000 /* SideBySideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideBySideView.swift; sourceTree = "<group>"; };
+		AB006A000000000000000000 /* GhostOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GhostOverlayView.swift; sourceTree = "<group>"; };
+		AB006C000000000000000000 /* ComparisonControlsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonControlsBar.swift; sourceTree = "<group>"; };
+		AB006E000000000000000000 /* ComparisonMetricsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComparisonMetricsPanel.swift; sourceTree = "<group>"; };
+		AB0070000000000000000000 /* SessionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPickerView.swift; sourceTree = "<group>"; };
+		AB0073000000000000000000 /* ActionDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDetectionService.swift; sourceTree = "<group>"; };
+		AB0075000000000000000000 /* TrimTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimTimelineView.swift; sourceTree = "<group>"; };
+		AB0077000000000000000000 /* TrimPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrimPreviewView.swift; sourceTree = "<group>"; };
+		AB0079000000000000000000 /* Pose3DData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pose3DData.swift; sourceTree = "<group>"; };
+		AB007B000000000000000000 /* Pose3DDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pose3DDetectionService.swift; sourceTree = "<group>"; };
+		AB007D000000000000000000 /* Skeleton3DSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skeleton3DSceneView.swift; sourceTree = "<group>"; };
+		AB007F000000000000000000 /* Skeleton3DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skeleton3DView.swift; sourceTree = "<group>"; };
+		AB0081000000000000000000 /* Skeleton3DViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skeleton3DViewModel.swift; sourceTree = "<group>"; };
+		AB0083000000000000000000 /* ReportExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportExportService.swift; sourceTree = "<group>"; };
+		AB0085000000000000000000 /* ReportShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportShareSheet.swift; sourceTree = "<group>"; };
+		AB0089000000000000000000 /* SessionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionHistoryView.swift; sourceTree = "<group>"; };
+		AB0091000000000000000000 /* BestScoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BestScoreView.swift; sourceTree = "<group>"; };
+		AB0093000000000000000000 /* ProgressStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStatsView.swift; sourceTree = "<group>"; };
+		AC0001000000000000000001 /* AnalysisResultCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResultCache.swift; sourceTree = "<group>"; };
+		AD8FFB1DEA8C5A638CA80F49 /* StartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
 		B0C2648345BFE3D9065C74CA /* PoseOverlayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PoseOverlayViewModel.swift; sourceTree = "<group>"; };
+		B1A6776C07C2EC4DB5F0AFC3 /* WatchConnectivityService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WatchConnectivityService.swift; sourceTree = "<group>"; };
+		B33B59DD15CDBDC3FD97EFB1 /* WatchConnectivityService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchConnectivityService.swift; path = ../../AIHomeRunWatch/Services/WatchConnectivityService.swift; sourceTree = "<group>"; };
+		BB5FDC11009C92E8995FD508 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		BF580A892BB5A36D9D2ECDDB /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
+		C4B47D665609EC05541B6E95 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		C4E62EBEE58B34710440A8E4 /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C81E60ED7770A8221E617DBA /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		D13F3F487D5C29C32347F6DF /* SwingSession.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SwingSession.swift; sourceTree = "<group>"; };
+		D39C98470B27553FCE4D9813 /* SessionCompleteView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SessionCompleteView.swift; sourceTree = "<group>"; };
 		E77C2F324248EC9C10181C1E /* VideoReplayViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoReplayViewModel.swift; sourceTree = "<group>"; };
+		F7167316E51071D6B31AD6AC /* AIHomeRunWatchApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AIHomeRunWatchApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,12 +269,43 @@
 			files = (
 				AB0204000000000000000000 /* Supabase in Frameworks */,
 				AB0206000000000000000000 /* GoogleSignIn in Frameworks */,
+				41D9E3DD4B291BA459655D84 /* WatchConnectivity.framework in Frameworks */,
+				63848380EA1E73BBEDDCBF17 /* HealthKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A67C9FA62C83F092D799274E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C1C1149DE2DD43A8AD5F25B /* Foundation.framework in Frameworks */,
+				345327299940EE02CFA28BF8 /* WatchConnectivity.framework in Frameworks */,
+				A46FCF1A74FE04F34E9154D6 /* HealthKit.framework in Frameworks */,
+				CFAD95D05E5996980336889C /* CoreMotion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01A7A9F9A9A6F69BC0987A7A /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				580D320A2F8E0CB361370AE2 /* SessionViewModel.swift */,
+			);
+			name = ViewModels;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		13D56A8ADB6AAD2DFCB6F00B /* Training */ = {
+			isa = PBXGroup;
+			children = (
+				16C1631E36F2A8C058F6E6DC /* TrainingView.swift */,
+			);
+			name = Training;
+			path = Training;
+			sourceTree = "<group>";
+		};
 		15C32C64719C36570AC473F7 /* VideoReplay */ = {
 			isa = PBXGroup;
 			children = (
@@ -138,11 +317,58 @@
 			path = VideoReplay;
 			sourceTree = "<group>";
 		};
+		19FAEFC0CDB1F824579ECF70 /* Watch */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Watch;
+			path = App/Views/Watch;
+			sourceTree = "<group>";
+		};
+		3369CEFF76B5A3AA5A37131D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AD8FFB1DEA8C5A638CA80F49 /* StartView.swift */,
+				0C5D26D29A7C96614254563E /* LiveSessionView.swift */,
+				D39C98470B27553FCE4D9813 /* SessionCompleteView.swift */,
+			);
+			name = Views;
+			path = Views;
+			sourceTree = "<group>";
+		};
+		3622E78E7CFEA1394B09B174 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				672144214BF3A1A9438E70B3 /* MotionService.swift */,
+				4C9AD319C3AFC2CE54EE1431 /* SwingDetector.swift */,
+				594286E9B0BE207AEFF88056 /* WorkoutService.swift */,
+				B1A6776C07C2EC4DB5F0AFC3 /* WatchConnectivityService.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		402ECD2608E3103E86614747 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C0323465651A7E339DAEF23A /* watchOS */,
+				42047E3133546CAA15D05899 /* WatchConnectivity.framework */,
+				82E20FEA27F7DB1DFB02DEC2 /* HealthKit.framework */,
+				BB5FDC11009C92E8995FD508 /* CoreMotion.framework */,
+				BF580A892BB5A36D9D2ECDDB /* WatchConnectivity.framework */,
+				C81E60ED7770A8221E617DBA /* HealthKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
+				402ECD2608E3103E86614747 /* Frameworks */,
+				62C56437E4DBCA406FCA6EF7 /* AIHomeRunWatch */,
+				633900FF778E1CD7A6D74515 /* Shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -150,6 +376,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				419F7E6C748ED9723EB6FCDE /* AIHomeRunWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -170,8 +397,73 @@
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
+				51E8DB47BA370E0F549A0E3D /* Watch */,
+				B33B59DD15CDBDC3FD97EFB1 /* WatchConnectivityService.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		51E8DB47BA370E0F549A0E3D /* Watch */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Watch;
+			path = Views/Watch;
+			sourceTree = "<group>";
+		};
+		62C56437E4DBCA406FCA6EF7 /* AIHomeRunWatch */ = {
+			isa = PBXGroup;
+			children = (
+				WA0004000000000000000001 /* AIHomeRunWatch.entitlements */,
+				C4E62EBEE58B34710440A8E4 /* Assets.xcassets */,
+				F7167316E51071D6B31AD6AC /* AIHomeRunWatchApp.swift */,
+				3622E78E7CFEA1394B09B174 /* Services */,
+				01A7A9F9A9A6F69BC0987A7A /* ViewModels */,
+				3369CEFF76B5A3AA5A37131D /* Views */,
+			);
+			name = AIHomeRunWatch;
+			path = AIHomeRunWatch;
+			sourceTree = "<group>";
+		};
+		633900FF778E1CD7A6D74515 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				D13F3F487D5C29C32347F6DF /* SwingSession.swift */,
+			);
+			name = Shared;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		AB0072000000000000000000 /* Comparison */ = {
+			isa = PBXGroup;
+			children = (
+				AB0066000000000000000000 /* ComparisonView.swift */,
+				AB0068000000000000000000 /* SideBySideView.swift */,
+				AB006A000000000000000000 /* GhostOverlayView.swift */,
+				AB006C000000000000000000 /* ComparisonControlsBar.swift */,
+				AB006E000000000000000000 /* ComparisonMetricsPanel.swift */,
+				AB0070000000000000000000 /* SessionPickerView.swift */,
+			);
+			path = Comparison;
+			sourceTree = "<group>";
+		};
+		AB0087000000000000000000 /* Skeleton3D */ = {
+			isa = PBXGroup;
+			children = (
+				AB007D000000000000000000 /* Skeleton3DSceneView.swift */,
+				AB007F000000000000000000 /* Skeleton3DView.swift */,
+			);
+			path = Skeleton3D;
+			sourceTree = "<group>";
+		};
+		AB0088000000000000000000 /* Stats */ = {
+			isa = PBXGroup;
+			children = (
+				AB0089000000000000000000 /* SessionHistoryView.swift */,
+				AB0091000000000000000000 /* BestScoreView.swift */,
+				AB0093000000000000000000 /* ProgressStatsView.swift */,
+			);
+			path = Stats;
 			sourceTree = "<group>";
 		};
 		AB0100000000000000000000 /* Services */ = {
@@ -182,9 +474,15 @@
 				AB000D000000000000000000 /* KeychainService.swift */,
 				AB0033000000000000000000 /* LocationManager.swift */,
 				AB0041000000000000000000 /* GooglePlacesService.swift */,
+				AC0001000000000000000001 /* AnalysisResultCache.swift */,
 				AB0045000000000000000000 /* BiomechanicsService.swift */,
 				AB0047000000000000000000 /* ClaudeAPIService.swift */,
 				98180CB00E150BF054FD2BF8 /* PoseDetectionService.swift */,
+				AB0073000000000000000000 /* ActionDetectionService.swift */,
+				AB007B000000000000000000 /* Pose3DDetectionService.swift */,
+				AB0083000000000000000000 /* ReportExportService.swift */,
+				885FD8776987D3A47F6AFF3F /* HealthKitService.swift */,
+				FU0004000000000000000000 /* FusionAnalysisService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -197,6 +495,10 @@
 				AB0035000000000000000000 /* FieldModels.swift */,
 				AB0043000000000000000000 /* BiomechanicsModels.swift */,
 				0CB1A7ED985D884DFDD64BE0 /* PoseData.swift */,
+				AB0060000000000000000000 /* ComparisonModels.swift */,
+				AB0062000000000000000000 /* PoseDataCache.swift */,
+				AB0079000000000000000000 /* Pose3DData.swift */,
+				FU0002000000000000000000 /* FusionModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -211,6 +513,8 @@
 				AB0049000000000000000000 /* AICoachViewModel.swift */,
 				E77C2F324248EC9C10181C1E /* VideoReplayViewModel.swift */,
 				B0C2648345BFE3D9065C74CA /* PoseOverlayViewModel.swift */,
+				AB0064000000000000000000 /* ComparisonViewModel.swift */,
+				AB0081000000000000000000 /* Skeleton3DViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -227,6 +531,11 @@
 				AB010A000000000000000000 /* FieldBooking */,
 				AB010B000000000000000000 /* Shared */,
 				15C32C64719C36570AC473F7 /* VideoReplay */,
+				AB0072000000000000000000 /* Comparison */,
+				AB0087000000000000000000 /* Skeleton3D */,
+				AB0088000000000000000000 /* Stats */,
+				19FAEFC0CDB1F824579ECF70 /* Watch */,
+				13D56A8ADB6AAD2DFCB6F00B /* Training */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -244,6 +553,8 @@
 			children = (
 				AB001B000000000000000000 /* UploadView.swift */,
 				AB001D000000000000000000 /* LoadingView.swift */,
+				AB0075000000000000000000 /* TrimTimelineView.swift */,
+				AB0077000000000000000000 /* TrimPreviewView.swift */,
 			);
 			path = Upload;
 			sourceTree = "<group>";
@@ -255,6 +566,18 @@
 				AB0021000000000000000000 /* ScoreRingView.swift */,
 				AB0023000000000000000000 /* GrowthChartView.swift */,
 				AB0025000000000000000000 /* CompareCardView.swift */,
+				AB0085000000000000000000 /* ReportShareSheet.swift */,
+				CH0002000000000000000000 /* RadarChartView.swift */,
+				CH0004000000000000000000 /* MetricGaugeView.swift */,
+				CH0006000000000000000000 /* SwingMetricsDashboard.swift */,
+				FU0006000000000000000000 /* MetricTrendMiniChart.swift */,
+				FU0008000000000000000000 /* SpeedDistributionChart.swift */,
+				FU0010000000000000000000 /* SwingTimelineView.swift */,
+				FU0012000000000000000000 /* ProMetricsCard.swift */,
+				NW0002000000000000000000 /* WatchMetricsCard.swift */,
+				NW0004000000000000000000 /* SwingDetailCard.swift */,
+				NW0006000000000000000000 /* HeatMapView.swift */,
+				NW0008000000000000000000 /* SessionSummaryCard.swift */,
 			);
 			path = Result;
 			sourceTree = "<group>";
@@ -293,6 +616,7 @@
 				AB003B000000000000000000 /* FieldSearchBar.swift */,
 				AB003D000000000000000000 /* FieldCardView.swift */,
 				AB003F000000000000000000 /* FieldDetailSheet.swift */,
+				875C740E7435757BB539D800 /* MapSnapshotView.swift */,
 			);
 			path = FieldBooking;
 			sourceTree = "<group>";
@@ -313,9 +637,34 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		C0323465651A7E339DAEF23A /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				C4B47D665609EC05541B6E95 /* Foundation.framework */,
+			);
+			name = watchOS;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		079156EB505DA225560EACE3 /* AIHomeRunWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 58019574F22218DB2826C355 /* Build configuration list for PBXNativeTarget "AIHomeRunWatch" */;
+			buildPhases = (
+				4F1BE329BF2FF4E86D232108 /* Sources */,
+				A67C9FA62C83F092D799274E /* Frameworks */,
+				D9351F11689940C90CD528E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AIHomeRunWatch;
+			productName = AIHomeRunWatch;
+			productReference = 419F7E6C748ED9723EB6FCDE /* AIHomeRunWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 		504EC3031FED79650016851F /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
@@ -323,10 +672,12 @@
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
+				WA0003000000000000000001 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				WA0005000000000000000001 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -339,6 +690,14 @@
 		};
 /* End PBXNativeTarget section */
 
+/* Begin PBXTargetDependency section */
+		WA0005000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 079156EB505DA225560EACE3 /* AIHomeRunWatch */;
+			targetProxy = WA0002000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXProject section */
 		504EC2FC1FED79650016851F /* Project object */ = {
 			isa = PBXProject;
@@ -346,6 +705,10 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					079156EB505DA225560EACE3 = {
+						CreatedOnToolsVersion = 15.0;
+						ProvisioningStyle = Manual;
+					};
 					504EC3031FED79650016851F = {
 						CreatedOnToolsVersion = 15.0;
 						LastSwiftMigration = 1500;
@@ -371,6 +734,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				079156EB505DA225560EACE3 /* AIHomeRunWatch */,
 			);
 		};
 /* End PBXProject section */
@@ -388,13 +752,40 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D9351F11689940C90CD528E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D9D6FF97A1B2D343B56E93B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4F1BE329BF2FF4E86D232108 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C81DC6F5D79CB537C6CA2FF /* AIHomeRunWatchApp.swift in Sources */,
+				5152E4894491D7D81342F3E1 /* MotionService.swift in Sources */,
+				A13664FEAF79FA0594150801 /* SwingDetector.swift in Sources */,
+				D8323CFD09546034D9BBE46D /* WorkoutService.swift in Sources */,
+				5605F7A5BF7B9A437D00CD9E /* WatchConnectivityService.swift in Sources */,
+				3CD54958DEA3C3304D40794D /* SessionViewModel.swift in Sources */,
+				69DC8848FBF36CA0E114F3D7 /* StartView.swift in Sources */,
+				AAA17E312283BBD9FDF704D4 /* LiveSessionView.swift in Sources */,
+				343267542A65951850213B73 /* SessionCompleteView.swift in Sources */,
+				01631D7BF500C20728FC3867 /* SwingSession.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3001FED79650016851F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0002000000000000000100 /* WatchSessionManager.swift in Sources */,
+				AA0004000000000000000100 /* WatchSessionsView.swift in Sources */,
 				AB0002000000000000000000 /* AIHomeRunApp.swift in Sources */,
 				AB0004000000000000000000 /* ContentView.swift in Sources */,
 				AB0006000000000000000000 /* AppConfig.swift in Sources */,
@@ -411,6 +802,9 @@
 				AB001E000000000000000000 /* LoadingView.swift in Sources */,
 				AB0020000000000000000000 /* ResultView.swift in Sources */,
 				AB0022000000000000000000 /* ScoreRingView.swift in Sources */,
+				CH0001000000000000000000 /* RadarChartView.swift in Sources */,
+				CH0003000000000000000000 /* MetricGaugeView.swift in Sources */,
+				CH0005000000000000000000 /* SwingMetricsDashboard.swift in Sources */,
 				AB0024000000000000000000 /* GrowthChartView.swift in Sources */,
 				AB0026000000000000000000 /* CompareCardView.swift in Sources */,
 				AB0028000000000000000000 /* ProfileView.swift in Sources */,
@@ -427,6 +821,7 @@
 				AB003E000000000000000000 /* FieldCardView.swift in Sources */,
 				AB0040000000000000000000 /* FieldDetailSheet.swift in Sources */,
 				AB0042000000000000000000 /* GooglePlacesService.swift in Sources */,
+				AC0002000000000000000001 /* AnalysisResultCache.swift in Sources */,
 				AB0044000000000000000000 /* BiomechanicsModels.swift in Sources */,
 				AB0046000000000000000000 /* BiomechanicsService.swift in Sources */,
 				AB0048000000000000000000 /* ClaudeAPIService.swift in Sources */,
@@ -439,6 +834,44 @@
 				A9340B74362B0E69F93BF735 /* PoseDetectionService.swift in Sources */,
 				84BA60F20AF61E0F6D227060 /* PoseOverlayViewModel.swift in Sources */,
 				A8A812259FAFEEE2E9D74B08 /* SkeletonOverlayView.swift in Sources */,
+				AB0061000000000000000000 /* ComparisonModels.swift in Sources */,
+				AB0063000000000000000000 /* PoseDataCache.swift in Sources */,
+				AB0065000000000000000000 /* ComparisonViewModel.swift in Sources */,
+				AB0067000000000000000000 /* ComparisonView.swift in Sources */,
+				AB0069000000000000000000 /* SideBySideView.swift in Sources */,
+				AB006B000000000000000000 /* GhostOverlayView.swift in Sources */,
+				AB006D000000000000000000 /* ComparisonControlsBar.swift in Sources */,
+				AB006F000000000000000000 /* ComparisonMetricsPanel.swift in Sources */,
+				AB0071000000000000000000 /* SessionPickerView.swift in Sources */,
+				AB0074000000000000000000 /* ActionDetectionService.swift in Sources */,
+				AB0076000000000000000000 /* TrimTimelineView.swift in Sources */,
+				AB0078000000000000000000 /* TrimPreviewView.swift in Sources */,
+				AB007A000000000000000000 /* Pose3DData.swift in Sources */,
+				AB007C000000000000000000 /* Pose3DDetectionService.swift in Sources */,
+				AB007E000000000000000000 /* Skeleton3DSceneView.swift in Sources */,
+				AB0080000000000000000000 /* Skeleton3DView.swift in Sources */,
+				AB0082000000000000000000 /* Skeleton3DViewModel.swift in Sources */,
+				AB0084000000000000000000 /* ReportExportService.swift in Sources */,
+				AB0086000000000000000000 /* ReportShareSheet.swift in Sources */,
+				DCFE81B405E476097C4612AE /* MapSnapshotView.swift in Sources */,
+				AB0090000000000000000000 /* SessionHistoryView.swift in Sources */,
+				AB0092000000000000000000 /* BestScoreView.swift in Sources */,
+				AB0094000000000000000000 /* ProgressStatsView.swift in Sources */,
+				6C0D959EB0EEA6403FD6E798 /* BuildFile in Sources */,
+				D157C1684445C992AC2B66DB /* WatchConnectivityService.swift in Sources */,
+				F85F1C21BCE2D5E508F96689 /* SwingSession.swift in Sources */,
+				D97C8BD00A54FD8127AB69CA /* TrainingView.swift in Sources */,
+				AF7ACC77C72CAB2B2F3247BA /* HealthKitService.swift in Sources */,
+				FU0001000000000000000000 /* FusionModels.swift in Sources */,
+				FU0003000000000000000000 /* FusionAnalysisService.swift in Sources */,
+				FU0005000000000000000000 /* MetricTrendMiniChart.swift in Sources */,
+				FU0007000000000000000000 /* SpeedDistributionChart.swift in Sources */,
+				FU0009000000000000000000 /* SwingTimelineView.swift in Sources */,
+				FU0011000000000000000000 /* ProMetricsCard.swift in Sources */,
+				NW0001000000000000000000 /* WatchMetricsCard.swift in Sources */,
+				NW0003000000000000000000 /* SwingDetailCard.swift in Sources */,
+				NW0005000000000000000000 /* HeatMapView.swift in Sources */,
+				NW0007000000000000000000 /* SessionSummaryCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,7 +999,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -574,7 +1007,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.aihomerun.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -589,7 +1022,7 @@
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -597,12 +1030,71 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.aihomerun.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "AIHomeRun AppStore";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		8EB8EAD4947B0E190DC92086 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AIHomeRunWatch/AIHomeRunWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
+				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = AIHomeRunWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aihomerun.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		95700298B08A609F6EDEF14F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AIHomeRunWatch/AIHomeRunWatch.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 17;
+				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = AIHomeRunWatch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aihomerun.app.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "AIHomeRun Watch AppStore";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -623,6 +1115,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		58019574F22218DB2826C355 /* Build configuration list for PBXNativeTarget "AIHomeRunWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				95700298B08A609F6EDEF14F /* Release */,
+				8EB8EAD4947B0E190DC92086 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -146,6 +146,17 @@ class VideoReplayViewModel: ObservableObject {
         player.seek(to: target, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 
+    /// Seek to an exact time in seconds (zero tolerance).
+    /// Used by ComparisonViewModel for frame-accurate sync.
+    func seekToTime(_ seconds: Double) {
+        guard seconds.isFinite, seconds >= 0 else { return }
+        let clamped = min(seconds, max(duration, 0.01))
+        let target = CMTime(seconds: clamped, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        player.seek(to: target, toleranceBefore: .zero, toleranceAfter: .zero)
+        // Update published time immediately for responsive UI
+        currentTime = clamped
+    }
+
     // MARK: Zoom / Pan
 
     func resetZoom() {

@@ -91,23 +91,23 @@ class AuthViewModel: ObservableObject {
             switch result {
             case .success(let authorization):
                 guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-                    self.error = "Apple Sign In: unexpected credential type"
+                    self.error = "Apple Sign In failed. Please try again."
                     return
                 }
                 guard let tokenData = credential.identityToken,
                       let idTokenString = String(data: tokenData, encoding: .utf8),
                       !idTokenString.isEmpty else {
-                    self.error = "Apple Sign In: missing identity token"
+                    self.error = "Apple Sign In failed. Please try again."
                     return
                 }
                 guard let nonce = currentNonce else {
-                    self.error = "Apple Sign In: missing nonce"
+                    self.error = "Apple Sign In failed. Please try again."
                     return
                 }
                 do {
                     try await supabase.signInWithApple(idToken: idTokenString, nonce: nonce)
                 } catch {
-                    self.error = error.localizedDescription
+                    self.error = "Apple Sign In failed: \(error.localizedDescription)"
                 }
             case .failure(let err):
                 // User cancelled – don't show an error
@@ -121,24 +121,43 @@ class AuthViewModel: ObservableObject {
 
     func signInWithGoogle() async {
         error = nil
-        guard let rootVC = await UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first?.windows.first?.rootViewController
+
+        // Find the key window's root VC — works on both iPhone and iPad multi-scene
+        guard let rootVC = await {
+            let scenes = UIApplication.shared.connectedScenes
+            let windowScene = scenes
+                .compactMap { $0 as? UIWindowScene }
+                .first(where: { $0.activationState == .foregroundActive })
+                ?? scenes.compactMap({ $0 as? UIWindowScene }).first
+            return windowScene?.windows.first(where: \.isKeyWindow)?.rootViewController
+                ?? windowScene?.windows.first?.rootViewController
+        }()
         else {
-            self.error = "Cannot find root view controller"
+            self.error = "Unable to present Google Sign In. Please try again."
             return
         }
 
         do {
             let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootVC)
             guard let idToken = result.user.idToken?.tokenString else {
-                self.error = "Google Sign In: missing ID token"
+                self.error = "Google Sign In failed. Please try again."
                 return
             }
             let accessToken = result.user.accessToken.tokenString
             try await supabase.signInWithGoogle(idToken: idToken, accessToken: accessToken)
         } catch {
             if (error as NSError).code == GIDSignInError.canceled.rawValue { return }
+            self.error = "Google Sign In failed: \(error.localizedDescription)"
+        }
+    }
+
+    // MARK: - Account Deletion
+
+    func deleteAccount() async {
+        error = nil
+        do {
+            try await supabase.deleteAccount()
+        } catch {
             self.error = error.localizedDescription
         }
     }

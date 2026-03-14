@@ -52,7 +52,7 @@ struct FieldBookingView: View {
                                         .tint(Color.hrBlue)
                                     Text("Searching for fields...")
                                         .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.4))
+                                        .foregroundStyle(.primary.opacity(0.55))
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 40)
@@ -94,7 +94,7 @@ struct FieldBookingView: View {
                             .foregroundStyle(vm.locationManager.hasPermission ? Color.hrGreen : Color.hrOrange)
                         Text(vm.locationName)
                             .font(.caption.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.50))
+                            .foregroundStyle(.primary.opacity(0.60))
                     }
                 }
             }
@@ -102,7 +102,6 @@ struct FieldBookingView: View {
                 FieldDetailSheet(field: field)
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
-                    .preferredColorScheme(.dark)
             }
         }
         .onAppear {
@@ -128,10 +127,10 @@ struct FieldBookingView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Enable Location")
                         .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                     Text("Find baseball fields near you automatically")
                         .font(.caption)
-                        .foregroundStyle(.white.opacity(0.5))
+                        .foregroundStyle(.primary.opacity(0.60))
                 }
                 Spacer()
             }
@@ -139,7 +138,7 @@ struct FieldBookingView: View {
             Button {
                 vm.requestLocationPermission()
             } label: {
-                Text("Enable Location Services")
+                Text("Continue")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -174,13 +173,13 @@ struct FieldBookingView: View {
                             Text(option.rawValue)
                                 .font(.caption.weight(.semibold))
                         }
-                        .foregroundStyle(vm.selectedFilter == option ? .white : .white.opacity(0.45))
+                        .foregroundStyle(vm.selectedFilter == option ? Color.white : Color.primary.opacity(0.55))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 7)
                         .background(
                             vm.selectedFilter == option
                             ? Color.hrBlue
-                            : Color.white.opacity(0.07)
+                            : Color.hrSurface
                         )
                         .clipShape(Capsule())
                     }
@@ -196,10 +195,10 @@ struct FieldBookingView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Nearby Fields")
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                 Text("\(vm.filteredFields.count) results \u{00B7} sorted by distance")
                     .font(.caption)
-                    .foregroundStyle(.white.opacity(0.35))
+                    .foregroundStyle(.primary.opacity(0.50))
             }
             Spacer()
         }
@@ -211,13 +210,13 @@ struct FieldBookingView: View {
         VStack(spacing: 16) {
             Image(systemName: "mappin.slash")
                 .font(.system(size: 36))
-                .foregroundStyle(.white.opacity(0.2))
+                .foregroundStyle(.primary.opacity(0.35))
             Text("No Fields Found")
                 .font(.headline.weight(.bold))
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(.primary.opacity(0.6))
             Text("Try searching a different area or expanding your search radius.")
                 .font(.caption)
-                .foregroundStyle(.white.opacity(0.35))
+                .foregroundStyle(.primary.opacity(0.50))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
