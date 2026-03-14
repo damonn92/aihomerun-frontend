@@ -254,7 +254,8 @@ function FeaturesShowcase() {
 
   const screenshots = [
     { src: '/screenshots/home.jpg',      label: 'AI Analysis',   desc: 'Upload any swing or pitch video and get instant AI-powered scores with radar charts, metric gauges, and professional-grade biomechanics data.' },
-    { src: '/screenshots/training.jpg',  label: 'Watch Training', desc: 'Track real-time swing metrics with Apple Watch — hand speed, rotational acceleration, swing scores, and heart rate during practice.' },
+    { src: '/screenshots/training.jpg',  label: 'Training',      desc: 'Track your health and fitness with HealthKit integration — steps, heart rate, calories, weekly workout progress, and Apple Watch connectivity.' },
+    { src: '/screenshots/watch.jpg',     label: 'Apple Watch',   desc: 'Track real-time swing metrics with Apple Watch — hand speed, rotational acceleration, swing scores, and heart rate during practice.' },
     { src: '/screenshots/ai-coach.jpg',  label: 'AI Coach',      desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
     { src: '/screenshots/rankings.jpg',  label: 'Rankings',      desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
     { src: '/screenshots/fields.jpg',    label: 'Find Fields',   desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
