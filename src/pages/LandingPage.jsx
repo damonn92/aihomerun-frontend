@@ -253,10 +253,11 @@ function FeaturesShowcase() {
   const fadeIn = useFadeIn()
 
   const screenshots = [
-    { src: '/screenshots/home.jpg',      label: 'AI Analysis',  desc: 'Upload any swing or pitch video and get instant AI-powered scores across 4 performance dimensions.' },
-    { src: '/screenshots/ai-coach.jpg',  label: 'AI Coach',     desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
-    { src: '/screenshots/rankings.jpg',  label: 'Rankings',     desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
-    { src: '/screenshots/fields.jpg',    label: 'Find Fields',  desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
+    { src: '/screenshots/home.jpg',      label: 'AI Analysis',   desc: 'Upload any swing or pitch video and get instant AI-powered scores with radar charts, metric gauges, and professional-grade biomechanics data.' },
+    { src: '/screenshots/training.jpg',  label: 'Watch Training', desc: 'Track real-time swing metrics with Apple Watch — hand speed, rotational acceleration, swing scores, and heart rate during practice.' },
+    { src: '/screenshots/ai-coach.jpg',  label: 'AI Coach',      desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
+    { src: '/screenshots/rankings.jpg',  label: 'Rankings',      desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
+    { src: '/screenshots/fields.jpg',    label: 'Find Fields',   desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
   ]
 
   // For the 3-phone display: previous, active, next indices
@@ -363,6 +364,218 @@ function FeaturesShowcase() {
   )
 }
 
+/* ─── Apple Watch Section ──────────────────────────────────────────────────── */
+function AppleWatchSection() {
+  const fadeIn = useFadeIn()
+  const [hoveredMetric, setHoveredMetric] = useState(null)
+
+  const watchMetrics = [
+    { icon: '⚡', label: 'Hand Speed', value: '68 mph', desc: 'Real-time hand speed measured via accelerometer during each swing', color: '#FF453A' },
+    { icon: '🔄', label: 'Rotational Accel.', value: '1,240 rad/s²', desc: 'Angular acceleration from rotation rate sensors — measures bat whip speed', color: '#FF8C00' },
+    { icon: '📐', label: 'Attack Angle', value: '12.3°', desc: 'Estimated bat attack angle at contact zone from gyroscope trajectory', color: '#0A84FF' },
+    { icon: '⏱️', label: 'Time to Contact', value: '0.18s', desc: 'Milliseconds from swing start to impact — faster means better reaction', color: '#BF5AF2' },
+    { icon: '💯', label: 'Swing Score', value: '85/100', desc: 'Composite weighted score combining all metrics with age-based normalization', color: '#30D158' },
+    { icon: '❤️', label: 'Heart Rate', value: '142 bpm', desc: 'Live heart rate tracking from Apple Watch during practice sessions', color: '#FF2D55' },
+  ]
+
+  return (
+    <section id="apple-watch" className="lp-section-pad" ref={fadeIn.ref} style={{
+      padding: 'clamp(80px, 9vw, 120px) 28px',
+      background: '#000',
+      borderTop: '1px solid rgba(255,255,255,0.05)',
+      position: 'relative',
+      overflow: 'hidden',
+      ...fadeIn.style,
+    }}>
+      {/* Background glow */}
+      <div style={{
+        position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)',
+        width: 600, height: 600, borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(48,209,88,0.08) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+
+      <div style={{ maxWidth: 1120, margin: '0 auto', position: 'relative' }}>
+        <div style={{ textAlign: 'center', marginBottom: 56 }}>
+          <SectionLabel>Apple Watch</SectionLabel>
+          <SectionTitle>Train smarter with<br/>your wrist</SectionTitle>
+          <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.4)', maxWidth: 560, margin: '0 auto', lineHeight: 1.68 }}>
+            Pair your Apple Watch for real-time swing tracking that rivals $100+ dedicated sensors.
+            No extra hardware needed — just your watch and your bat.
+          </p>
+        </div>
+
+        {/* Watch hero + metrics */}
+        <div className="watch-hero-flex" style={{
+          display: 'flex', alignItems: 'center', gap: 60, flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}>
+
+          {/* Left: Watch illustration */}
+          <div style={{
+            flex: '0 0 auto', position: 'relative',
+            width: 280, height: 340,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {/* Watch body */}
+            <div style={{
+              width: 180, height: 220,
+              background: 'linear-gradient(145deg, #1a1a1a, #2d2d2d)',
+              borderRadius: 44,
+              border: '2px solid rgba(255,255,255,0.12)',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(48,209,88,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              padding: 16, position: 'relative',
+            }}>
+              {/* Watch band top */}
+              <div style={{
+                position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)',
+                width: 100, height: 36, borderRadius: '12px 12px 0 0',
+                background: 'linear-gradient(180deg, #333, #1a1a1a)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderBottom: 'none',
+              }} />
+              {/* Watch band bottom */}
+              <div style={{
+                position: 'absolute', bottom: -32, left: '50%', transform: 'translateX(-50%)',
+                width: 100, height: 36, borderRadius: '0 0 12px 12px',
+                background: 'linear-gradient(180deg, #1a1a1a, #333)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderTop: 'none',
+              }} />
+              {/* Crown */}
+              <div style={{
+                position: 'absolute', right: -6, top: '35%',
+                width: 6, height: 24, borderRadius: 3,
+                background: 'linear-gradient(180deg, #555, #333)',
+              }} />
+
+              {/* Screen content */}
+              <div style={{
+                fontSize: 11, fontWeight: 600, color: '#30D158',
+                letterSpacing: 0.5, marginBottom: 6,
+              }}>AIHomeRun</div>
+              <div style={{
+                fontSize: 36, fontWeight: 800, color: '#fff',
+                lineHeight: 1, marginBottom: 2,
+                fontFamily: '-apple-system, "SF Pro Display", sans-serif',
+              }}>68</div>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>mph Hand Speed</div>
+
+              {/* Mini stats row */}
+              <div style={{ display: 'flex', gap: 12 }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FF8C00' }}>85</div>
+                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>Score</div>
+                </div>
+                <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FF2D55' }}>142</div>
+                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>BPM</div>
+                </div>
+                <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#30D158' }}>12</div>
+                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>Swings</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pulsing ring around watch */}
+            <div style={{
+              position: 'absolute', inset: 20,
+              border: '1px solid rgba(48,209,88,0.15)',
+              borderRadius: 60, animation: 'pulse-glow 3s ease-in-out infinite',
+              boxShadow: '0 0 30px rgba(48,209,88,0.08)',
+            }} />
+          </div>
+
+          {/* Right: Metrics grid */}
+          <div style={{
+            flex: '1 1 480px',
+            display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 14,
+          }}>
+            {watchMetrics.map((m, i) => (
+              <div
+                key={i}
+                onMouseEnter={() => setHoveredMetric(i)}
+                onMouseLeave={() => setHoveredMetric(null)}
+                style={{
+                  background: hoveredMetric === i ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                  border: `1px solid ${hoveredMetric === i ? m.color + '33' : 'rgba(255,255,255,0.06)'}`,
+                  borderRadius: 16, padding: '18px 16px',
+                  transition: 'all 0.25s ease',
+                  transform: hoveredMetric === i ? 'translateY(-2px)' : 'none',
+                  cursor: 'default',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                  <span style={{ fontSize: 20 }}>{m.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.85)', letterSpacing: -0.2 }}>{m.label}</div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: m.color, letterSpacing: -0.5, fontFamily: '-apple-system, "SF Pro Display", sans-serif' }}>{m.value}</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.55 }}>{m.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom callout: comparison with Blast */}
+        <div style={{
+          marginTop: 56, textAlign: 'center',
+          background: 'linear-gradient(135deg, rgba(48,209,88,0.06), rgba(0,122,255,0.04))',
+          border: '1px solid rgba(48,209,88,0.15)',
+          borderRadius: 20, padding: '28px 32px',
+          maxWidth: 700, margin: '56px auto 0',
+        }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 10, letterSpacing: -0.3 }}>
+            Why pay $100+ for a dedicated sensor?
+          </div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 16 }}>
+            Blast Baseball and other sensor-based systems charge $100+ for a bat-mounted sensor.
+            AIHomeRun uses the Apple Watch you already own to deliver comparable swing metrics —
+            hand speed, rotational acceleration, swing scores, and more — completely free.
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap' }}>
+            {[
+              { label: 'AIHomeRun', price: 'Free', sub: 'Uses your Apple Watch', color: '#30D158' },
+              { label: 'Blast Baseball', price: '$100+', sub: 'Requires dedicated sensor', color: 'rgba(255,255,255,0.3)' },
+            ].map(c => (
+              <div key={c.label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: c.color, marginBottom: 4 }}>{c.label}</div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: c.color, letterSpacing: -0.5 }}>{c.price}</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{c.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Air swing mode callout */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', gap: 28, marginTop: 36, flexWrap: 'wrap',
+        }}>
+          {[
+            { icon: '🏏', title: 'Standard Mode', desc: 'Full swing detection with ball impact tracking' },
+            { icon: '💨', title: 'Air Swing Mode', desc: 'Practice without a ball — detects swing motion only' },
+            { icon: '📱', title: 'Live Sync', desc: 'Real-time metrics stream to your iPhone during practice' },
+          ].map(item => (
+            <div key={item.title} style={{
+              textAlign: 'center', flex: '0 1 200px',
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>{item.icon}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: 4 }}>{item.title}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}>{item.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ─── Main Landing Page ─────────────────────────────────────────────────────  */
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false)
@@ -378,6 +591,7 @@ export default function LandingPage() {
   const howToFade     = useFadeIn()
   const roadmapFade   = useFadeIn()
   const ctaFade       = useFadeIn()
+  // watchFade is handled inside AppleWatchSection
 
   const base = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif',
@@ -534,6 +748,15 @@ export default function LandingPage() {
             grid-template-columns: 1fr !important;
             max-width: 100% !important;
           }
+
+          /* Watch section: stack vertically */
+          .watch-hero-flex {
+            flex-direction: column !important;
+            gap: 36px !important;
+          }
+          .watch-hero-flex > div:last-child {
+            grid-template-columns: 1fr !important;
+          }
         }
 
         @media (max-width: 390px) {
@@ -569,10 +792,10 @@ export default function LandingPage() {
 
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
             <a href="#showcase" className="nav-link-item">Preview</a>
+            <a href="#apple-watch" className="nav-link-item">Apple Watch</a>
             <a href="#features" className="nav-link-item">Features</a>
             <a href="#how-to-use" className="nav-link-item">How to Use</a>
             <a href="https://apps.apple.com/app/aihomerun/id6760232096" target="_blank" rel="noopener noreferrer" className="nav-link-item">Download</a>
-            <a href="mailto:info@aihomerun.app" className="nav-link-item" style={{ fontSize:14 }}>Contact</a>
           </div>
 
           <a href="https://apps.apple.com/app/aihomerun/id6760232096" target="_blank" rel="noopener noreferrer" className="nav-cta" style={{
@@ -652,8 +875,8 @@ export default function LandingPage() {
               fontSize: 18, color: 'rgba(255,255,255,0.5)', lineHeight: 1.72,
               maxWidth: 460, margin: '0 0 42px', letterSpacing: -0.1,
             }}>
-              Upload a video for instant AI analysis, chat with your personal
-              AI coach, climb the rankings, and find fields near you.
+              Upload a video for instant AI analysis, pair your Apple Watch for
+              real-time swing tracking, chat with your AI coach, and climb the rankings.
               Professional-grade baseball training — completely free.
             </p>
 
@@ -701,8 +924,8 @@ export default function LandingPage() {
           display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 24,
         }}>
           {[
-            { num: '5',       label: 'Powerful features\nin one free app' },
-            { num: '20+',     label: 'Biomechanical\ndata points analyzed' },
+            { num: '7',       label: 'Pro features\nin one free app' },
+            { num: '30+',     label: 'Biomechanical\ndata points analyzed' },
             { num: '<30s',    label: 'Instant AI\nfeedback per video' },
             { num: '100%',    label: 'Free forever\nno ads, no fees' },
           ].map(({ num, label }) => (
@@ -721,6 +944,9 @@ export default function LandingPage() {
 
       {/* ── FEATURES SHOWCASE (Tab-based phone viewer) ─────────────────── */}
       <FeaturesShowcase />
+
+      {/* ── APPLE WATCH SECTION ────────────────────────────────────────── */}
+      <AppleWatchSection />
 
       {/* ── FEATURES ────────────────────────────────────────────────────── */}
       <section id="features" className="lp-section-pad" ref={featuresFade.ref} style={{
@@ -748,15 +974,15 @@ export default function LandingPage() {
           }}>
             <FeatureCard
               icon="🎯"
-              title="AI Swing & Pitch Analysis"
+              title="AI Video Analysis"
               accent="#FF453A"
-              desc="Upload any video and our AI instantly analyzes biomechanical data points — hip rotation, bat path, shoulder alignment, and more. Get scored on Overall, Technique, Power, and Balance."
+              desc="Upload any video and get instant AI-powered scores with radar charts, metric gauges, and bar indicators. Analyze hip rotation, bat path, shoulder alignment, plane efficiency, and 30+ data points."
             />
             <FeatureCard
-              icon="🏆"
-              title="Player Rankings"
-              accent="#FFD60A"
-              desc="See where you stand among other players on the leaderboard. Compare your scores, track your position, and stay motivated by competing with athletes nationwide."
+              icon="⌚"
+              title="Apple Watch Integration"
+              accent="#30D158"
+              desc="Pair your Apple Watch for real-time swing detection with hand speed, rotational acceleration, composite swing scores, and heart rate tracking. Air Swing mode lets you practice without a ball."
             />
             <FeatureCard
               icon="🤖"
@@ -766,14 +992,20 @@ export default function LandingPage() {
             />
           </div>
 
-          {/* Row 2: 2 feature cards centered */}
+          {/* Row 2: 3 feature cards */}
           <div className="features-grid-bottom" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
+            gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 18,
-            maxWidth: '67%',
+            maxWidth: '100%',
             margin: '0 auto',
           }}>
+            <FeatureCard
+              icon="🏆"
+              title="Player Rankings"
+              accent="#FFD60A"
+              desc="See where you stand among other players on the leaderboard. Compare your scores, track your position, and stay motivated by competing with athletes nationwide."
+            />
             <FeatureCard
               icon="📍"
               title="Find Baseball Fields"
@@ -781,10 +1013,10 @@ export default function LandingPage() {
               desc="Discover nearby baseball fields and batting cages with integrated maps. Get directions, see facility details, and find the perfect place to practice."
             />
             <FeatureCard
-              icon="👤"
-              title="Player Profile & History"
+              icon="📊"
+              title="Pro Analytics & Progress"
               accent="#BF5AF2"
-              desc="Track your complete session history, view your progress over time, and manage your athlete profile. Every analysis is saved so you can see how far you've come."
+              desc="Track your complete history with radar charts, trend lines, and metric breakdowns. Compare sessions side by side and see how far you've come with professional-grade visualizations."
             />
           </div>
         </div>
@@ -910,8 +1142,8 @@ export default function LandingPage() {
               { icon: '👨‍🏫', title: 'Coach Dashboard',      desc: 'Coaches review player sessions and add personal feedback notes' },
               { icon: '👪', title: 'Family Mode',           desc: 'Manage multiple young athletes under one parent account' },
               { icon: '🏟️', title: 'Team Features',         desc: 'Compare performance across a full team roster and track group progress' },
-              { icon: '🎬', title: 'Video Annotations',     desc: 'AI-annotated video replay highlighting joint angles and key positions in your swing or pitch' },
               { icon: '📅', title: 'Training Programs',     desc: 'Multi-week structured training plans generated by AI, tailored to your specific improvement areas' },
+              { icon: '🤖', title: 'Smart Bat Sensor',      desc: 'Optional Bluetooth bat sensor integration for even more precise bat speed and impact data' },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="coming-card" style={{
                 background: 'rgba(255,255,255,0.02)',
@@ -967,8 +1199,8 @@ export default function LandingPage() {
             fontSize: 18, color: 'rgba(255,255,255,0.45)', lineHeight: 1.72,
             margin: '0 0 42px', letterSpacing: -0.1,
           }}>
-            AI video analysis, personal coaching, player rankings,
-            and field finder — all completely free. No subscription. No ads.
+            AI video analysis, Apple Watch swing tracking, personal coaching,
+            player rankings, and field finder — all completely free. No subscription. No ads.
           </p>
 
           <div className="cta-badges" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
@@ -1011,6 +1243,7 @@ export default function LandingPage() {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', marginBottom: 14 }}>Product</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <a href="#showcase" className="footer-link">App Preview</a>
+                <a href="#apple-watch" className="footer-link">Apple Watch</a>
                 <a href="#features" className="footer-link">Features</a>
                 <a href="#how-to-use" className="footer-link">How to Use</a>
                 <a href="https://apps.apple.com/app/aihomerun/id6760232096" target="_blank" rel="noopener noreferrer" className="footer-link">Download App</a>
