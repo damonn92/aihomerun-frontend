@@ -34,7 +34,7 @@ struct VideoTimelineView: View {
                 ZStack(alignment: .leading) {
                     // Background track
                     RoundedRectangle(cornerRadius: trackHeight / 2)
-                        .fill(Color.white.opacity(0.14))
+                        .fill(Color.primary.opacity(0.12))
                         .frame(height: trackHeight)
 
                     // Filled track
@@ -44,7 +44,7 @@ struct VideoTimelineView: View {
 
                     // Thumb
                     Circle()
-                        .fill(.white)
+                        .fill(Color.hrBlue)
                         .frame(
                             width: isDragging ? thumbDragSize : thumbSize,
                             height: isDragging ? thumbDragSize : thumbSize
@@ -78,11 +78,11 @@ struct VideoTimelineView: View {
             HStack {
                 Text(currentTime)
                     .font(.system(size: 10, weight: .medium).monospacedDigit())
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.primary.opacity(0.45))
                 Spacer()
                 Text(duration)
                     .font(.system(size: 10, weight: .medium).monospacedDigit())
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.primary.opacity(0.45))
             }
         }
     }
