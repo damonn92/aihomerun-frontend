@@ -255,7 +255,6 @@ function FeaturesShowcase() {
   const screenshots = [
     { src: '/screenshots/home.jpg',      label: 'AI Analysis',   desc: 'Upload any swing or pitch video and get instant AI-powered scores with radar charts, metric gauges, and professional-grade biomechanics data.' },
     { src: '/screenshots/training.jpg',  label: 'Training',      desc: 'Track your health and fitness with HealthKit integration — steps, heart rate, calories, weekly workout progress, and Apple Watch connectivity.' },
-    { src: '/screenshots/watch.jpg',     label: 'Apple Watch',   desc: 'Track real-time swing metrics with Apple Watch — hand speed, rotational acceleration, swing scores, and heart rate during practice.' },
     { src: '/screenshots/ai-coach.jpg',  label: 'AI Coach',      desc: 'Chat one-on-one with your personal AI coach for biomechanics advice and personalized training tips.' },
     { src: '/screenshots/rankings.jpg',  label: 'Rankings',      desc: 'See how you stack up against other players and stay motivated by climbing the leaderboard.' },
     { src: '/screenshots/fields.jpg',    label: 'Find Fields',   desc: 'Discover nearby baseball fields and batting cages with integrated maps and directions.' },
@@ -412,82 +411,100 @@ function AppleWatchSection() {
           justifyContent: 'center',
         }}>
 
-          {/* Left: Watch illustration */}
+          {/* Left: Realistic Apple Watch with real screenshot */}
           <div style={{
             flex: '0 0 auto', position: 'relative',
-            width: 280, height: 340,
+            width: 300, height: 420,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            {/* Watch body */}
+            {/* Watch band top */}
             <div style={{
-              width: 180, height: 220,
-              background: 'linear-gradient(145deg, #1a1a1a, #2d2d2d)',
-              borderRadius: 44,
-              border: '2px solid rgba(255,255,255,0.12)',
-              boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 0 40px rgba(48,209,88,0.1), inset 0 1px 0 rgba(255,255,255,0.1)',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              padding: 16, position: 'relative',
+              position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+              width: 108, height: 80, borderRadius: '20px 20px 0 0',
+              background: 'linear-gradient(180deg, #3a3a3c 0%, #2c2c2e 40%, #1c1c1e 100%)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 -2px 8px rgba(0,0,0,0.4)',
             }}>
-              {/* Watch band top */}
+              {/* Band texture lines */}
+              <div style={{ position: 'absolute', top: 12, left: 8, right: 8, height: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 1 }} />
+              <div style={{ position: 'absolute', top: 24, left: 8, right: 8, height: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 1 }} />
+              <div style={{ position: 'absolute', top: 36, left: 8, right: 8, height: 1, background: 'rgba(255,255,255,0.02)', borderRadius: 1 }} />
+            </div>
+            {/* Watch band bottom */}
+            <div style={{
+              position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+              width: 108, height: 80, borderRadius: '0 0 20px 20px',
+              background: 'linear-gradient(180deg, #1c1c1e 0%, #2c2c2e 60%, #3a3a3c 100%)',
+              boxShadow: 'inset 0 -1px 0 rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.4)',
+            }}>
+              <div style={{ position: 'absolute', bottom: 12, left: 8, right: 8, height: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 1 }} />
+              <div style={{ position: 'absolute', bottom: 24, left: 8, right: 8, height: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 1 }} />
+              <div style={{ position: 'absolute', bottom: 36, left: 8, right: 8, height: 1, background: 'rgba(255,255,255,0.02)', borderRadius: 1 }} />
+            </div>
+
+            {/* Watch case (titanium-style) */}
+            <div style={{
+              width: 198, height: 242,
+              background: 'linear-gradient(145deg, #48484a 0%, #2c2c2e 30%, #1c1c1e 70%, #3a3a3c 100%)',
+              borderRadius: 52,
+              border: '1.5px solid rgba(255,255,255,0.15)',
+              boxShadow: '0 40px 100px rgba(0,0,0,0.9), 0 0 60px rgba(48,209,88,0.08), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', zIndex: 2,
+              padding: 12,
+            }}>
+              {/* Digital Crown */}
               <div style={{
-                position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)',
-                width: 100, height: 36, borderRadius: '12px 12px 0 0',
-                background: 'linear-gradient(180deg, #333, #1a1a1a)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderBottom: 'none',
-              }} />
-              {/* Watch band bottom */}
+                position: 'absolute', right: -8, top: '30%',
+                width: 8, height: 32, borderRadius: 4,
+                background: 'linear-gradient(180deg, #58585a, #3a3a3c, #48484a)',
+                boxShadow: '1px 0 3px rgba(0,0,0,0.5), inset 0 0 1px rgba(255,255,255,0.1)',
+              }}>
+                {/* Crown knurling */}
+                {[0,1,2,3,4,5,6].map(i => (
+                  <div key={i} style={{
+                    position: 'absolute', right: 0, top: 4 + i * 3.5, width: '100%', height: 0.5,
+                    background: 'rgba(255,255,255,0.08)',
+                  }} />
+                ))}
+              </div>
+              {/* Side button */}
               <div style={{
-                position: 'absolute', bottom: -32, left: '50%', transform: 'translateX(-50%)',
-                width: 100, height: 36, borderRadius: '0 0 12px 12px',
-                background: 'linear-gradient(180deg, #1a1a1a, #333)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderTop: 'none',
-              }} />
-              {/* Crown */}
-              <div style={{
-                position: 'absolute', right: -6, top: '35%',
-                width: 6, height: 24, borderRadius: 3,
-                background: 'linear-gradient(180deg, #555, #333)',
+                position: 'absolute', right: -7, top: '55%',
+                width: 7, height: 18, borderRadius: 3,
+                background: 'linear-gradient(180deg, #48484a, #3a3a3c)',
+                boxShadow: '1px 0 2px rgba(0,0,0,0.4)',
               }} />
 
-              {/* Screen content */}
+              {/* Screen bezel (inner ring) */}
               <div style={{
-                fontSize: 11, fontWeight: 600, color: '#30D158',
-                letterSpacing: 0.5, marginBottom: 6,
-              }}>AIHomeRun</div>
-              <div style={{
-                fontSize: 36, fontWeight: 800, color: '#fff',
-                lineHeight: 1, marginBottom: 2,
-                fontFamily: '-apple-system, "SF Pro Display", sans-serif',
-              }}>68</div>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>mph Hand Speed</div>
-
-              {/* Mini stats row */}
-              <div style={{ display: 'flex', gap: 12 }}>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FF8C00' }}>85</div>
-                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>Score</div>
-                </div>
-                <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#FF2D55' }}>142</div>
-                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>BPM</div>
-                </div>
-                <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)' }} />
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#30D158' }}>12</div>
-                  <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.4)' }}>Swings</div>
-                </div>
+                width: '100%', height: '100%',
+                background: '#000',
+                borderRadius: 42,
+                overflow: 'hidden',
+                position: 'relative',
+                boxShadow: 'inset 0 0 8px rgba(0,0,0,0.8)',
+              }}>
+                {/* Actual watch screenshot */}
+                <img
+                  src="/screenshots/watch-screen.png"
+                  alt="AIHomeRun on Apple Watch"
+                  style={{
+                    width: '100%', height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: 40,
+                  }}
+                />
               </div>
             </div>
 
-            {/* Pulsing ring around watch */}
+            {/* Ambient glow behind watch */}
             <div style={{
-              position: 'absolute', inset: 20,
-              border: '1px solid rgba(48,209,88,0.15)',
-              borderRadius: 60, animation: 'pulse-glow 3s ease-in-out infinite',
-              boxShadow: '0 0 30px rgba(48,209,88,0.08)',
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 260, height: 260, borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(48,209,88,0.12) 0%, rgba(48,209,88,0.04) 40%, transparent 70%)',
+              pointerEvents: 'none', zIndex: 1,
+              animation: 'pulse-glow 3s ease-in-out infinite',
             }} />
           </div>
 
