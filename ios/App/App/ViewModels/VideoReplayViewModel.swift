@@ -34,9 +34,12 @@ class VideoReplayViewModel: ObservableObject {
     // MARK: Lifecycle
 
     func loadVideo(url: URL) {
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            loadError = "Video no longer available"
-            return
+        let isRemote = url.scheme == "https" || url.scheme == "http"
+        if !isRemote {
+            guard FileManager.default.fileExists(atPath: url.path) else {
+                loadError = "Video no longer available"
+                return
+            }
         }
 
         self.videoURL = url

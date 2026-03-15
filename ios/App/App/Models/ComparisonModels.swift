@@ -12,17 +12,27 @@ struct ComparisonSession: Identifiable {
     var poseData: VideoPoseData?         // populated after local re-analysis or from cache
     var syncPointTime: Double?           // user-set sync moment (seconds from video start)
 
+    /// True if video is playable — either a local file or a remote URL
     var videoAvailable: Bool {
         guard let url = videoURL else { return false }
+        if url.scheme == "https" || url.scheme == "http" {
+            return true  // Remote URL — AVPlayer can stream it
+        }
         return FileManager.default.fileExists(atPath: url.path)
     }
 
-    /// Short display label: date or fallback to "Session"
+    /// True if this is a remote (cloud) video URL
+    var isRemoteVideo: Bool {
+        guard let url = videoURL else { return false }
+        return url.scheme == "https" || url.scheme == "http"
+    }
+
+    /// Short display label: date + time for easy identification
     var displayLabel: String {
         if let dateStr = sessionSummary.createdAt {
-            return ComparisonSession.formatDate(dateStr)
+            return ComparisonSession.formatDateTime(dateStr)
         }
-        return "Session"
+        return analysisResult != nil ? "Current" : "Previous"
     }
 
     /// Overall score, if available
@@ -44,16 +54,32 @@ struct ComparisonSession: Identifiable {
         return f
     }()
 
+    private static let displayDateTimeFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d h:mm a"
+        return f
+    }()
+
     private static func formatDate(_ iso: String) -> String {
         if let date = isoFormatter.date(from: iso) {
             return displayFormatter.string(from: date)
         }
-        // Try without fractional seconds
         let alt = ISO8601DateFormatter()
         if let date = alt.date(from: iso) {
             return displayFormatter.string(from: date)
         }
         return String(iso.prefix(10))
+    }
+
+    private static func formatDateTime(_ iso: String) -> String {
+        if let date = isoFormatter.date(from: iso) {
+            return displayDateTimeFormatter.string(from: date)
+        }
+        let alt = ISO8601DateFormatter()
+        if let date = alt.date(from: iso) {
+            return displayDateTimeFormatter.string(from: date)
+        }
+        return String(iso.prefix(16))
     }
 }
 
@@ -112,14 +138,24 @@ final class VideoURLStore {
     /// Save a mapping from videoId to local file URL
     func store(videoId: String, url: URL) {
         var map = loadMap()
-        map[videoId] = url.absoluteString
+        map[videoId] = url.path
         UserDefaults.standard.set(map, forKey: key)
     }
 
     /// Look up a local file URL for a given videoId
     func url(for videoId: String) -> URL? {
         let map = loadMap()
-        guard let str = map[videoId] else { return nil }
+        guard var str = map[videoId] else { return nil }
+        // Migrate legacy entries that stored absoluteString (file:///...) instead of path
+        if str.hasPrefix("file://") {
+            if let legacyURL = URL(string: str) {
+                str = legacyURL.path
+                // Fix the stored value
+                var updated = map
+                updated[videoId] = str
+                UserDefaults.standard.set(updated, forKey: key)
+            }
+        }
         let url = URL(fileURLWithPath: str)
         // Only return if file still exists
         return FileManager.default.fileExists(atPath: url.path) ? url : nil

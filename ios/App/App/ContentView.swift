@@ -102,7 +102,7 @@ struct MainTabView: View {
 
             TrainingView()
                 .tabItem {
-                    Label("Training", systemImage: "heart.fill")
+                    Label("Watch", systemImage: "applewatch")
                 }
                 .tag(1)
 

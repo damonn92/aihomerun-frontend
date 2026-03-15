@@ -88,16 +88,17 @@ class ComparisonViewModel: ObservableObject, Identifiable {
         } else {
             isLoadingLeft = true
             Task {
+                let analysisURL = await localURLForPoseAnalysis(url)
                 // Check disk cache first
-                if let cachedPose = await PoseDataCache.shared.cached(for: url) {
+                if let cachedPose = await PoseDataCache.shared.cached(for: analysisURL) {
                     leftPoseVM.loadCachedPoseData(cachedPose)
                     leftSession.poseData = cachedPose
                     isLoadingLeft = false
                 } else {
-                    await leftPoseVM.runAnalysis(videoURL: url)
+                    await leftPoseVM.runAnalysis(videoURL: analysisURL)
                     if let data = leftPoseVM.poseData {
                         leftSession.poseData = data
-                        await PoseDataCache.shared.store(data, for: url)
+                        await PoseDataCache.shared.store(data, for: analysisURL)
                     }
                     isLoadingLeft = false
                 }
@@ -117,19 +118,42 @@ class ComparisonViewModel: ObservableObject, Identifiable {
         } else {
             isLoadingRight = true
             Task {
-                if let cachedPose = await PoseDataCache.shared.cached(for: url) {
+                let analysisURL = await localURLForPoseAnalysis(url)
+                if let cachedPose = await PoseDataCache.shared.cached(for: analysisURL) {
                     rightPoseVM.loadCachedPoseData(cachedPose)
                     rightSession.poseData = cachedPose
                     isLoadingRight = false
                 } else {
-                    await rightPoseVM.runAnalysis(videoURL: url)
+                    await rightPoseVM.runAnalysis(videoURL: analysisURL)
                     if let data = rightPoseVM.poseData {
                         rightSession.poseData = data
-                        await PoseDataCache.shared.store(data, for: url)
+                        await PoseDataCache.shared.store(data, for: analysisURL)
                     }
                     isLoadingRight = false
                 }
             }
+        }
+    }
+
+    // MARK: - Remote Video Helper
+
+    /// If the URL is remote, download it to a temp file for pose analysis.
+    /// AVPlayer can stream remote URLs, but MediaPipe/Vision needs a local file.
+    private func localURLForPoseAnalysis(_ url: URL) async -> URL {
+        guard url.scheme == "https" || url.scheme == "http" else { return url }
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("comparison_videos", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let fileName = url.lastPathComponent.isEmpty ? UUID().uuidString + ".mov" : url.lastPathComponent
+        let localURL = tempDir.appendingPathComponent(fileName)
+        // If already downloaded, reuse
+        if FileManager.default.fileExists(atPath: localURL.path) { return localURL }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            try data.write(to: localURL)
+            return localURL
+        } catch {
+            // Fall back to original URL — pose analysis may fail but video playback still works
+            return url
         }
     }
 

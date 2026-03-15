@@ -16,8 +16,18 @@ enum ActionType: String, CaseIterable {
 @MainActor
 class UploadViewModel: ObservableObject {
     @Published var videoURL: URL?
-    @Published var actionType: ActionType = .swing
-    @Published var age: Int = 12
+    @Published var actionType: ActionType = {
+        let raw = UserDefaults.standard.string(forKey: "com.aihomerun.lastActionType") ?? "swing"
+        return ActionType(rawValue: raw) ?? .swing
+    }() {
+        didSet { UserDefaults.standard.set(actionType.rawValue, forKey: "com.aihomerun.lastActionType") }
+    }
+    @Published var age: Int = {
+        let saved = UserDefaults.standard.integer(forKey: "com.aihomerun.lastAge")
+        return (6...18).contains(saved) ? saved : 12
+    }() {
+        didSet { UserDefaults.standard.set(age, forKey: "com.aihomerun.lastAge") }
+    }
     @Published var isLoading = false
     @Published var loadStep: Int = 0
     @Published var uploadProgress: Double = 0
@@ -47,17 +57,51 @@ class UploadViewModel: ObservableObject {
         return dir
     }
 
-    /// Copy a video to permanent storage so Session History can replay it later
-    private func persistVideo(_ sourceURL: URL, videoId: String) -> URL {
+    /// Early-copy: stash video to a stable temp location before upload starts,
+    /// so the file survives even if the original temp path is cleaned up during analysis.
+    private var stashedVideoURL: URL?
+
+    private func stashVideo(_ sourceURL: URL) -> URL {
+        let stashDir = Self.savedVideosDir.appendingPathComponent("_stash", isDirectory: true)
+        try? FileManager.default.createDirectory(at: stashDir, withIntermediateDirectories: true)
         let ext = sourceURL.pathExtension.isEmpty ? "mov" : sourceURL.pathExtension
-        let dest = Self.savedVideosDir.appendingPathComponent("\(videoId).\(ext)")
-        if FileManager.default.fileExists(atPath: dest.path) { return dest }
+        let dest = stashDir.appendingPathComponent(UUID().uuidString + "." + ext)
         do {
             try FileManager.default.copyItem(at: sourceURL, to: dest)
+            stashedVideoURL = dest
             return dest
         } catch {
-            // If copy fails, return original URL as fallback
             return sourceURL
+        }
+    }
+
+    /// Move the stashed video to its permanent location keyed by videoId.
+    private func persistVideo(videoId: String) -> URL? {
+        guard let source = stashedVideoURL else { return nil }
+        let ext = source.pathExtension.isEmpty ? "mov" : source.pathExtension
+        let dest = Self.savedVideosDir.appendingPathComponent("\(videoId).\(ext)")
+        // Already persisted for this videoId
+        if FileManager.default.fileExists(atPath: dest.path) {
+            try? FileManager.default.removeItem(at: source) // clean stash
+            stashedVideoURL = nil
+            return dest
+        }
+        do {
+            try FileManager.default.moveItem(at: source, to: dest)
+            stashedVideoURL = nil
+            return dest
+        } catch {
+            // Move failed — try to return stash location as fallback
+            stashedVideoURL = nil
+            return FileManager.default.fileExists(atPath: source.path) ? source : nil
+        }
+    }
+
+    /// Clean up stash if analysis fails
+    private func cleanupStash() {
+        if let url = stashedVideoURL {
+            try? FileManager.default.removeItem(at: url)
+            stashedVideoURL = nil
         }
     }
 
@@ -73,6 +117,10 @@ class UploadViewModel: ObservableObject {
         result = nil
         usedCache = false
 
+        // Stash video to a stable location BEFORE upload starts.
+        // Temp files can be cleaned up during the long upload+analysis cycle.
+        let stableURL = stashVideo(videoURL)
+
         // Check cache first (unless force-refreshing)
         if !forceRefresh {
             let cache = AnalysisResultCache.shared
@@ -82,8 +130,7 @@ class UploadViewModel: ObservableObject {
                 self.uploadProgress = 1.0
                 self.isLoading = false
                 // Persist video and store URL mapping for comparison/history lookups
-                if let videoId = cached.videoId {
-                    let persistedURL = persistVideo(videoURL, videoId: videoId)
+                if let videoId = cached.videoId, let persistedURL = persistVideo(videoId: videoId) {
                     VideoURLStore.shared.store(videoId: videoId, url: persistedURL)
                 }
                 return
@@ -114,7 +161,7 @@ class UploadViewModel: ObservableObject {
 
         do {
             let analysisResult = try await APIClient.shared.analyzeVideo(
-                fileURL: videoURL,
+                fileURL: stableURL,
                 actionType: actionType.rawValue,
                 age: age,
                 token: token
@@ -133,16 +180,17 @@ class UploadViewModel: ObservableObject {
             // Cache the result for future lookups
             await AnalysisResultCache.shared.store(analysisResult, for: videoURL, actionType: actionType.rawValue, age: age)
 
-            // Persist video and store URL mapping for history/comparison
-            if let videoId = analysisResult.videoId {
-                let persistedURL = persistVideo(videoURL, videoId: videoId)
+            // Persist video (move from stash to permanent location)
+            if let videoId = analysisResult.videoId, let persistedURL = persistVideo(videoId: videoId) {
                 VideoURLStore.shared.store(videoId: videoId, url: persistedURL)
             }
         } catch APIError.qualityGateFailure(let qe) {
             simTask.cancel()
+            cleanupStash()
             qualityError = qe
         } catch {
             simTask.cancel()
+            cleanupStash()
             self.error = error.localizedDescription
         }
 

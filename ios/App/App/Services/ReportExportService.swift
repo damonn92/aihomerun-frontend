@@ -123,130 +123,450 @@ class ReportExportService {
 
     // MARK: - Share Image Generation
 
-    /// Generate a square shareable image (suitable for social media).
+    /// Generate a tall shareable image with full report content (single long image).
     static func generateShareImage(from data: ReportData) -> UIImage {
-        let size = CGSize(width: 1080, height: 1080)
+        let imgWidth: CGFloat = 1080
+        let margin: CGFloat = 60
+        let contentWidth = imgWidth - margin * 2
+        let fb = data.analysisResult.feedback
+        let metrics = data.analysisResult.metrics
+
+        // --- Colors ---
+        let bgColor = UIColor(red: 0.06, green: 0.07, blue: 0.10, alpha: 1.0)
+        let cardBg = UIColor(white: 1.0, alpha: 0.06)
+        let cardBgAlt = UIColor(white: 1.0, alpha: 0.04)
+        let accentBlue = UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1.0)
+        let textWhite = UIColor.white
+        let textDim = UIColor.white.withAlphaComponent(0.55)
+        let textMuted = UIColor.white.withAlphaComponent(0.4)
+        let dividerColor = UIColor.white.withAlphaComponent(0.08)
+        let greenColor = UIColor(red: 0.0, green: 0.85, blue: 0.45, alpha: 1)
+        let orangeColor = UIColor(red: 1.0, green: 0.58, blue: 0.0, alpha: 1)
+
+        // --- Pre-calculate total height ---
+        let totalHeight = shareImageTotalHeight(data: data, imgWidth: imgWidth, margin: margin, contentWidth: contentWidth)
+
+        let size = CGSize(width: imgWidth, height: totalHeight)
         let renderer = UIGraphicsImageRenderer(size: size)
 
         return renderer.image { ctx in
             let rect = CGRect(origin: .zero, size: size)
-            let fb = data.analysisResult.feedback
 
-            // Background
-            UIColor(red: 0.06, green: 0.07, blue: 0.10, alpha: 1.0).setFill()
+            // === BACKGROUND ===
+            bgColor.setFill()
             ctx.fill(rect)
 
-            // Gradient accent bar
-            let gradientRect = CGRect(x: 0, y: 0, width: size.width, height: 6)
-            UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1.0).setFill()
-            UIBezierPath(rect: gradientRect).fill()
+            // Top gradient accent bar
+            let barHeight: CGFloat = 6
+            let gctx = UIGraphicsGetCurrentContext()!
+            gctx.saveGState()
+            gctx.addRect(CGRect(x: 0, y: 0, width: imgWidth, height: barHeight))
+            gctx.clip()
+            let gradColors: [CGColor] = [accentBlue.cgColor, UIColor(red: 0.4, green: 0.2, blue: 0.95, alpha: 1).cgColor]
+            let grad = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: gradColors as CFArray, locations: [0, 1])!
+            gctx.drawLinearGradient(grad, start: .zero, end: CGPoint(x: imgWidth, y: 0), options: [])
+            gctx.restoreGState()
 
-            let margin: CGFloat = 60
-            var y: CGFloat = 50
+            var y: CGFloat = barHeight + 36
 
-            // Logo + Title
+            // === HEADER: Logo + Title + Date ===
             if let logo = loadAppLogo() {
-                let logoSize: CGFloat = 44
-                logo.draw(in: CGRect(x: margin, y: y, width: logoSize, height: logoSize))
+                let logoSize: CGFloat = 52
+                let logoRect = CGRect(x: margin, y: y, width: logoSize, height: logoSize)
+                let ctx2 = UIGraphicsGetCurrentContext()!
+                ctx2.saveGState()
+                UIBezierPath(roundedRect: logoRect, cornerRadius: 12).addClip()
+                logo.draw(in: logoRect)
+                ctx2.restoreGState()
 
                 let titleAttrs: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.systemFont(ofSize: 32, weight: .black),
-                    .foregroundColor: UIColor.white
+                    .font: UIFont.systemFont(ofSize: 36, weight: .black),
+                    .foregroundColor: textWhite
                 ]
-                "AIHomeRun".draw(at: CGPoint(x: margin + logoSize + 12, y: y + 4), withAttributes: titleAttrs)
-            } else {
-                let titleAttrs: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.systemFont(ofSize: 32, weight: .black),
-                    .foregroundColor: UIColor.white
+                "AIHomeRun".draw(at: CGPoint(x: margin + logoSize + 14, y: y + 2), withAttributes: titleAttrs)
+
+                let subtitleAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 16, weight: .medium),
+                    .foregroundColor: accentBlue.withAlphaComponent(0.8)
                 ]
-                "AIHomeRun Report".draw(at: CGPoint(x: margin, y: y), withAttributes: titleAttrs)
+                "Analysis Report".draw(at: CGPoint(x: margin + logoSize + 16, y: y + 38), withAttributes: subtitleAttrs)
             }
-            y += 56
+            y += 72
 
-            // Date
+            // Date + Player info line
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .medium
-            let dateAttrs: [NSAttributedString.Key: Any] = [
+            dateFormatter.timeStyle = .short
+            var infoStr = dateFormatter.string(from: data.date)
+            if let name = data.playerName { infoStr += "  ·  \(name)" }
+            if let age = data.playerAge { infoStr += "  ·  Age \(age)" }
+            infoStr += "  ·  \(data.analysisResult.actionType.capitalized)"
+
+            let infoAttrs: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 18, weight: .medium),
-                .foregroundColor: UIColor.white.withAlphaComponent(0.5)
+                .foregroundColor: textDim
             ]
-            dateFormatter.string(from: data.date).draw(at: CGPoint(x: margin, y: y), withAttributes: dateAttrs)
-            y += 50
+            infoStr.draw(at: CGPoint(x: margin, y: y), withAttributes: infoAttrs)
+            y += 40
 
-            // Big score circle
-            let scoreSize: CGFloat = 200
-            let scoreX = (size.width - scoreSize) / 2
-            let scoreRect = CGRect(x: scoreX, y: y, width: scoreSize, height: scoreSize)
+            // Divider
+            dividerColor.setFill()
+            UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 1)).fill()
+            y += 28
+
+            // === SCORE HERO SECTION ===
+            let scoreCardRect = CGRect(x: margin, y: y, width: contentWidth, height: 200)
+            cardBg.setFill()
+            UIBezierPath(roundedRect: scoreCardRect, cornerRadius: 20).fill()
+
+            // Big score number (left side)
             let gradeColor = scoreUIColor(for: fb.grade)
-            gradeColor.withAlphaComponent(0.15).setFill()
-            UIBezierPath(ovalIn: scoreRect).fill()
-            gradeColor.withAlphaComponent(0.5).setStroke()
-            let path = UIBezierPath(ovalIn: scoreRect.insetBy(dx: 2, dy: 2))
-            path.lineWidth = 3
-            path.stroke()
-
-            let scoreAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 64, weight: .black),
+            let scoreStr = "\(fb.overallScore)"
+            let bigScoreAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 96, weight: .black),
                 .foregroundColor: gradeColor
             ]
-            let scoreStr = "\(fb.overallScore)"
-            let scoreStrSize = scoreStr.size(withAttributes: scoreAttrs)
-            scoreStr.draw(at: CGPoint(x: scoreX + (scoreSize - scoreStrSize.width) / 2,
-                                       y: y + (scoreSize - scoreStrSize.height) / 2 - 10),
-                         withAttributes: scoreAttrs)
+            let bigScoreSize = scoreStr.size(withAttributes: bigScoreAttrs)
+            scoreStr.draw(at: CGPoint(x: margin + 36, y: y + (200 - bigScoreSize.height) / 2 - 8), withAttributes: bigScoreAttrs)
 
-            let gradeAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 28, weight: .bold),
-                .foregroundColor: gradeColor.withAlphaComponent(0.7)
+            // Grade label
+            let gradeLabelAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 36, weight: .bold),
+                .foregroundColor: gradeColor.withAlphaComponent(0.6)
             ]
-            let gradeStrSize = fb.grade.size(withAttributes: gradeAttrs)
-            fb.grade.draw(at: CGPoint(x: scoreX + (scoreSize - gradeStrSize.width) / 2,
-                                       y: y + (scoreSize - scoreStrSize.height) / 2 + 50),
-                         withAttributes: gradeAttrs)
-            y += scoreSize + 30
+            fb.grade.draw(at: CGPoint(x: margin + 36 + bigScoreSize.width + 10, y: y + (200 - bigScoreSize.height) / 2 + 14), withAttributes: gradeLabelAttrs)
 
-            // Sub-scores bar
-            let subWidth = (size.width - margin * 2 - 40) / 3
-            let subScores = [
-                ("Technique", fb.techniqueScore, UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1)),
-                ("Power", fb.powerScore, UIColor(red: 1.0, green: 0.58, blue: 0.0, alpha: 1)),
-                ("Balance", fb.balanceScore, UIColor(red: 0.0, green: 0.85, blue: 0.45, alpha: 1))
+            // "/ 100" under score
+            let outOfAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 18, weight: .medium),
+                .foregroundColor: textMuted
             ]
+            "/ 100".draw(at: CGPoint(x: margin + 42, y: y + (200 - bigScoreSize.height) / 2 + bigScoreSize.height - 8), withAttributes: outOfAttrs)
 
-            for (i, sub) in subScores.enumerated() {
-                let x = margin + CGFloat(i) * (subWidth + 20)
+            // Sub-scores on right side (stacked vertically)
+            let subScores: [(String, Int, UIColor)] = [
+                ("Technique", fb.techniqueScore, accentBlue),
+                ("Power", fb.powerScore, orangeColor),
+                ("Balance", fb.balanceScore, greenColor)
+            ]
+            let subStartX = imgWidth / 2 + 40
+            let subBarWidth = contentWidth - (subStartX - margin) - 36
+            var subY = y + 28
+            for sub in subScores {
                 let labelAttrs: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.systemFont(ofSize: 16, weight: .bold),
-                    .foregroundColor: sub.2.withAlphaComponent(0.8)
+                    .font: UIFont.systemFont(ofSize: 17, weight: .bold),
+                    .foregroundColor: sub.2
                 ]
-                sub.0.draw(at: CGPoint(x: x, y: y), withAttributes: labelAttrs)
+                sub.0.draw(at: CGPoint(x: subStartX, y: subY), withAttributes: labelAttrs)
 
                 let valAttrs: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.monospacedDigitSystemFont(ofSize: 42, weight: .black),
-                    .foregroundColor: UIColor.white
+                    .font: UIFont.monospacedDigitSystemFont(ofSize: 17, weight: .black),
+                    .foregroundColor: textWhite
                 ]
-                "\(sub.1)".draw(at: CGPoint(x: x, y: y + 22), withAttributes: valAttrs)
+                let valStr = "\(sub.1)"
+                let valSize = valStr.size(withAttributes: valAttrs)
+                valStr.draw(at: CGPoint(x: subStartX + subBarWidth - valSize.width, y: subY), withAttributes: valAttrs)
+
+                // Progress bar
+                let barY = subY + 26
+                let barH: CGFloat = 6
+                UIColor.white.withAlphaComponent(0.08).setFill()
+                UIBezierPath(roundedRect: CGRect(x: subStartX, y: barY, width: subBarWidth, height: barH), cornerRadius: 3).fill()
+                sub.2.setFill()
+                UIBezierPath(roundedRect: CGRect(x: subStartX, y: barY, width: subBarWidth * CGFloat(sub.1) / 100, height: barH), cornerRadius: 3).fill()
+
+                subY += 50
             }
-            y += 90
+            y += 200 + 28
 
-            // Summary
+            // === KEY FRAME IMAGE ===
+            if let image = data.keyFrameImage {
+                let maxImgH: CGFloat = 520
+                let imgAspect = image.size.width / image.size.height
+                let imgW = min(contentWidth, maxImgH * imgAspect)
+                let imgH = imgW / imgAspect
+                let imgX = margin + (contentWidth - imgW) / 2
+
+                let imgRect = CGRect(x: imgX, y: y, width: imgW, height: imgH)
+                let ctx2 = UIGraphicsGetCurrentContext()!
+                ctx2.saveGState()
+                UIBezierPath(roundedRect: imgRect, cornerRadius: 16).addClip()
+                image.draw(in: imgRect)
+                ctx2.restoreGState()
+
+                // Subtle border
+                UIColor.white.withAlphaComponent(0.1).setStroke()
+                let borderPath = UIBezierPath(roundedRect: imgRect, cornerRadius: 16)
+                borderPath.lineWidth = 1.5
+                borderPath.stroke()
+
+                y += imgH + 28
+            }
+
+            // === SUMMARY ===
+            let summaryHeaderAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 15, weight: .bold),
+                .foregroundColor: textMuted
+            ]
+            "SUMMARY".draw(at: CGPoint(x: margin, y: y), withAttributes: summaryHeaderAttrs)
+            y += 28
+
             let summaryAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 20, weight: .medium),
-                .foregroundColor: UIColor.white.withAlphaComponent(0.6)
+                .font: UIFont.systemFont(ofSize: 22, weight: .regular),
+                .foregroundColor: UIColor.white.withAlphaComponent(0.75)
             ]
-            let summaryRect = CGRect(x: margin, y: y, width: size.width - margin * 2, height: 120)
-            fb.plainSummary.draw(in: summaryRect, withAttributes: summaryAttrs)
+            let summaryH = textHeight(fb.plainSummary, width: contentWidth, attributes: summaryAttrs)
+            fb.plainSummary.draw(in: CGRect(x: margin, y: y, width: contentWidth, height: summaryH), withAttributes: summaryAttrs)
+            y += summaryH + 28
 
-            // Logo watermark
-            let wmAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 14, weight: .medium),
-                .foregroundColor: UIColor.white.withAlphaComponent(0.2)
+            // Divider
+            dividerColor.setFill()
+            UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 1)).fill()
+            y += 24
+
+            // === BIOMECHANICS TABLE ===
+            let bioHeaderAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 15, weight: .bold),
+                .foregroundColor: textMuted
             ]
-            let wm = "Generated by AIHomeRun"
-            let wmSize = wm.size(withAttributes: wmAttrs)
-            wm.draw(at: CGPoint(x: size.width - margin - wmSize.width, y: size.height - 40),
-                    withAttributes: wmAttrs)
+            "BIOMECHANICS".draw(at: CGPoint(x: margin, y: y), withAttributes: bioHeaderAttrs)
+            y += 32
+
+            let metricItems: [(String, String)] = [
+                ("Peak Wrist Speed", metrics.peakWristSpeed.map { String(format: "%.1f m/s", $0) } ?? "N/A"),
+                ("Hip-Shoulder Separation", metrics.hipShoulderSeparation.map { String(format: "%.0f°", $0) } ?? "N/A"),
+                ("Follow-Through", metrics.followThrough.map { $0 ? "Yes" : "No" } ?? "N/A"),
+                ("Elbow Angle", metrics.jointAngles?.elbowAngle.map { String(format: "%.0f°", $0) } ?? "N/A"),
+                ("Knee Bend", metrics.jointAngles?.kneeBend.map { String(format: "%.0f°", $0) } ?? "N/A")
+            ]
+
+            let metricLabelAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 19, weight: .medium),
+                .foregroundColor: textDim
+            ]
+            let metricValAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.monospacedDigitSystemFont(ofSize: 19, weight: .bold),
+                .foregroundColor: textWhite
+            ]
+
+            for (index, item) in metricItems.enumerated() {
+                // Alternating row background
+                if index % 2 == 0 {
+                    cardBgAlt.setFill()
+                    UIBezierPath(roundedRect: CGRect(x: margin, y: y - 8, width: contentWidth, height: 40), cornerRadius: 8).fill()
+                }
+                item.0.draw(at: CGPoint(x: margin + 12, y: y), withAttributes: metricLabelAttrs)
+                let valSize = item.1.size(withAttributes: metricValAttrs)
+                item.1.draw(at: CGPoint(x: margin + contentWidth - valSize.width - 12, y: y), withAttributes: metricValAttrs)
+                y += 42
+            }
+            y += 20
+
+            // Divider
+            dividerColor.setFill()
+            UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 1)).fill()
+            y += 24
+
+            // === STRENGTHS & IMPROVEMENTS (two columns) ===
+            let halfWidth = (contentWidth - 30) / 2
+
+            let sectionItemAttrs: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 18, weight: .regular),
+                .foregroundColor: UIColor.white.withAlphaComponent(0.75)
+            ]
+
+            // Strengths header (left)
+            if !fb.strengths.isEmpty {
+                let sHeaderAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 15, weight: .bold),
+                    .foregroundColor: greenColor
+                ]
+                // Green dot
+                greenColor.withAlphaComponent(0.5).setFill()
+                UIBezierPath(ovalIn: CGRect(x: margin, y: y + 4, width: 8, height: 8)).fill()
+                "STRENGTHS".draw(at: CGPoint(x: margin + 14, y: y), withAttributes: sHeaderAttrs)
+            }
+
+            // Improvements header (right)
+            if !fb.improvements.isEmpty {
+                let iHeaderAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 15, weight: .bold),
+                    .foregroundColor: orangeColor
+                ]
+                let rightX = margin + halfWidth + 30
+                orangeColor.withAlphaComponent(0.5).setFill()
+                UIBezierPath(ovalIn: CGRect(x: rightX, y: y + 4, width: 8, height: 8)).fill()
+                "IMPROVEMENTS".draw(at: CGPoint(x: rightX + 14, y: y), withAttributes: iHeaderAttrs)
+            }
+            y += 32
+
+            // Draw items
+            var leftY = y
+            for item in fb.strengths.prefix(5) {
+                let bullet = "• \(item)"
+                let h = textHeight(bullet, width: halfWidth - 12, attributes: sectionItemAttrs)
+                bullet.draw(in: CGRect(x: margin + 4, y: leftY, width: halfWidth - 12, height: h), withAttributes: sectionItemAttrs)
+                leftY += h + 10
+            }
+
+            var rightY = y
+            let rightX = margin + halfWidth + 30
+            for item in fb.improvements.prefix(5) {
+                let bullet = "• \(item)"
+                let h = textHeight(bullet, width: halfWidth - 12, attributes: sectionItemAttrs)
+                bullet.draw(in: CGRect(x: rightX + 4, y: rightY, width: halfWidth - 12, height: h), withAttributes: sectionItemAttrs)
+                rightY += h + 10
+            }
+            y = max(leftY, rightY) + 20
+
+            // Divider
+            dividerColor.setFill()
+            UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 1)).fill()
+            y += 24
+
+            // === DRILL RECOMMENDATION ===
+            if let drill = fb.drill {
+                // Card background
+                let drillCardH = shareImageDrillHeight(drill: drill, contentWidth: contentWidth, margin: margin)
+                let drillCardRect = CGRect(x: margin, y: y, width: contentWidth, height: drillCardH)
+                accentBlue.withAlphaComponent(0.08).setFill()
+                UIBezierPath(roundedRect: drillCardRect, cornerRadius: 16).fill()
+
+                // Left accent bar
+                accentBlue.withAlphaComponent(0.6).setFill()
+                UIBezierPath(roundedRect: CGRect(x: margin, y: y, width: 4, height: drillCardH), cornerRadius: 2).fill()
+
+                let innerX = margin + 24
+                let innerW = contentWidth - 48
+                var dy = y + 20
+
+                let drillHeaderAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 14, weight: .bold),
+                    .foregroundColor: accentBlue
+                ]
+                "RECOMMENDED DRILL".draw(at: CGPoint(x: innerX, y: dy), withAttributes: drillHeaderAttrs)
+                dy += 26
+
+                let drillNameAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 22, weight: .bold),
+                    .foregroundColor: textWhite
+                ]
+                let nameH = textHeight(drill.name, width: innerW, attributes: drillNameAttrs)
+                drill.name.draw(in: CGRect(x: innerX, y: dy, width: innerW, height: nameH), withAttributes: drillNameAttrs)
+                dy += nameH + 8
+
+                let drillDescAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 18, weight: .regular),
+                    .foregroundColor: textDim
+                ]
+                let descH = textHeight(drill.description, width: innerW, attributes: drillDescAttrs)
+                drill.description.draw(in: CGRect(x: innerX, y: dy, width: innerW, height: descH), withAttributes: drillDescAttrs)
+                dy += descH + 12
+
+                if let reps = drill.reps {
+                    let repsAttrs: [NSAttributedString.Key: Any] = [
+                        .font: UIFont.systemFont(ofSize: 15, weight: .bold),
+                        .foregroundColor: accentBlue
+                    ]
+                    let repsSize = reps.size(withAttributes: repsAttrs)
+                    let badgeRect = CGRect(x: innerX, y: dy, width: repsSize.width + 20, height: repsSize.height + 10)
+                    accentBlue.withAlphaComponent(0.15).setFill()
+                    UIBezierPath(roundedRect: badgeRect, cornerRadius: badgeRect.height / 2).fill()
+                    reps.draw(at: CGPoint(x: innerX + 10, y: dy + 5), withAttributes: repsAttrs)
+                }
+
+                y += drillCardH + 28
+            }
+
+            // === FOOTER ===
+            dividerColor.setFill()
+            UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 1)).fill()
+            y += 20
+
+            // Footer with logo
+            if let logo = loadAppLogo() {
+                let fLogoSize: CGFloat = 20
+                let fLogoRect = CGRect(x: imgWidth / 2 - 120, y: y, width: fLogoSize, height: fLogoSize)
+                let ctx2 = UIGraphicsGetCurrentContext()!
+                ctx2.saveGState()
+                UIBezierPath(roundedRect: fLogoRect, cornerRadius: 4).addClip()
+                logo.draw(in: fLogoRect)
+                ctx2.restoreGState()
+
+                let footerAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 15, weight: .medium),
+                    .foregroundColor: textMuted
+                ]
+                "Generated by AIHomeRun".draw(at: CGPoint(x: imgWidth / 2 - 120 + fLogoSize + 8, y: y + 1), withAttributes: footerAttrs)
+            }
         }
+    }
+
+    // MARK: - Share Image Height Calculation
+
+    private static func shareImageDrillHeight(drill: DrillInfo, contentWidth: CGFloat, margin: CGFloat) -> CGFloat {
+        let innerW = contentWidth - 48
+        let nameAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 22, weight: .bold)]
+        let descAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 18, weight: .regular)]
+        let nameH = textHeight(drill.name, width: innerW, attributes: nameAttrs)
+        let descH = textHeight(drill.description, width: innerW, attributes: descAttrs)
+        return 20 + 26 + nameH + 8 + descH + 12 + (drill.reps != nil ? 36 : 0) + 20
+    }
+
+    private static func shareImageTotalHeight(data: ReportData, imgWidth: CGFloat, margin: CGFloat, contentWidth: CGFloat) -> CGFloat {
+        let fb = data.analysisResult.feedback
+        var h: CGFloat = 6 + 36 // top bar + padding
+        h += 72 // header
+        h += 40 // info line + gap
+        h += 28 // divider
+        h += 200 + 28 // score hero
+
+        // Key frame
+        if let image = data.keyFrameImage {
+            let maxImgH: CGFloat = 520
+            let imgAspect = image.size.width / image.size.height
+            let imgW = min(contentWidth, maxImgH * imgAspect)
+            let imgH = imgW / imgAspect
+            h += imgH + 28
+        }
+
+        // Summary
+        let summaryAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 22, weight: .regular)
+        ]
+        h += 28 + textHeight(fb.plainSummary, width: contentWidth, attributes: summaryAttrs) + 28
+
+        // Divider + biomechanics header
+        h += 24 + 32
+        h += CGFloat(5) * 42 + 20 // 5 metric rows
+
+        // Divider + strengths/improvements
+        h += 24 + 32
+
+        let halfWidth = (contentWidth - 30) / 2
+        let sectionItemAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 18, weight: .regular)
+        ]
+        var leftH: CGFloat = 0
+        for item in fb.strengths.prefix(5) {
+            leftH += textHeight("• \(item)", width: halfWidth - 12, attributes: sectionItemAttrs) + 10
+        }
+        var rightH: CGFloat = 0
+        for item in fb.improvements.prefix(5) {
+            rightH += textHeight("• \(item)", width: halfWidth - 12, attributes: sectionItemAttrs) + 10
+        }
+        h += max(leftH, rightH) + 20
+
+        // Divider + drill
+        h += 24
+        if let drill = fb.drill {
+            h += shareImageDrillHeight(drill: drill, contentWidth: contentWidth, margin: margin) + 28
+        }
+
+        // Footer
+        h += 24 + 30 + 40 // divider + footer + bottom padding
+
+        return h
     }
 
     // MARK: - Key Frame Extraction

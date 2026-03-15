@@ -22,6 +22,7 @@ struct ResultView: View {
             ZStack {
                 Color.hrBg.ignoresSafeArea()
 
+                GeometryReader { geo in
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 14) {
 
@@ -161,8 +162,10 @@ struct ResultView: View {
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 8)
+                    .frame(width: geo.size.width)
                 }
                 .scrollDismissesKeyboard(.immediately)
+                }  // GeometryReader
             }
             .contentShape(Rectangle())
             .navigationTitle("\(result.actionType.capitalized) Analysis")
@@ -200,10 +203,9 @@ struct ResultView: View {
         }
         .onAppear {
             appeared = true
-            // Store current video URL for future comparison lookups
-            if let videoURL, let videoId = result.videoId {
-                VideoURLStore.shared.store(videoId: videoId, url: videoURL)
-            }
+            // Ensure current video is persisted for future comparison lookups.
+            // This is the most reliable moment — the video file is guaranteed to exist.
+            ensureVideoPersisted()
             // Run sensor fusion if watch session data is available
             computeFusion()
         }
@@ -290,6 +292,13 @@ struct ResultView: View {
     }
 
     private func buildCurrentSession() -> ComparisonSession {
+        // Prefer cloud URL, fall back to local URL
+        let effectiveURL: URL? = {
+            if let cloudStr = result.videoUrl, let cloudURL = URL(string: cloudStr) {
+                return cloudURL
+            }
+            return videoURL
+        }()
         let summary = SessionSummary(
             videoId: result.videoId,
             actionType: result.actionType,
@@ -297,11 +306,12 @@ struct ResultView: View {
             techniqueScore: feedback.techniqueScore,
             powerScore: feedback.powerScore,
             balanceScore: feedback.balanceScore,
-            createdAt: nil
+            createdAt: ISO8601DateFormatter().string(from: Date()),
+            videoUrl: result.videoUrl
         )
         return ComparisonSession(
             id: result.videoId ?? UUID().uuidString,
-            videoURL: videoURL,
+            videoURL: effectiveURL,
             sessionSummary: summary,
             analysisResult: result,
             poseData: nil,
@@ -310,14 +320,34 @@ struct ResultView: View {
     }
 
     private func buildComparisonSession(from summary: SessionSummary) -> ComparisonSession {
+        // Prefer cloud URL from API, fall back to local VideoURLStore
         let url: URL? = {
+            if let cloudStr = summary.videoUrl, let cloudURL = URL(string: cloudStr) {
+                return cloudURL
+            }
             guard let vid = summary.videoId else { return nil }
             return VideoURLStore.shared.url(for: vid)
         }()
+        // If summary has no createdAt, try to find it from history array
+        var enrichedSummary = summary
+        if summary.createdAt == nil, let vid = summary.videoId,
+           let historyMatch = result.history?.first(where: { $0.videoId == vid }),
+           historyMatch.createdAt != nil {
+            enrichedSummary = SessionSummary(
+                videoId: summary.videoId,
+                actionType: summary.actionType,
+                overallScore: summary.overallScore ?? historyMatch.overallScore,
+                techniqueScore: summary.techniqueScore ?? historyMatch.techniqueScore,
+                powerScore: summary.powerScore ?? historyMatch.powerScore,
+                balanceScore: summary.balanceScore ?? historyMatch.balanceScore,
+                createdAt: historyMatch.createdAt,
+                videoUrl: summary.videoUrl ?? historyMatch.videoUrl
+            )
+        }
         return ComparisonSession(
             id: summary.videoId ?? UUID().uuidString,
             videoURL: url,
-            sessionSummary: summary,
+            sessionSummary: enrichedSummary,
             analysisResult: nil,
             poseData: nil,
             syncPointTime: nil
@@ -326,10 +356,38 @@ struct ResultView: View {
 
     private func buildHistorySessions() -> [ComparisonSession] {
         guard let history = result.history else { return [] }
-        // Exclude the current session from the list
+        // Exclude current session from the list
         return history
             .filter { $0.videoId != result.videoId }
             .map { buildComparisonSession(from: $0) }
+    }
+
+    // MARK: - Video Persistence
+
+    /// Reliably persist the current video and store its URL mapping.
+    /// Called from onAppear — at this point the video file is guaranteed to exist.
+    private func ensureVideoPersisted() {
+        guard let sourceURL = videoURL, let videoId = result.videoId else { return }
+        // If VideoURLStore already has a valid entry (file exists), skip
+        if VideoURLStore.shared.url(for: videoId) != nil { return }
+        // Copy to permanent location
+        let savedDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("SavedVideos", isDirectory: true)
+        try? FileManager.default.createDirectory(at: savedDir, withIntermediateDirectories: true)
+        let ext = sourceURL.pathExtension.isEmpty ? "mov" : sourceURL.pathExtension
+        let dest = savedDir.appendingPathComponent("\(videoId).\(ext)")
+        if FileManager.default.fileExists(atPath: dest.path) {
+            // File already there, just store the mapping
+            VideoURLStore.shared.store(videoId: videoId, url: dest)
+            return
+        }
+        do {
+            try FileManager.default.copyItem(at: sourceURL, to: dest)
+            VideoURLStore.shared.store(videoId: videoId, url: dest)
+        } catch {
+            // Last resort: store the source URL directly (works within current session)
+            VideoURLStore.shared.store(videoId: videoId, url: sourceURL)
+        }
     }
 
     // MARK: - Cache Banner

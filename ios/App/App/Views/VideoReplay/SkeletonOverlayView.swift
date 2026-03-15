@@ -160,7 +160,7 @@ struct PoseToolbar: View {
                                  isOn: $poseVM.showAngles, color: .hrGold)
 
                     Rectangle()
-                        .fill(Color.white.opacity(0.12))
+                        .fill(Color.primary.opacity(0.12))
                         .frame(width: 1, height: 18)
                         .padding(.horizontal, 2)
 
@@ -168,7 +168,7 @@ struct PoseToolbar: View {
                 }
                 .padding(.horizontal, 6)
                 .padding(.vertical, 5)
-                .background(Color.white.opacity(0.06))
+                .background(Color.primary.opacity(0.06))
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -205,8 +205,8 @@ struct PoseToolbar: View {
                 } else {
                     Image(systemName: "figure.stand")
                         .font(.system(size: 14))
-                        .foregroundStyle(.white.opacity(0.4))
-                }
+                        .foregroundStyle(.primary.opacity(0.4))
+             }
             }
             .frame(width: 20)
 
@@ -214,10 +214,10 @@ struct PoseToolbar: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(analysisStatusTitle)
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(.primary.opacity(0.8))
                 Text(analysisStatusDetail)
                     .font(.system(size: 9, weight: .medium, design: .monospaced))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.primary.opacity(0.5))
                     .lineLimit(1)
             }
 
@@ -241,7 +241,7 @@ struct PoseToolbar: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
-        .background(Color.white.opacity(0.06))
+        .background(Color.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -287,7 +287,7 @@ struct PoseToolbar: View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.white.opacity(0.08))
+                    .fill(Color.primary.opacity(0.08))
                     .frame(height: 3)
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.hrBlue)
@@ -311,10 +311,10 @@ struct PoseToolbar: View {
                 Text(label)
                     .font(.system(size: 9, weight: .semibold))
             }
-            .foregroundStyle(isOn.wrappedValue ? .white : .white.opacity(0.35))
+            .foregroundStyle(isOn.wrappedValue ? .white : .primary.opacity(0.45))
             .padding(.horizontal, 8)
             .padding(.vertical, 5)
-            .background(isOn.wrappedValue ? color.opacity(0.3) : Color.clear)
+            .background(isOn.wrappedValue ? color.opacity(0.3) : Color.primary.opacity(0.06))
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -332,10 +332,10 @@ struct PoseToolbar: View {
                 Text("Draw")
                     .font(.system(size: 9, weight: .semibold))
             }
-            .foregroundStyle(poseVM.isDrawingMode ? .white : .white.opacity(0.35))
+            .foregroundStyle(poseVM.isDrawingMode ? .white : .primary.opacity(0.45))
             .padding(.horizontal, 8)
             .padding(.vertical, 5)
-            .background(poseVM.isDrawingMode ? Color.hrRed.opacity(0.3) : Color.clear)
+            .background(poseVM.isDrawingMode ? Color.hrRed.opacity(0.3) : Color.primary.opacity(0.06))
             .clipShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -361,7 +361,7 @@ struct PoseToolbar: View {
             }
 
             Rectangle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color.primary.opacity(0.12))
                 .frame(width: 1, height: 16)
                 .padding(.horizontal, 2)
 
@@ -371,14 +371,14 @@ struct PoseToolbar: View {
                     poseVM.activeLineWidth = width
                 } label: {
                     RoundedRectangle(cornerRadius: 1)
-                        .fill(poseVM.activeLineWidth == width ? Color.white : Color.white.opacity(0.3))
+                        .fill(poseVM.activeLineWidth == width ? Color.primary : Color.primary.opacity(0.3))
                         .frame(width: 16, height: width)
                 }
                 .buttonStyle(.plain)
             }
 
             Rectangle()
-                .fill(Color.white.opacity(0.12))
+                .fill(Color.primary.opacity(0.12))
                 .frame(width: 1, height: 16)
                 .padding(.horizontal, 2)
 
@@ -386,7 +386,7 @@ struct PoseToolbar: View {
             Button { poseVM.undoLastStroke() } label: {
                 Image(systemName: "arrow.uturn.backward")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(.primary.opacity(0.6))
                     .frame(width: 28, height: 28)
             }
             .buttonStyle(.plain)
@@ -395,14 +395,14 @@ struct PoseToolbar: View {
             Button { poseVM.clearAnnotations() } label: {
                 Image(systemName: "trash")
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(.primary.opacity(0.6))
                     .frame(width: 28, height: 28)
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
-        .background(Color.white.opacity(0.06))
+        .background(Color.primary.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)

@@ -1,7 +1,7 @@
 import SwiftUI
 import HealthKit
 
-/// Training dashboard — shows HealthKit data, workout history, and fitness metrics
+/// Training dashboard — Apple Watch integration hub with HealthKit data below
 struct TrainingView: View {
     @StateObject private var healthService = HealthKitService.shared
     @StateObject private var watchManager = WatchSessionManager.shared
@@ -14,31 +14,41 @@ struct TrainingView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 16) {
 
+                        // Hero: Apple Watch status
+                        if watchManager.isWatchConnected {
+                            watchConnectedHero
+                        } else {
+                            watchNotConnectedHero
+                        }
+
                         // Live Watch session (if active)
                         if watchManager.isWatchSessionActive {
                             liveSessionBanner
                         }
 
-                        // HealthKit not available / not authorized
+                        // How it works (only when not connected)
+                        if !watchManager.isWatchConnected {
+                            howItWorksCard
+                        }
+
+                        // Quick Start button (when connected but no active session)
+                        if watchManager.isWatchConnected && !watchManager.isWatchSessionActive {
+                            startSessionButton
+                        }
+
+                        // HealthKit section
                         if !healthService.isAvailable {
                             healthKitUnavailableCard
                         } else if !healthService.isAuthorized {
                             healthKitAuthCard
                         } else {
-                            // Today's stats
+                            // Section header
+                            sectionHeader("Health & Activity")
+
                             todayStatsCard
-
-                            // Weekly overview
                             weeklyOverviewCard
-
-                            // Heart rate card
                             heartRateCard
-
-                            // Training history
                             trainingHistoryCard
-
-                            // Watch connection
-                            watchConnectionCard
                         }
                     }
                     .padding(.horizontal, 20)
@@ -46,10 +56,11 @@ struct TrainingView: View {
                     .padding(.bottom, 40)
                 }
             }
-            .navigationTitle("Training")
+            .navigationTitle("Apple Watch")
             .navigationBarTitleDisplayMode(.large)
             .refreshable {
                 await healthService.fetchAllData()
+                watchManager.refreshConnectionStatus()
             }
             .onAppear {
                 Task { await healthService.fetchAllData() }
@@ -58,10 +69,234 @@ struct TrainingView: View {
         }
     }
 
+    // MARK: - Section Header
+
+    private func sectionHeader(_ title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
+            Spacer()
+        }
+        .padding(.top, 8)
+    }
+
+    // MARK: - Watch Connected Hero
+
+    private var watchConnectedHero: some View {
+        VStack(spacing: 16) {
+            // Watch icon with animated ring
+            ZStack {
+                Circle()
+                    .fill(Color.hrGreen.opacity(0.1))
+                    .frame(width: 100, height: 100)
+
+                Circle()
+                    .stroke(Color.hrGreen.opacity(0.2), lineWidth: 3)
+                    .frame(width: 100, height: 100)
+
+                Circle()
+                    .trim(from: 0, to: 0.75)
+                    .stroke(Color.hrGreen, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 100, height: 100)
+                    .rotationEffect(.degrees(-90))
+
+                Image(systemName: "applewatch.radiowaves.left.and.right")
+                    .font(.system(size: 36))
+                    .foregroundStyle(Color.hrGreen)
+            }
+
+            VStack(spacing: 6) {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 8, height: 8)
+                    Text("Apple Watch Connected")
+                        .font(.system(size: 18, weight: .bold))
+                }
+
+                Text(watchManager.isWatchReachable
+                     ? "Watch app active — ready to train"
+                     : "Open AIHomeRun on Watch to start")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            // Connection details
+            HStack(spacing: 16) {
+                WatchStatusPill(
+                    icon: "antenna.radiowaves.left.and.right",
+                    label: "Paired",
+                    color: .hrGreen
+                )
+                WatchStatusPill(
+                    icon: watchManager.isWatchReachable ? "wifi" : "wifi.slash",
+                    label: watchManager.isWatchReachable ? "Reachable" : "Not Active",
+                    color: watchManager.isWatchReachable ? .hrBlue : .hrOrange
+                )
+                WatchStatusPill(
+                    icon: "heart.fill",
+                    label: "HealthKit",
+                    color: healthService.isAuthorized ? .hrGreen : .secondary
+                )
+            }
+        }
+        .padding(20)
+        .background(Color.hrCard)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.hrGreen.opacity(0.25), lineWidth: 1.5)
+        )
+    }
+
+    // MARK: - Watch Not Connected Hero
+
+    private var watchNotConnectedHero: some View {
+        VStack(spacing: 20) {
+            // Watch icon
+            ZStack {
+                Circle()
+                    .fill(Color.hrBlue.opacity(0.08))
+                    .frame(width: 110, height: 110)
+
+                // Dashed ring
+                Circle()
+                    .stroke(Color.hrBlue.opacity(0.2), style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+                    .frame(width: 110, height: 110)
+
+                Image(systemName: "applewatch")
+                    .font(.system(size: 42))
+                    .foregroundStyle(Color.hrBlue)
+            }
+
+            VStack(spacing: 8) {
+                Text("Connect Apple Watch")
+                    .font(.system(size: 20, weight: .bold))
+
+                Text("Wear your Apple Watch during batting\npractice for real-time swing tracking")
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+            }
+
+            // Feature highlights
+            VStack(spacing: 12) {
+                WatchFeatureRow(
+                    icon: "figure.baseball",
+                    title: "Auto Swing Detection",
+                    subtitle: "Detects every swing automatically",
+                    color: Color.hrGold
+                )
+                WatchFeatureRow(
+                    icon: "speedometer",
+                    title: "Swing Speed",
+                    subtitle: "Measure bat speed in real-time",
+                    color: Color.hrBlue
+                )
+                WatchFeatureRow(
+                    icon: "heart.fill",
+                    title: "Heart Rate Tracking",
+                    subtitle: "Monitor intensity during training",
+                    color: .red
+                )
+                WatchFeatureRow(
+                    icon: "arrow.triangle.2.circlepath",
+                    title: "Sync with iPhone",
+                    subtitle: "Combine video + sensor data for deeper analysis",
+                    color: Color.hrGreen
+                )
+            }
+            .padding(.top, 4)
+
+            // Refresh button
+            Button {
+                watchManager.refreshConnectionStatus()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 13, weight: .semibold))
+                    Text("Check Connection")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .foregroundStyle(Color.hrBlue)
+                .frame(maxWidth: .infinity)
+                .frame(height: 46)
+                .background(Color.hrBlue.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+        }
+        .padding(20)
+        .background(Color.hrCard)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(Color.hrStroke, lineWidth: 1)
+        )
+    }
+
+    // MARK: - How It Works Card
+
+    private var howItWorksCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Image(systemName: "questionmark.circle.fill")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.hrBlue)
+                Text("How to Set Up")
+                    .font(.system(size: 15, weight: .bold))
+                Spacer()
+            }
+
+            VStack(alignment: .leading, spacing: 12) {
+                SetupStep(number: 1, text: "Pair Apple Watch with your iPhone in Settings")
+                SetupStep(number: 2, text: "Install AIHomeRun on your Apple Watch")
+                SetupStep(number: 3, text: "Open the Watch app and start a session")
+                SetupStep(number: 4, text: "Swing! Data syncs to your iPhone automatically")
+            }
+        }
+        .hrCard()
+    }
+
+    // MARK: - Start Session Button
+
+    private var startSessionButton: some View {
+        Button {
+            let savedAge = UserDefaults.standard.integer(forKey: "com.aihomerun.lastAge")
+            watchManager.startWatchSession(
+                playerName: "",
+                playerAge: (6...18).contains(savedAge) ? savedAge : 12,
+                battingHand: .right
+            )
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "figure.baseball")
+                    .font(.system(size: 16, weight: .semibold))
+                Text("Start Training Session")
+                    .font(.system(size: 16, weight: .bold))
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 52)
+            .background(
+                LinearGradient(
+                    colors: [Color.hrGreen, Color.hrGreen.opacity(0.8)],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+    }
+
     // MARK: - Live Watch Session Banner
 
     private var liveSessionBanner: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 14) {
             HStack {
                 HStack(spacing: 6) {
                     Circle()
@@ -72,44 +307,58 @@ struct TrainingView: View {
                                 .fill(.green.opacity(0.3))
                                 .frame(width: 16, height: 16)
                         )
-                    Text("Live Watch Session")
+                    Text("Live Session")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.green)
                 }
                 Spacer()
-                Image(systemName: "applewatch")
-                    .foregroundStyle(.secondary)
+                Button {
+                    watchManager.stopWatchSession()
+                } label: {
+                    Text("End")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 5)
+                        .background(Color.red.opacity(0.12))
+                        .clipShape(Capsule())
+                }
             }
 
-            HStack(spacing: 20) {
-                VStack {
+            HStack(spacing: 0) {
+                VStack(spacing: 4) {
                     Text("\(watchManager.liveSwingCount)")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
                         .contentTransition(.numericText())
                     Text("Swings")
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                 }
+                .frame(maxWidth: .infinity)
 
-                Divider().frame(height: 36)
+                Divider().frame(height: 40)
 
-                VStack {
+                VStack(spacing: 4) {
                     Text("\(Int(watchManager.liveLastSpeed))")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.hrBlue)
                     Text("Last mph")
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                 }
+                .frame(maxWidth: .infinity)
 
-                VStack {
+                Divider().frame(height: 40)
+
+                VStack(spacing: 4) {
                     Text("\(Int(watchManager.liveBestSpeed))")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.hrGreen)
                     Text("Best mph")
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                 }
+                .frame(maxWidth: .infinity)
             }
         }
         .padding(16)
@@ -333,57 +582,6 @@ struct TrainingView: View {
         .hrCard()
     }
 
-    // MARK: - Watch Connection Card
-
-    private var watchConnectionCard: some View {
-        let connected = watchManager.isWatchConnected
-        let reachable = watchManager.isWatchReachable
-
-        return HStack(spacing: 12) {
-            Image(systemName: connected ?
-                  "applewatch.radiowaves.left.and.right" : "applewatch.slash")
-                .font(.system(size: 16))
-                .foregroundStyle(connected ? .green : .secondary)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(connected ? "Apple Watch Connected" : "Apple Watch Not Connected")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(connected ? .primary : .secondary)
-                Text(watchSubtitle(connected: connected, reachable: reachable))
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            if connected {
-                Circle()
-                    .fill(reachable ? .green : .orange)
-                    .frame(width: 8, height: 8)
-            }
-        }
-        .padding(14)
-        .background(connected ? Color.hrGreen.opacity(0.08) : Color.gray.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .stroke(Color.hrStroke, lineWidth: 1)
-        )
-        .onTapGesture {
-            watchManager.refreshConnectionStatus()
-        }
-    }
-
-    private func watchSubtitle(connected: Bool, reachable: Bool) -> String {
-        if !connected {
-            return "Pair your Apple Watch and install AIHomeRun"
-        }
-        if reachable {
-            return "Watch app active — real-time sync ready"
-        }
-        return "Paired — open Watch app for live sync"
-    }
-
     // MARK: - HealthKit Not Available
 
     private var healthKitUnavailableCard: some View {
@@ -407,25 +605,17 @@ struct TrainingView: View {
     private var healthKitAuthCard: some View {
         VStack(spacing: 20) {
             Image(systemName: "heart.circle.fill")
-                .font(.system(size: 56))
+                .font(.system(size: 48))
                 .foregroundStyle(Color.hrBlue)
 
             VStack(spacing: 6) {
                 Text("Connect Apple Health")
-                    .font(.system(size: 20, weight: .bold))
-                Text("Track your training stats, heart rate,\nand workout history")
+                    .font(.system(size: 18, weight: .bold))
+                Text("Enable HealthKit to see your training\nstats and heart rate data")
                     .font(.system(size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-
-            VStack(alignment: .leading, spacing: 10) {
-                FeatureRow(icon: "figure.baseball", text: "Baseball workout tracking", color: Color.hrGold)
-                FeatureRow(icon: "heart.fill", text: "Heart rate monitoring", color: .red)
-                FeatureRow(icon: "flame.fill", text: "Calories & exercise time", color: Color.hrOrange)
-                FeatureRow(icon: "chart.line.uptrend.xyaxis", text: "Training progress over time", color: Color.hrGreen)
-            }
-            .padding(.vertical, 4)
 
             Button {
                 Task { await healthService.requestAuthorization() }
@@ -437,7 +627,7 @@ struct TrainingView: View {
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
-                .frame(height: 52)
+                .frame(height: 48)
                 .background(Color.hrBlue)
                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
@@ -446,7 +636,80 @@ struct TrainingView: View {
     }
 }
 
-// MARK: - Sub-components
+// MARK: - Watch-specific Sub-components
+
+private struct WatchStatusPill: View {
+    let icon: String
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundStyle(color)
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(color.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+}
+
+private struct WatchFeatureRow: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.12))
+                    .frame(width: 36, height: 36)
+                Image(systemName: icon)
+                    .font(.system(size: 15))
+                    .foregroundStyle(color)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                Text(subtitle)
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+    }
+}
+
+private struct SetupStep: View {
+    let number: Int
+    let text: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text("\(number)")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .frame(width: 22, height: 22)
+                .background(Color.hrBlue)
+                .clipShape(Circle())
+
+            Text(text)
+                .font(.system(size: 13))
+                .foregroundStyle(.primary.opacity(0.8))
+        }
+    }
+}
+
+// MARK: - Original Sub-components (preserved)
 
 private struct TodayStatCell: View {
     let value: String
@@ -668,24 +931,6 @@ private struct WorkoutRow: View {
         return minutes >= 60
             ? String(format: "%dh %dm", minutes / 60, minutes % 60)
             : "\(minutes) min"
-    }
-}
-
-private struct FeatureRow: View {
-    let icon: String
-    let text: String
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundStyle(color)
-                .frame(width: 24)
-            Text(text)
-                .font(.system(size: 14))
-                .foregroundStyle(.primary.opacity(0.8))
-        }
     }
 }
 

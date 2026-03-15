@@ -11,6 +11,7 @@ struct AnalysisResult: Codable {
     let quality: Quality?
     let previousSession: SessionSummary?
     let history: [SessionSummary]?
+    let videoUrl: String?
 
     enum CodingKeys: String, CodingKey {
         case videoId = "video_id"
@@ -20,6 +21,7 @@ struct AnalysisResult: Codable {
         case quality
         case previousSession = "previous_session"
         case history
+        case videoUrl = "video_url"
     }
 }
 
@@ -143,6 +145,7 @@ struct SessionSummary: Codable, Identifiable {
     let powerScore: Int?
     let balanceScore: Int?
     let createdAt: String?
+    let videoUrl: String?
 
     enum CodingKeys: String, CodingKey {
         case videoId = "video_id"
@@ -152,9 +155,10 @@ struct SessionSummary: Codable, Identifiable {
         case powerScore = "power_score"
         case balanceScore = "balance_score"
         case createdAt = "created_at"
+        case videoUrl = "video_url"
     }
 
-    init(videoId: String?, actionType: String?, overallScore: Int?, techniqueScore: Int?, powerScore: Int?, balanceScore: Int?, createdAt: String?) {
+    init(videoId: String?, actionType: String?, overallScore: Int?, techniqueScore: Int?, powerScore: Int?, balanceScore: Int?, createdAt: String?, videoUrl: String? = nil) {
         self.videoId = videoId
         self.actionType = actionType
         self.overallScore = overallScore
@@ -162,6 +166,7 @@ struct SessionSummary: Codable, Identifiable {
         self.powerScore = powerScore
         self.balanceScore = balanceScore
         self.createdAt = createdAt
+        self.videoUrl = videoUrl
         self.id = videoId ?? UUID().uuidString
     }
 
@@ -174,6 +179,7 @@ struct SessionSummary: Codable, Identifiable {
         powerScore = try container.decodeIfPresent(Int.self, forKey: .powerScore)
         balanceScore = try container.decodeIfPresent(Int.self, forKey: .balanceScore)
         createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        videoUrl = try container.decodeIfPresent(String.self, forKey: .videoUrl)
         id = videoId ?? UUID().uuidString
     }
 }

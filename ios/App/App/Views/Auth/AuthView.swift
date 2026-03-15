@@ -94,7 +94,7 @@ struct AuthView: View {
                             }
 
                             HRInputContainer(icon: "lock.fill") {
-                                SecureField("Password (8+ characters)", text: $password)
+                                SecureField(mode == .signIn ? "Password" : "Password (8+ characters)", text: $password)
                                     .textContentType(mode == .signIn ? .password : .newPassword)
                             }
 
