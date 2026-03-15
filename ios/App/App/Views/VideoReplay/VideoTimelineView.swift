@@ -77,12 +77,12 @@ struct VideoTimelineView: View {
             // Time labels
             HStack {
                 Text(currentTime)
-                    .font(.system(size: 10, weight: .medium).monospacedDigit())
-                    .foregroundStyle(.primary.opacity(0.45))
+                    .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(.primary.opacity(0.65))
                 Spacer()
                 Text(duration)
-                    .font(.system(size: 10, weight: .medium).monospacedDigit())
-                    .foregroundStyle(.primary.opacity(0.45))
+                    .font(.system(size: 10, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(.primary.opacity(0.65))
             }
         }
     }

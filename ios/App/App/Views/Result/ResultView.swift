@@ -22,7 +22,7 @@ struct ResultView: View {
             ZStack {
                 Color.hrBg.ignoresSafeArea()
 
-                ScrollView(showsIndicators: false) {
+                ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 14) {
 
                         if usedCache {
@@ -162,7 +162,9 @@ struct ResultView: View {
                     .padding(.horizontal, 20)
                     .padding(.top, 8)
                 }
+                .scrollDismissesKeyboard(.immediately)
             }
+            .contentShape(Rectangle())
             .navigationTitle("\(result.actionType.capitalized) Analysis")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -243,7 +243,7 @@ struct VideoReplayView: View {
             Button { vm.stepBackward() } label: {
                 Image(systemName: "backward.frame.fill")
                     .font(.system(size: 14))
-                    .foregroundStyle(.primary.opacity(0.55))
+                    .foregroundStyle(.primary.opacity(0.7))
                     .frame(width: 36, height: 32)
             }
             .buttonStyle(.plain)
@@ -251,7 +251,7 @@ struct VideoReplayView: View {
             Button { vm.stepForward() } label: {
                 Image(systemName: "forward.frame.fill")
                     .font(.system(size: 14))
-                    .foregroundStyle(.primary.opacity(0.55))
+                    .foregroundStyle(.primary.opacity(0.7))
                     .frame(width: 36, height: 32)
             }
             .buttonStyle(.plain)
@@ -268,10 +268,10 @@ struct VideoReplayView: View {
                 } label: {
                     Text(speedLabel(rate))
                         .font(.system(size: 11, weight: .semibold).monospacedDigit())
-                        .foregroundStyle(vm.playbackRate == rate ? .white : .primary.opacity(0.45))
+                        .foregroundStyle(vm.playbackRate == rate ? .white : .primary.opacity(0.65))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
-                        .background(vm.playbackRate == rate ? Color.hrBlue : Color.primary.opacity(0.06))
+                        .background(vm.playbackRate == rate ? Color.hrBlue : Color.primary.opacity(0.08))
                         .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
@@ -287,7 +287,7 @@ struct VideoReplayView: View {
         } label: {
             Image(systemName: "arrow.up.left.and.arrow.down.right")
                 .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(.primary.opacity(0.55))
+                .foregroundStyle(.primary.opacity(0.7))
                 .frame(width: 36, height: 32)
         }
         .buttonStyle(.plain)

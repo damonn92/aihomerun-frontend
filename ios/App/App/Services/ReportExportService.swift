@@ -17,14 +17,29 @@ class ReportExportService {
         let date: Date
     }
 
-    // MARK: - PDF Generation
+    // MARK: - Text Height Helper
 
-    /// Generate a single-page PDF report from analysis data.
+    /// Calculate the actual height that text will occupy when drawn in a constrained rect.
+    private static func textHeight(_ text: String, width: CGFloat, attributes: [NSAttributedString.Key: Any]) -> CGFloat {
+        let nsStr = text as NSString
+        let boundingRect = nsStr.boundingRect(
+            with: CGSize(width: width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: attributes,
+            context: nil
+        )
+        return ceil(boundingRect.height)
+    }
+
+    // MARK: - PDF Generation (Multi-Page)
+
+    /// Generate a multi-page PDF report from analysis data.
     static func generatePDF(from data: ReportData) -> Data {
         let pageWidth: CGFloat = 612    // US Letter
         let pageHeight: CGFloat = 792
-        let margin: CGFloat = 40
+        let margin: CGFloat = 48
         let contentWidth = pageWidth - margin * 2
+        let maxY = pageHeight - margin  // Bottom boundary
 
         let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight))
 
@@ -35,37 +50,73 @@ class ReportExportService {
             let fb = data.analysisResult.feedback
             let metrics = data.analysisResult.metrics
 
-            // MARK: Header
-            yOffset = drawHeader(yOffset: yOffset, margin: margin, contentWidth: contentWidth, date: data.date)
+            // === PAGE BACKGROUND ===
+            drawPageBackground(pageWidth: pageWidth, pageHeight: pageHeight)
 
-            // MARK: Player Info + Score
+            // === HEADER WITH LOGO ===
+            yOffset = drawHeader(yOffset: yOffset, margin: margin, contentWidth: contentWidth, date: data.date, pageWidth: pageWidth)
+
+            // === SCORE HERO ===
             yOffset = drawScoreSection(yOffset: yOffset, margin: margin, contentWidth: contentWidth, feedback: fb, data: data)
 
-            // MARK: Key Frame Image
+            // === KEY FRAME IMAGE ===
             if let image = data.keyFrameImage {
-                yOffset += 12
-                let imgHeight = min(200.0, contentWidth * 0.45)
-                let imgWidth = imgHeight * (image.size.width / image.size.height)
+                yOffset += 16
+                let maxImgHeight: CGFloat = 200
+                let imgAspect = image.size.width / image.size.height
+                let imgWidth = min(contentWidth * 0.55, maxImgHeight * imgAspect)
+                let imgHeight = imgWidth / imgAspect
                 let imgX = margin + (contentWidth - imgWidth) / 2
-                image.draw(in: CGRect(x: imgX, y: yOffset, width: imgWidth, height: imgHeight))
-                yOffset += imgHeight + 12
+
+                // Image border/shadow
+                let imgRect = CGRect(x: imgX, y: yOffset, width: imgWidth, height: imgHeight)
+                let shadowRect = imgRect.insetBy(dx: -1, dy: -1)
+                UIColor(white: 0.85, alpha: 1).setStroke()
+                let border = UIBezierPath(roundedRect: shadowRect, cornerRadius: 8)
+                border.lineWidth = 1
+                border.stroke()
+
+                // Clip and draw image
+                let clipPath = UIBezierPath(roundedRect: imgRect, cornerRadius: 8)
+                let ctx = UIGraphicsGetCurrentContext()!
+                ctx.saveGState()
+                clipPath.addClip()
+                image.draw(in: imgRect)
+                ctx.restoreGState()
+
+                yOffset += imgHeight + 18
             }
 
-            // MARK: Sub-scores
+            // === SUB-SCORES ===
             yOffset = drawSubScores(yOffset: yOffset, margin: margin, contentWidth: contentWidth, feedback: fb)
 
-            // MARK: Biomechanics
+            // === BIOMECHANICS ===
             yOffset = drawBiomechanics(yOffset: yOffset, margin: margin, contentWidth: contentWidth, metrics: metrics)
 
-            // MARK: Strengths & Improvements
+            // === STRENGTHS & IMPROVEMENTS ===
+            // Check if we need a new page
+            let strengthsHeight = estimateStrengthsHeight(feedback: fb, contentWidth: contentWidth, margin: margin)
+            if yOffset + strengthsHeight > maxY {
+                drawFooter(pageHeight: pageHeight, margin: margin, contentWidth: contentWidth)
+                context.beginPage()
+                drawPageBackground(pageWidth: pageWidth, pageHeight: pageHeight)
+                yOffset = margin + 20
+            }
             yOffset = drawStrengthsImprovements(yOffset: yOffset, margin: margin, contentWidth: contentWidth, feedback: fb)
 
-            // MARK: Drill Recommendation
+            // === DRILL RECOMMENDATION ===
             if let drill = fb.drill {
+                let drillHeight = estimateDrillHeight(drill: drill, contentWidth: contentWidth, margin: margin)
+                if yOffset + drillHeight > maxY {
+                    drawFooter(pageHeight: pageHeight, margin: margin, contentWidth: contentWidth)
+                    context.beginPage()
+                    drawPageBackground(pageWidth: pageWidth, pageHeight: pageHeight)
+                    yOffset = margin + 20
+                }
                 yOffset = drawDrill(yOffset: yOffset, margin: margin, contentWidth: contentWidth, drill: drill)
             }
 
-            // MARK: Footer
+            // === FOOTER ===
             drawFooter(pageHeight: pageHeight, margin: margin, contentWidth: contentWidth)
         }
     }
@@ -93,13 +144,24 @@ class ReportExportService {
             let margin: CGFloat = 60
             var y: CGFloat = 50
 
-            // Title
-            let titleAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 32, weight: .black),
-                .foregroundColor: UIColor.white
-            ]
-            "AIHomeRun Report".draw(at: CGPoint(x: margin, y: y), withAttributes: titleAttrs)
-            y += 50
+            // Logo + Title
+            if let logo = UIImage(named: "AppIcon-512@2x") ?? UIImage(named: "AppLogo") {
+                let logoSize: CGFloat = 44
+                logo.draw(in: CGRect(x: margin, y: y, width: logoSize, height: logoSize))
+
+                let titleAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 32, weight: .black),
+                    .foregroundColor: UIColor.white
+                ]
+                "AIHomeRun".draw(at: CGPoint(x: margin + logoSize + 12, y: y + 4), withAttributes: titleAttrs)
+            } else {
+                let titleAttrs: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: 32, weight: .black),
+                    .foregroundColor: UIColor.white
+                ]
+                "AIHomeRun Report".draw(at: CGPoint(x: margin, y: y), withAttributes: titleAttrs)
+            }
+            y += 56
 
             // Date
             let dateFormatter = DateFormatter()
@@ -175,7 +237,7 @@ class ReportExportService {
             let summaryRect = CGRect(x: margin, y: y, width: size.width - margin * 2, height: 120)
             fb.plainSummary.draw(in: summaryRect, withAttributes: summaryAttrs)
 
-            // Watermark
+            // Logo watermark
             let wmAttrs: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 14, weight: .medium),
                 .foregroundColor: UIColor.white.withAlphaComponent(0.2)
@@ -203,21 +265,40 @@ class ReportExportService {
 
     // MARK: - PDF Drawing Helpers
 
-    private static func drawHeader(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, date: Date) -> CGFloat {
+    private static func drawPageBackground(pageWidth: CGFloat, pageHeight: CGFloat) {
+        // White page background
+        UIColor.white.setFill()
+        UIBezierPath(rect: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)).fill()
+    }
+
+    private static func drawHeader(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, date: Date, pageWidth: CGFloat) -> CGFloat {
         var y = yOffset
 
-        // Title
+        // Logo (app icon)
+        let logoSize: CGFloat = 32
+        if let logo = UIImage(named: "AppIcon-512@2x") ?? UIImage(named: "AppLogo") {
+            let logoRect = CGRect(x: margin, y: y - 4, width: logoSize, height: logoSize)
+            // Draw rounded logo
+            let ctx = UIGraphicsGetCurrentContext()!
+            ctx.saveGState()
+            UIBezierPath(roundedRect: logoRect, cornerRadius: 7).addClip()
+            logo.draw(in: logoRect)
+            ctx.restoreGState()
+        }
+
+        // Title next to logo
+        let titleX = margin + logoSize + 10
         let titleAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 22, weight: .black),
+            .font: UIFont.systemFont(ofSize: 20, weight: .black),
             .foregroundColor: UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1.0)
         ]
-        "AIHomeRun".draw(at: CGPoint(x: margin, y: y), withAttributes: titleAttrs)
+        "AIHomeRun".draw(at: CGPoint(x: titleX, y: y), withAttributes: titleAttrs)
 
         let subAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 12, weight: .medium),
-            .foregroundColor: UIColor.gray
+            .font: UIFont.systemFont(ofSize: 11, weight: .medium),
+            .foregroundColor: UIColor(white: 0.55, alpha: 1)
         ]
-        "Analysis Report".draw(at: CGPoint(x: margin + 130, y: y + 6), withAttributes: subAttrs)
+        "Analysis Report".draw(at: CGPoint(x: titleX + 108, y: y + 5), withAttributes: subAttrs)
 
         // Date (right-aligned)
         let dateFormatter = DateFormatter()
@@ -225,24 +306,33 @@ class ReportExportService {
         dateFormatter.timeStyle = .short
         let dateStr = dateFormatter.string(from: date)
         let dateAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 11, weight: .regular),
-            .foregroundColor: UIColor.gray
+            .font: UIFont.systemFont(ofSize: 10, weight: .regular),
+            .foregroundColor: UIColor(white: 0.50, alpha: 1)
         ]
         let dateSize = dateStr.size(withAttributes: dateAttrs)
-        dateStr.draw(at: CGPoint(x: margin + contentWidth - dateSize.width, y: y + 6),
+        dateStr.draw(at: CGPoint(x: margin + contentWidth - dateSize.width, y: y + 5),
                     withAttributes: dateAttrs)
 
-        y += 30
+        y += 34
 
-        // Separator line
-        let linePath = UIBezierPath()
-        linePath.move(to: CGPoint(x: margin, y: y))
-        linePath.addLine(to: CGPoint(x: margin + contentWidth, y: y))
-        UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 0.5).setStroke()
-        linePath.lineWidth = 2
-        linePath.stroke()
+        // Gradient separator line
+        let lineRect = CGRect(x: margin, y: y, width: contentWidth, height: 2.5)
+        let ctx = UIGraphicsGetCurrentContext()!
+        ctx.saveGState()
+        let colors: [CGColor] = [
+            UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1.0).cgColor,
+            UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 0.2).cgColor
+        ]
+        let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: [0, 1])!
+        ctx.addRect(lineRect)
+        ctx.clip()
+        ctx.drawLinearGradient(gradient,
+                               start: CGPoint(x: margin, y: y),
+                               end: CGPoint(x: margin + contentWidth, y: y),
+                               options: [])
+        ctx.restoreGState()
 
-        return y + 12
+        return y + 16
     }
 
     private static func drawScoreSection(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, feedback: Feedback, data: ReportData) -> CGFloat {
@@ -251,8 +341,8 @@ class ReportExportService {
         // Player info
         if let name = data.playerName {
             let nameAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 14, weight: .semibold),
-                .foregroundColor: UIColor.darkGray
+                .font: UIFont.systemFont(ofSize: 13, weight: .semibold),
+                .foregroundColor: UIColor(white: 0.30, alpha: 1)
             ]
             name.draw(at: CGPoint(x: margin, y: y), withAttributes: nameAttrs)
             y += 18
@@ -261,9 +351,9 @@ class ReportExportService {
         if let age = data.playerAge {
             let ageAttrs: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 11, weight: .regular),
-                .foregroundColor: UIColor.gray
+                .foregroundColor: UIColor(white: 0.50, alpha: 1)
             ]
-            "Age \(age) · \(data.analysisResult.actionType.capitalized)".draw(
+            "Age \(age) \u{00B7} \(data.analysisResult.actionType.capitalized)".draw(
                 at: CGPoint(x: margin, y: y), withAttributes: ageAttrs)
             y += 20
         }
@@ -271,19 +361,20 @@ class ReportExportService {
         // Big score
         let scoreStr = "\(feedback.overallScore)"
         let scoreAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 48, weight: .black),
+            .font: UIFont.systemFont(ofSize: 52, weight: .black),
             .foregroundColor: scoreUIColor(for: feedback.grade)
         ]
         scoreStr.draw(at: CGPoint(x: margin, y: y), withAttributes: scoreAttrs)
 
         // Grade next to score
+        let scoreStrSize = scoreStr.size(withAttributes: scoreAttrs)
         let gradeAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 24, weight: .bold),
-            .foregroundColor: scoreUIColor(for: feedback.grade).withAlphaComponent(0.6)
+            .foregroundColor: scoreUIColor(for: feedback.grade).withAlphaComponent(0.5)
         ]
-        feedback.grade.draw(at: CGPoint(x: margin + 80, y: y + 16), withAttributes: gradeAttrs)
+        feedback.grade.draw(at: CGPoint(x: margin + scoreStrSize.width + 8, y: y + 18), withAttributes: gradeAttrs)
 
-        y += 58
+        y += 60
         return y
     }
 
@@ -291,8 +382,8 @@ class ReportExportService {
         var y = yOffset
 
         let sectionTitle: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 11, weight: .bold),
-            .foregroundColor: UIColor.gray
+            .font: UIFont.systemFont(ofSize: 10, weight: .bold),
+            .foregroundColor: UIColor(white: 0.50, alpha: 1)
         ]
         "SCORES".draw(at: CGPoint(x: margin, y: y), withAttributes: sectionTitle)
         y += 18
@@ -307,38 +398,46 @@ class ReportExportService {
         for (i, score) in scores.enumerated() {
             let x = margin + CGFloat(i) * (barWidth + 10)
 
+            // Label
             let labelAttrs: [NSAttributedString.Key: Any] = [
                 .font: UIFont.systemFont(ofSize: 10, weight: .semibold),
                 .foregroundColor: score.2
             ]
             score.0.draw(at: CGPoint(x: x, y: y), withAttributes: labelAttrs)
 
+            // Value
             let valAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.monospacedDigitSystemFont(ofSize: 20, weight: .black),
-                .foregroundColor: UIColor.black
+                .font: UIFont.monospacedDigitSystemFont(ofSize: 22, weight: .black),
+                .foregroundColor: UIColor(white: 0.15, alpha: 1)
             ]
             "\(score.1)".draw(at: CGPoint(x: x, y: y + 14), withAttributes: valAttrs)
 
-            // Score bar
-            let barRect = CGRect(x: x, y: y + 38, width: barWidth - 10, height: 4)
-            UIColor(white: 0.9, alpha: 1).setFill()
-            UIBezierPath(roundedRect: barRect, cornerRadius: 2).fill()
+            // Background bar
+            let barRect = CGRect(x: x, y: y + 42, width: barWidth - 10, height: 5)
+            UIColor(white: 0.92, alpha: 1).setFill()
+            UIBezierPath(roundedRect: barRect, cornerRadius: 2.5).fill()
 
+            // Filled bar
             let fillWidth = (barWidth - 10) * CGFloat(score.1) / 100.0
-            let fillRect = CGRect(x: x, y: y + 38, width: fillWidth, height: 4)
+            let fillRect = CGRect(x: x, y: y + 42, width: fillWidth, height: 5)
             score.2.setFill()
-            UIBezierPath(roundedRect: fillRect, cornerRadius: 2).fill()
+            UIBezierPath(roundedRect: fillRect, cornerRadius: 2.5).fill()
         }
 
-        return y + 52
+        return y + 58
     }
 
     private static func drawBiomechanics(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, metrics: Metrics) -> CGFloat {
         var y = yOffset
 
+        // Section divider
+        UIColor(white: 0.90, alpha: 1).setFill()
+        UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 0.5)).fill()
+        y += 12
+
         let sectionTitle: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 11, weight: .bold),
-            .foregroundColor: UIColor.gray
+            .font: UIFont.systemFont(ofSize: 10, weight: .bold),
+            .foregroundColor: UIColor(white: 0.50, alpha: 1)
         ]
         "BIOMECHANICS".draw(at: CGPoint(x: margin, y: y), withAttributes: sectionTitle)
         y += 18
@@ -353,122 +452,224 @@ class ReportExportService {
 
         let labelAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 10, weight: .medium),
-            .foregroundColor: UIColor.darkGray
+            .foregroundColor: UIColor(white: 0.35, alpha: 1)
         ]
         let valueAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.monospacedDigitSystemFont(ofSize: 10, weight: .bold),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor(white: 0.15, alpha: 1)
         ]
 
-        for item in metricItems {
-            item.0.draw(at: CGPoint(x: margin, y: y), withAttributes: labelAttrs)
+        for (index, item) in metricItems.enumerated() {
+            // Alternating row background
+            if index % 2 == 0 {
+                UIColor(white: 0.97, alpha: 1).setFill()
+                UIBezierPath(rect: CGRect(x: margin, y: y - 2, width: contentWidth, height: 16)).fill()
+            }
+
+            item.0.draw(at: CGPoint(x: margin + 4, y: y), withAttributes: labelAttrs)
             let valSize = item.1.size(withAttributes: valueAttrs)
-            item.1.draw(at: CGPoint(x: margin + contentWidth - valSize.width, y: y), withAttributes: valueAttrs)
-            y += 16
+            item.1.draw(at: CGPoint(x: margin + contentWidth - valSize.width - 4, y: y), withAttributes: valueAttrs)
+            y += 17
         }
 
-        return y + 8
+        return y + 10
+    }
+
+    // MARK: - Strengths & Improvements (FIXED text overlap)
+
+    private static func estimateStrengthsHeight(feedback: Feedback, contentWidth: CGFloat, margin: CGFloat) -> CGFloat {
+        let halfWidth = (contentWidth - 24) / 2
+        let itemAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9.5, weight: .regular),
+            .foregroundColor: UIColor.darkGray
+        ]
+
+        var leftHeight: CGFloat = 24 // header
+        for item in feedback.strengths.prefix(4) {
+            let h = textHeight("\u{2022} \(item)", width: halfWidth - 8, attributes: itemAttrs)
+            leftHeight += h + 6
+        }
+
+        var rightHeight: CGFloat = 24 // header
+        for item in feedback.improvements.prefix(4) {
+            let h = textHeight("\u{2022} \(item)", width: halfWidth - 8, attributes: itemAttrs)
+            rightHeight += h + 6
+        }
+
+        return max(leftHeight, rightHeight) + 16
     }
 
     private static func drawStrengthsImprovements(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, feedback: Feedback) -> CGFloat {
         var y = yOffset
 
-        let halfWidth = (contentWidth - 16) / 2
+        // Section divider
+        UIColor(white: 0.90, alpha: 1).setFill()
+        UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 0.5)).fill()
+        y += 12
 
-        // Strengths
+        let halfWidth = (contentWidth - 24) / 2
+
+        let itemAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 9.5, weight: .regular),
+            .foregroundColor: UIColor(white: 0.30, alpha: 1)
+        ]
+
+        // ---- LEFT COLUMN: Strengths ----
+        var leftMaxY = y
         if !feedback.strengths.isEmpty {
             let headerAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 11, weight: .bold),
+                .font: UIFont.systemFont(ofSize: 10, weight: .bold),
                 .foregroundColor: UIColor(red: 0.0, green: 0.7, blue: 0.35, alpha: 1)
             ]
             "STRENGTHS".draw(at: CGPoint(x: margin, y: y), withAttributes: headerAttrs)
 
-            let itemAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 10, weight: .regular),
-                .foregroundColor: UIColor.darkGray
-            ]
+            // Green accent dot
+            let dotRect = CGRect(x: margin + 80, y: y + 3, width: 6, height: 6)
+            UIColor(red: 0.0, green: 0.7, blue: 0.35, alpha: 0.4).setFill()
+            UIBezierPath(ovalIn: dotRect).fill()
 
-            var sy = y + 16
+            var sy = y + 20
             for item in feedback.strengths.prefix(4) {
                 let bullet = "\u{2022} \(item)"
-                let rect = CGRect(x: margin, y: sy, width: halfWidth, height: 30)
+                let h = textHeight(bullet, width: halfWidth - 8, attributes: itemAttrs)
+                let rect = CGRect(x: margin + 4, y: sy, width: halfWidth - 8, height: h)
                 bullet.draw(in: rect, withAttributes: itemAttrs)
-                sy += 14
+                sy += h + 6
             }
+            leftMaxY = sy
         }
 
-        // Improvements
+        // ---- RIGHT COLUMN: Improvements ----
+        var rightMaxY = y
         if !feedback.improvements.isEmpty {
             let headerAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 11, weight: .bold),
+                .font: UIFont.systemFont(ofSize: 10, weight: .bold),
                 .foregroundColor: UIColor(red: 1.0, green: 0.58, blue: 0.0, alpha: 1)
             ]
-            "IMPROVEMENTS".draw(at: CGPoint(x: margin + halfWidth + 16, y: y), withAttributes: headerAttrs)
+            let rightX = margin + halfWidth + 24
+            "IMPROVEMENTS".draw(at: CGPoint(x: rightX, y: y), withAttributes: headerAttrs)
 
-            let itemAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 10, weight: .regular),
-                .foregroundColor: UIColor.darkGray
-            ]
+            // Orange accent dot
+            let dotRect = CGRect(x: rightX + 106, y: y + 3, width: 6, height: 6)
+            UIColor(red: 1.0, green: 0.58, blue: 0.0, alpha: 0.4).setFill()
+            UIBezierPath(ovalIn: dotRect).fill()
 
-            var iy = y + 16
+            var iy = y + 20
             for item in feedback.improvements.prefix(4) {
                 let bullet = "\u{2022} \(item)"
-                let rect = CGRect(x: margin + halfWidth + 16, y: iy, width: halfWidth, height: 30)
+                let h = textHeight(bullet, width: halfWidth - 8, attributes: itemAttrs)
+                let rect = CGRect(x: rightX + 4, y: iy, width: halfWidth - 8, height: h)
                 bullet.draw(in: rect, withAttributes: itemAttrs)
-                iy += 14
+                iy += h + 6
             }
+            rightMaxY = iy
         }
 
-        let maxItems = max(feedback.strengths.prefix(4).count, feedback.improvements.prefix(4).count)
-        return y + 16 + CGFloat(maxItems) * 14 + 12
+        return max(leftMaxY, rightMaxY) + 12
+    }
+
+    // MARK: - Drill Recommendation (FIXED text overlap)
+
+    private static func estimateDrillHeight(drill: DrillInfo, contentWidth: CGFloat, margin: CGFloat) -> CGFloat {
+        let nameAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 12, weight: .bold)
+        ]
+        let descAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 10, weight: .regular)
+        ]
+        let nameH = textHeight(drill.name, width: contentWidth, attributes: nameAttrs)
+        let descH = textHeight(drill.description, width: contentWidth, attributes: descAttrs)
+        return 20 + nameH + 6 + descH + 6 + 20 + 24
     }
 
     private static func drawDrill(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, drill: DrillInfo) -> CGFloat {
         var y = yOffset
 
+        // Section divider
+        UIColor(white: 0.90, alpha: 1).setFill()
+        UIBezierPath(rect: CGRect(x: margin, y: y, width: contentWidth, height: 0.5)).fill()
+        y += 12
+
+        // Background card
+        let cardTop = y - 4
+        UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 0.05).setFill()
+        UIBezierPath(roundedRect: CGRect(x: margin, y: cardTop, width: contentWidth, height: estimateDrillHeight(drill: drill, contentWidth: contentWidth - 24, margin: margin)),
+                     cornerRadius: 8).fill()
+
+        // Left accent bar
+        UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 0.6).setFill()
+        UIBezierPath(roundedRect: CGRect(x: margin, y: cardTop, width: 3, height: estimateDrillHeight(drill: drill, contentWidth: contentWidth - 24, margin: margin)),
+                     cornerRadius: 1.5).fill()
+
+        let innerMargin = margin + 12
+
         let headerAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 11, weight: .bold),
-            .foregroundColor: UIColor(red: 1.0, green: 0.58, blue: 0.0, alpha: 1)
+            .font: UIFont.systemFont(ofSize: 10, weight: .bold),
+            .foregroundColor: UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1)
         ]
-        "RECOMMENDED DRILL".draw(at: CGPoint(x: margin, y: y), withAttributes: headerAttrs)
-        y += 16
+        "RECOMMENDED DRILL".draw(at: CGPoint(x: innerMargin, y: y), withAttributes: headerAttrs)
+        y += 18
 
         let nameAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 12, weight: .bold),
-            .foregroundColor: UIColor.black
+            .foregroundColor: UIColor(white: 0.15, alpha: 1)
         ]
-        drill.name.draw(at: CGPoint(x: margin, y: y), withAttributes: nameAttrs)
-        y += 16
+        let nameH = textHeight(drill.name, width: contentWidth - 24, attributes: nameAttrs)
+        drill.name.draw(in: CGRect(x: innerMargin, y: y, width: contentWidth - 24, height: nameH), withAttributes: nameAttrs)
+        y += nameH + 6
 
         let descAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 10, weight: .regular),
-            .foregroundColor: UIColor.darkGray
+            .foregroundColor: UIColor(white: 0.35, alpha: 1)
         ]
-        let descRect = CGRect(x: margin, y: y, width: contentWidth, height: 40)
-        drill.description.draw(in: descRect, withAttributes: descAttrs)
-        y += 30
+        let descH = textHeight(drill.description, width: contentWidth - 24, attributes: descAttrs)
+        drill.description.draw(in: CGRect(x: innerMargin, y: y, width: contentWidth - 24, height: descH), withAttributes: descAttrs)
+        y += descH + 8
 
         if let reps = drill.reps {
+            // Reps badge
             let repsAttrs: [NSAttributedString.Key: Any] = [
-                .font: UIFont.systemFont(ofSize: 10, weight: .semibold),
-                .foregroundColor: UIColor(red: 1.0, green: 0.58, blue: 0.0, alpha: 1)
+                .font: UIFont.systemFont(ofSize: 9, weight: .bold),
+                .foregroundColor: UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1)
             ]
-            reps.draw(at: CGPoint(x: margin, y: y), withAttributes: repsAttrs)
-            y += 16
+            let repsSize = reps.size(withAttributes: repsAttrs)
+            let badgeRect = CGRect(x: innerMargin, y: y, width: repsSize.width + 14, height: repsSize.height + 6)
+
+            UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 0.12).setFill()
+            UIBezierPath(roundedRect: badgeRect, cornerRadius: badgeRect.height / 2).fill()
+            reps.draw(at: CGPoint(x: innerMargin + 7, y: y + 3), withAttributes: repsAttrs)
+            y += badgeRect.height + 8
         }
 
-        return y + 8
+        return y + 12
     }
 
     private static func drawFooter(pageHeight: CGFloat, margin: CGFloat, contentWidth: CGFloat) {
+        let y = pageHeight - margin + 8
+
+        // Separator line
+        UIColor(white: 0.90, alpha: 1).setFill()
+        UIBezierPath(rect: CGRect(x: margin, y: y - 4, width: contentWidth, height: 0.5)).fill()
+
+        // Logo icon (small)
+        if let logo = UIImage(named: "AppIcon-512@2x") ?? UIImage(named: "AppLogo") {
+            let logoSize: CGFloat = 14
+            let ctx = UIGraphicsGetCurrentContext()!
+            ctx.saveGState()
+            let logoRect = CGRect(x: margin + (contentWidth - 200) / 2, y: y + 1, width: logoSize, height: logoSize)
+            UIBezierPath(roundedRect: logoRect, cornerRadius: 3).addClip()
+            logo.draw(in: logoRect)
+            ctx.restoreGState()
+        }
+
         let footerAttrs: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: 9, weight: .medium),
-            .foregroundColor: UIColor.lightGray
+            .font: UIFont.systemFont(ofSize: 8, weight: .medium),
+            .foregroundColor: UIColor(white: 0.65, alpha: 1)
         ]
-        let footer = "Generated by AIHomeRun · AI-Powered Baseball Coaching"
+        let footer = "Generated by AIHomeRun \u{00B7} AI-Powered Baseball Coaching"
         let footerSize = footer.size(withAttributes: footerAttrs)
-        footer.draw(at: CGPoint(x: margin + (contentWidth - footerSize.width) / 2,
-                                y: pageHeight - margin + 10),
+        footer.draw(at: CGPoint(x: margin + (contentWidth - footerSize.width) / 2 + 10,
+                                y: y + 2),
                    withAttributes: footerAttrs)
     }
 
