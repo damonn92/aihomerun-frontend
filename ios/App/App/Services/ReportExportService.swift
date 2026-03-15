@@ -145,7 +145,7 @@ class ReportExportService {
             var y: CGFloat = 50
 
             // Logo + Title
-            if let logo = UIImage(named: "AppIcon-512@2x") ?? UIImage(named: "AppLogo") {
+            if let logo = loadAppLogo() {
                 let logoSize: CGFloat = 44
                 logo.draw(in: CGRect(x: margin, y: y, width: logoSize, height: logoSize))
 
@@ -271,34 +271,45 @@ class ReportExportService {
         UIBezierPath(rect: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)).fill()
     }
 
+    private static func loadAppLogo() -> UIImage? {
+        // Try regular image asset first, then fall back to loading from bundle
+        if let img = UIImage(named: "AppLogo") { return img }
+        if let url = Bundle.main.url(forResource: "AppIcon-512@2x", withExtension: "png"),
+           let img = UIImage(contentsOfFile: url.path) { return img }
+        return nil
+    }
+
     private static func drawHeader(yOffset: CGFloat, margin: CGFloat, contentWidth: CGFloat, date: Date, pageWidth: CGFloat) -> CGFloat {
         var y = yOffset
 
         // Logo (app icon)
-        let logoSize: CGFloat = 32
-        if let logo = UIImage(named: "AppIcon-512@2x") ?? UIImage(named: "AppLogo") {
-            let logoRect = CGRect(x: margin, y: y - 4, width: logoSize, height: logoSize)
-            // Draw rounded logo
+        let logoSize: CGFloat = 30
+        var titleX = margin
+        if let logo = loadAppLogo() {
+            let logoRect = CGRect(x: margin, y: y - 2, width: logoSize, height: logoSize)
             let ctx = UIGraphicsGetCurrentContext()!
             ctx.saveGState()
             UIBezierPath(roundedRect: logoRect, cornerRadius: 7).addClip()
             logo.draw(in: logoRect)
             ctx.restoreGState()
+            titleX = margin + logoSize + 8
         }
 
-        // Title next to logo
-        let titleX = margin + logoSize + 10
+        // Title "AIHomeRun"
         let titleAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 20, weight: .black),
             .foregroundColor: UIColor(red: 0.08, green: 0.47, blue: 0.98, alpha: 1.0)
         ]
-        "AIHomeRun".draw(at: CGPoint(x: titleX, y: y), withAttributes: titleAttrs)
+        let titleStr = "AIHomeRun"
+        titleStr.draw(at: CGPoint(x: titleX, y: y), withAttributes: titleAttrs)
 
+        // "Analysis Report" — dynamically positioned after title text
+        let titleSize = titleStr.size(withAttributes: titleAttrs)
         let subAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.systemFont(ofSize: 11, weight: .medium),
             .foregroundColor: UIColor(white: 0.55, alpha: 1)
         ]
-        "Analysis Report".draw(at: CGPoint(x: titleX + 108, y: y + 5), withAttributes: subAttrs)
+        "Analysis Report".draw(at: CGPoint(x: titleX + titleSize.width + 6, y: y + 6), withAttributes: subAttrs)
 
         // Date (right-aligned)
         let dateFormatter = DateFormatter()
@@ -652,7 +663,7 @@ class ReportExportService {
         UIBezierPath(rect: CGRect(x: margin, y: y - 4, width: contentWidth, height: 0.5)).fill()
 
         // Logo icon (small)
-        if let logo = UIImage(named: "AppIcon-512@2x") ?? UIImage(named: "AppLogo") {
+        if let logo = loadAppLogo() {
             let logoSize: CGFloat = 14
             let ctx = UIGraphicsGetCurrentContext()!
             ctx.saveGState()
