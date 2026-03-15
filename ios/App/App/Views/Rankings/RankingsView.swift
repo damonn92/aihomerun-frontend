@@ -9,7 +9,7 @@ struct RankingsView: View {
     @State private var appeared = false
 
     private var userId: String? {
-        authVM.user?.id.uuidString
+        authVM.user?.id
     }
 
     var body: some View {

@@ -107,7 +107,7 @@
 		AB0090000000000000000000 /* SessionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0089000000000000000000 /* SessionHistoryView.swift */; };
 		AB0092000000000000000000 /* BestScoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0091000000000000000000 /* BestScoreView.swift */; };
 		AB0094000000000000000000 /* ProgressStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0093000000000000000000 /* ProgressStatsView.swift */; };
-		AB0204000000000000000000 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = AB0202000000000000000000 /* Supabase */; };
+
 		AB0206000000000000000000 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = AB0203000000000000000000 /* GoogleSignIn */; };
 		AC0002000000000000000001 /* AnalysisResultCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0001000000000000000001 /* AnalysisResultCache.swift */; };
 		AF7ACC77C72CAB2B2F3247BA /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885FD8776987D3A47F6AFF3F /* HealthKitService.swift */; };
@@ -267,7 +267,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AB0204000000000000000000 /* Supabase in Frameworks */,
 				AB0206000000000000000000 /* GoogleSignIn in Frameworks */,
 				41D9E3DD4B291BA459655D84 /* WatchConnectivity.framework in Frameworks */,
 				63848380EA1E73BBEDDCBF17 /* HealthKit.framework in Frameworks */,
@@ -681,7 +680,6 @@
 			);
 			name = App;
 			packageProductDependencies = (
-				AB0202000000000000000000 /* Supabase */,
 				AB0203000000000000000000 /* GoogleSignIn */,
 			);
 			productName = App;
@@ -726,7 +724,6 @@
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
-				AB0200000000000000000000 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 				AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
@@ -999,7 +996,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1022,7 +1019,7 @@
 				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				INFOPLIST_FILE = App/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1046,7 +1043,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AIHomeRunWatch/AIHomeRunWatch.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AIHomeRunWatch/Info.plist;
@@ -1075,7 +1072,7 @@
 				CODE_SIGN_ENTITLEMENTS = AIHomeRunWatch/AIHomeRunWatch.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 30;
 				DEVELOPMENT_TEAM = 9SZ4Y9U2U7;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AIHomeRunWatch/Info.plist;
@@ -1131,14 +1128,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		AB0200000000000000000000 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase/supabase-swift";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 		AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
@@ -1150,11 +1139,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		AB0202000000000000000000 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = AB0200000000000000000000 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
 		AB0203000000000000000000 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AB0201000000000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;

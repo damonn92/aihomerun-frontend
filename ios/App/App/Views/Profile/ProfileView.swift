@@ -1,5 +1,5 @@
 import SwiftUI
-import Supabase
+// Profile view — uses backend API via SupabaseService
 
 struct ProfileView: View {
     @EnvironmentObject var authVM: AuthViewModel
@@ -39,7 +39,7 @@ struct ProfileView: View {
                                         .foregroundStyle(.primary.opacity(0.70))
                                     Spacer()
                                     Button("Retry") {
-                                        if let uid = authVM.user?.id.uuidString {
+                                        if let uid = authVM.user?.id {
                                             Task { await vm.load(userId: uid) }
                                         }
                                     }
@@ -85,12 +85,12 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
-                if let uid = authVM.user?.id.uuidString {
+                if let uid = authVM.user?.id {
                     Task { await vm.load(userId: uid) }
                 }
             }
             .sheet(isPresented: $showChildEditor) {
-                if let uid = authVM.user?.id.uuidString {
+                if let uid = authVM.user?.id {
                     ChildEditorView(
                         parentId: uid,
                         existing: editingChild
@@ -191,7 +191,7 @@ struct ProfileView: View {
 
                         Button("Save") {
                             Task {
-                                guard let uid = authVM.user?.id.uuidString else { return }
+                                guard let uid = authVM.user?.id else { return }
                                 try? await vm.updateName(newName, userId: uid)
                                 editingName = false
                             }
@@ -230,7 +230,7 @@ struct ProfileView: View {
             VStack(spacing: 0) {
                 NavigationLink {
                     ChangeEmailView(currentEmail: authVM.user?.email ?? "") { email in
-                        try await SupabaseService.shared.updateEmail(newEmail: email)
+                        try await SupabaseService.shared.updateEmail(newEmail: email)  // will show "not supported" error
                     }
                 } label: {
                     accountRowLabel(icon: "envelope.fill", title: "Email Address",
@@ -242,7 +242,7 @@ struct ProfileView: View {
 
                 NavigationLink {
                     ChangePasswordView { pass in
-                        try await SupabaseService.shared.updatePassword(newPassword: pass)
+                        try await SupabaseService.shared.updatePassword(newPassword: pass)  // will show "not supported" error
                     }
                 } label: {
                     accountRowLabel(icon: "lock.fill", title: "Password", value: "••••••••")

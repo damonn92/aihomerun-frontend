@@ -126,7 +126,7 @@ struct AICoachView: View {
             }
         }
         .task {
-            guard let userId = authVM.user?.id.uuidString else {
+            guard let userId = authVM.user?.id else {
                 vm.configure(child: nil)
                 if !vm.hasConversation { vm.loadWelcome() }
                 return

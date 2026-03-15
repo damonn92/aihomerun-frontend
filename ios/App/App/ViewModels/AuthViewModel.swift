@@ -1,36 +1,22 @@
 import Foundation
-import Supabase
 import AuthenticationServices
 import GoogleSignIn
 import CryptoKit
 
 @MainActor
 class AuthViewModel: ObservableObject {
-    @Published var user: User?
+    @Published var user: AuthUser?
     @Published var isLoading = true
     @Published var error: String?
 
-    private let supabase = SupabaseService.shared
+    private let service = SupabaseService.shared
 
     init() {
-        Task { await listenForAuthChanges() }
-    }
-
-    // MARK: - Auth State
-
-    private func listenForAuthChanges() async {
-        isLoading = true
-        for await (event, session) in await supabase.client.auth.authStateChanges {
-            switch event {
-            case .initialSession, .signedIn:
-                user = session?.user
-            case .signedOut:
-                user = nil
-            default:
-                break
-            }
-            isLoading = false
+        // Restore persisted session synchronously
+        if let u = service.currentUser {
+            user = u
         }
+        isLoading = false
     }
 
     // MARK: - Email Auth
@@ -38,7 +24,8 @@ class AuthViewModel: ObservableObject {
     func signIn(email: String, password: String) async {
         error = nil
         do {
-            try await supabase.signIn(email: email, password: password)
+            try await service.signIn(email: email, password: password)
+            user = service.currentUser
         } catch {
             self.error = error.localizedDescription
         }
@@ -47,7 +34,8 @@ class AuthViewModel: ObservableObject {
     func signUp(email: String, password: String) async {
         error = nil
         do {
-            try await supabase.signUp(email: email, password: password)
+            try await service.signUp(email: email, password: password)
+            user = service.currentUser
         } catch {
             self.error = error.localizedDescription
         }
@@ -56,7 +44,7 @@ class AuthViewModel: ObservableObject {
     func resetPassword(email: String) async {
         error = nil
         do {
-            try await supabase.resetPassword(email: email)
+            try await service.resetPassword(email: email)
         } catch {
             self.error = error.localizedDescription
         }
@@ -65,7 +53,8 @@ class AuthViewModel: ObservableObject {
     func signOut() async {
         error = nil
         do {
-            try await supabase.signOut()
+            try await service.signOut()
+            user = nil
         } catch {
             self.error = error.localizedDescription
         }
@@ -73,7 +62,7 @@ class AuthViewModel: ObservableObject {
 
     // MARK: - Apple Sign In
 
-    /// Raw nonce kept in memory so we can forward it to Supabase after Apple returns.
+    /// Raw nonce kept in memory so we can forward it to the backend after Apple returns.
     private var currentNonce: String?
 
     /// Called inside the `SignInWithAppleButton` request closure.
@@ -105,7 +94,8 @@ class AuthViewModel: ObservableObject {
                     return
                 }
                 do {
-                    try await supabase.signInWithApple(idToken: idTokenString, nonce: nonce)
+                    try await service.signInWithApple(idToken: idTokenString, nonce: nonce)
+                    user = service.currentUser
                 } catch {
                     self.error = "Apple Sign In failed: \(error.localizedDescription)"
                 }
@@ -143,8 +133,9 @@ class AuthViewModel: ObservableObject {
                 self.error = "Google Sign In failed. Please try again."
                 return
             }
-            let accessToken = result.user.accessToken.tokenString
-            try await supabase.signInWithGoogle(idToken: idToken, accessToken: accessToken)
+            let googleAccessToken = result.user.accessToken.tokenString
+            try await service.signInWithGoogle(idToken: idToken, accessToken: googleAccessToken)
+            user = service.currentUser
         } catch {
             if (error as NSError).code == GIDSignInError.canceled.rawValue { return }
             self.error = "Google Sign In failed: \(error.localizedDescription)"
@@ -156,7 +147,8 @@ class AuthViewModel: ObservableObject {
     func deleteAccount() async {
         error = nil
         do {
-            try await supabase.deleteAccount()
+            try await service.deleteAccount()
+            user = nil
         } catch {
             self.error = error.localizedDescription
         }
@@ -165,7 +157,7 @@ class AuthViewModel: ObservableObject {
     // MARK: - Token
 
     func accessToken() async -> String? {
-        await supabase.currentAccessToken()
+        await service.currentAccessToken()
     }
 
     // MARK: - Helpers
@@ -186,4 +178,3 @@ class AuthViewModel: ObservableObject {
         return hashed.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
-

@@ -108,14 +108,6 @@ enum AppConfig {
         return dict
     }()
 
-    static var supabaseURL: String {
-        dict["SUPABASE_URL"] as? String ?? ""
-    }
-
-    static var supabaseAnonKey: String {
-        dict["SUPABASE_ANON_KEY"] as? String ?? ""
-    }
-
     static var apiBaseURL: String {
         dict["API_BASE_URL"] as? String ?? ""
     }
